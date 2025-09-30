@@ -1,125 +1,249 @@
-import React from 'react'
-import freelancerIcon from '../../assets/img/icons.png'
-import analytics from '../../assets/img/improvement.png'
-import Invite from '../../assets/img/invite.png'
-import visibility from '../../assets/img/graph.png'
+// eslint-disable-next-line no-unused-vars
+import { motion } from "motion/react";
+import vidOne from "../../assets/vids/vidOne.MOV";
+import vidTwo from "../../assets/vids/vidTwo.MOV";
+import vidThree from "../../assets/vids/vidThree.MOV";
+import vidFour from "../../assets/vids/vidFour.MOV";
+
+
+const FEATURES = [
+  "Rank higher in Upwork search",
+  "Convert profile views into interviews",
+  "Attract high-value clients",
+  "Win more jobs with smarter proposals",
+];
+
+const STEPS = [
+  {
+    title: "Smarter Copy, Instantly",
+    vidSrc: vidFour,
+    description:
+      "Stop guessing what works. Provolo improves your profile and proposals automatically.",
+  },
+  {
+    title: "Optimized for the Algorithm",
+    vidSrc: vidTwo,
+    description: "Headlines and overviews crafted to boost your visibility in Upwork's search.",
+  },
+  {
+    title: "Works for Any Freelancer",
+    vidSrc: vidOne,
+    description: "Designer, developer, writer, or marketer, Provolo adapts to your niche.",
+  },
+  {
+    title: "More Invitations & Interviews",
+    vidSrc: vidThree,
+    description:
+      "Rank higher, get noticed, and turn views into conversations with persuasive, client-focused copy.",
+  },
+];
 
 const Features = () => {
-    return (
-        <div className="py-10" id='features'>
-            <div className="mx-auto max-w-2xl px-6 md:px-6 lg:max-w-7xl lg:p-8">
+  // Minimal container animation - very subtle
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 0.6,
+        staggerChildren: 0.08,
+        delayChildren: 0.1,
+      },
+    },
+  };
 
-                <div className="grid gap-4 lg:grid-cols-3 lg:grid-rows-2">
+  // Subtle fade up for text elements
+  const fadeUpVariants = {
+    hidden: {
+      opacity: 0,
+      y: 15,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        ease: [0.25, 0.46, 0.45, 0.94],
+      },
+    },
+  };
 
-                    <div className="relative lg:row-span-2 h-full">
-                        <div className="absolute inset-px rounded-lg bg-white lg:rounded-l-4xl h-full" />
-                        <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] lg:rounded-l-[calc(2rem+1px)]">
-                            <div className="px-8 pt-8  sm:px-10 sm:pt-10 sm:pb-0">
-                                <p className="text-lg font-medium tracking-tight text-gray-950 max-lg:text-center">
-                                    Smarter Copy. Better Results. Instantly
-                                </p>
-                                <p className="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center">
-                                    Stop guessing what works. Provolo applies proven copywriting strategies to improve your profile and proposals automatically.
-                                </p>
-                            </div>
+  // Gentle animation for feature items
+  const featureVariants = {
+    hidden: {
+      opacity: 0,
+      x: -10,
+    },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.4,
+        ease: "easeOut",
+      },
+    },
+  };
 
+  // Minimal card animation with scroll trigger
+  const cardVariants = {
+    hidden: {
+      opacity: 0,
+      y: 20,
+      scale: 0.98,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: 0.5,
+        ease: [0.25, 0.46, 0.45, 0.94],
+      },
+    },
+  };
 
-                            <div className="@container relative min-h-120 w-full grow max-lg:mx-auto max-lg:max-w-sm p-5">
-                                <div className="flex flex-col flex-1 items-center justify-center px-8 max-lg:pt-10 max-lg:pb-12 sm:px-10 lg:pb-10 p-8 h-full rounded-lg border border-gray-50 bg-gray-50 ">
+  return (
+    <section className="lg:py-32 pt-20 lg:px-10 px-5" id="features">
+      <motion.div
+        className="mx-auto max-w-full lg:max-w-[93.75rem] flex flex-col lg:gap-[102px] gap-[70px]"
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-50px" }}
+      >
+        {/* Intro text */}
+        <motion.p
+          className="lg:w-[69%] w-full font-headingmd lg:text-3xl text-base"
+          variants={fadeUpVariants}
+        >
+          Provolo is an AI-powered copywriting platform built for freelancers on Upwork.{" "}
+          <span className="text-[#A6AAB3] font-headingmd">
+            It doesn't just write faster, it writes smarter, applying proven strategies to optimize
+            your profile and proposals. The result? More visibility, more interviews, and more jobs,
+            without the guesswork.
+          </span>
+        </motion.p>
 
-                                    <span className='flex align-middle items-center justify-between w-full'>
-                                        <p className='font-medium text-gray-500 text-md'>Proposal Performance</p>
-                                    </span>
-                                    <span className='flex align-middle items-center justify-between w-full'>
-                                        <p className='text-gray-500 text-sm'>Open Rate Boost</p>
-                                        {/* <p className='text-gray-500 text-xs py-1 px-2 rounded-md border'>+</p> */}
-                                    </span>
+        {/* Features list */}
+        <motion.div variants={fadeUpVariants}>
+          <motion.p
+            className="font-headingmd mb-5 lg:text-base text-[18px]"
+            variants={fadeUpVariants}
+          >
+            Why Provolo Works
+          </motion.p>
+          <motion.ol
+            className="list-none flex justify-between lg:text-base text-[14px] text-[#6B7280] flex-wrap gap-6"
+            variants={containerVariants}
+          >
+            {FEATURES.map((feature, index) => (
+              <motion.li
+                key={index}
+                className="flex items-center font-headingmd text-[#6B7280]"
+                variants={featureVariants}
+                whileHover={{
+                  x: 2,
+                  transition: { duration: 0.2, ease: "easeOut" },
+                }}
+              >
+                <motion.span
+                  className="px-2 py-1 bg-[#6B7280]/10 rounded-lg mr-2 text-sm font-headingmd"
+                  whileHover={{
+                    backgroundColor: "rgba(107, 114, 128, 0.15)",
+                    scale: 1.05,
+                    transition: { duration: 0.2 },
+                  }}
+                >
+                  {index + 1}
+                </motion.span>
+                {feature}
+              </motion.li>
+            ))}
+          </motion.ol>
+        </motion.div>
 
-                                    <span className="border border-gray-100 w-full lg:mb-auto my-5" />
+        {/* Steps header */}
+        <motion.div variants={fadeUpVariants}>
+          <p className="font-headingmd lg:text-base text-[18px]">How Provolo Gets You Hired</p>
+        </motion.div>
+      </motion.div>
 
-                                    <img src={analytics} alt="Analytics" className='mt-5' />
+      {/* Steps (scrollable cards with scroll snapping) */}
+      <motion.div
+        className="lg:flex grid md:grid-cols-2 grid-cols-1 gap-7 lg:overflow-x-auto no-scrollbar py-5 lg:px-2 lg:ml-48 snap-x snap-mandatory"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={{
+          hidden: { opacity: 0 },
+          visible: {
+            opacity: 1,
+            transition: {
+              staggerChildren: 0.1,
+              delayChildren: 0.2,
+            },
+          },
+        }}
+      >
+        {STEPS.map((step, index) => (
+          <motion.div
+            key={index}
+            className="flex-shrink-0 w-full sm:w-full lg:w-[630px] snap-start"
+            variants={cardVariants}
+            whileHover={{
+              y: -2,
+              transition: {
+                duration: 0.3,
+                ease: "easeOut",
+              },
+            }}
+          >
+            <motion.div
+              className="bg-[#F0F1F2] mb-8 lg:h-[500px] h-[420px] rounded-3xl lg:px-20  flex"
+              whileHover={{
+                // backgroundColor: "#EAEBEC",
+                transition: { duration: 0.3 },
+              }}
+            >
 
-                                </div>
-                            </div>
-                        </div>
-                        <div className="pointer-events-none absolute inset-px rounded-lg shadow-sm outline outline-black/5 lg:rounded-l-4xl" />
-                    </div>
+              <video src={step.vidSrc} autoPlay loop muted></video>
 
-                    <div className="relative max-lg:row-start-1 ">
-                        <div className="absolute inset-px rounded-lg bg-white max-lg:rounded-t-4xl" />
-
-                        <div className="relative flex h-fit flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] max-lg:rounded-t-[calc(2rem+1px)]">
-
-                            <div className="px-8 pt-8 sm:px- sm:pt-10">
-                                <p className="mt-2 text-lg font-medium tracking-tight text-gray-950 max-lg:text-center">Get More Invitations & Interviews
-                                </p>
-                                <p className="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center">
-                                    Rank higher in search results and convert more views into interviews with persuasive, client-focused copy.
-                                </p>
-                            </div>
-
-                            <div className="flex flex-1 items-center justify-center px-8 max-lg:pt-10 max-lg:pb-12 sm:px-8 lg:pb-2 relative h-full">
-                                
-                                <span className='opacity-0'>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Cum saepe, autem cupiditate voluptas, necessitatibus praesentium labore dolore qui, maxime impedit corrupti. Facere eaque in id nesciunt dignissimos repellat incidunt quod.</span>
-                                <img src={Invite} alt="Notification" className='rounded-lg absolute w-[45%] lg:top-2 top-16  opacity-50 border-gray-100 border' />
-                                <img src={Invite} alt="Notification" className='rounded-lg absolute w-[65%] border-gray-100 border lg:top-6 top-20  opacity-90' />
-                                <img src={Invite} alt="Notification" className='rounded-lg absolute w-[85%] shadow lg:top-12 bottom-12 border-gray-100 border' />
-                            </div>
-                        </div>
-                        <div className="pointer-events-none absolute inset-px rounded-lg shadow-sm outline outline-black/5 max-lg:rounded-t-4xl" />
-                    </div>
-
-                    <div className="relative max-lg:row-start-3 lg:col-start-2 lg:row-start-2">
-                        <div className="absolute inset-px rounded-lg bg-white" />
-                        <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
-                            <div className="px-8 pt-8 sm:px-10 sm:pt-10">
-                                <p className="mt-2 text-lg font-medium tracking-tight text-gray-950 max-lg:text-center">Works for Any Freelancer</p>
-                                <p className="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center">
-                                    Whether you're a designer, developer, writer, or marketer, Provolo adapts to your niche.
-                                </p>
-                            </div>
-                            <div className="@container flex flex-1 items-center max-lg:py-6 lg:pb-2 px-8">
-                                <img src={freelancerIcon} alt="Upwork Icons" />
-                            </div>
-                        </div>
-                        <div className="pointer-events-none absolute inset-px rounded-lg shadow-sm outline outline-black/5" />
-                    </div>
-                    <div className="relative lg:row-span-2">
-                        <div className="absolute inset-px rounded-lg bg-white max-lg:rounded-b-4xl lg:rounded-r-4xl" />
-                        <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] max-lg:rounded-b-[calc(2rem+1px)] lg:rounded-r-[calc(2rem+1px)]">
-                            <div className="px-8 pt-8 pb-3 sm:px-10 sm:pt-10 sm:pb-0">
-                                <p className="mt-2 text-lg font-medium tracking-tight text-gray-950 max-lg:text-center">
-                                    Optimized to Get You Seen
-                                </p>
-                                <p className="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center">
-                                    Get a headline and overview written to boost performance in Upwork’s search algorithm, and attract more clients.
-                                </p>
-                            </div>
-                            <div className="@container relative min-h-120 w-full grow max-lg:mx-auto max-lg:max-w-sm p-5">
-                                <div className="flex flex-col flex-1 items-center justify-center px-8 max-lg:pt-10 max-lg:pb-12 sm:px-10 lg:pb-10 bg-gray-50 p-8 h-full rounded-lg border border-gray-100">
-
-                                    <img src={visibility} alt="Upwork Icons" />
-
-
-                                    <span className="border border-gray-100 w-full lg:mt-auto mt-5 mb-5" />
-
-                                    <span className='flex align-middle items-center justify-between w-full'>
-                                        <p className='text-gray-500 text-sm'>Profile views</p>
-                                        <p className='text-gray-500 text-xs py-1 px-2 rounded-md border border-gray-50'>Last 30 days</p>
-                                    </span>
-                                    <span className='flex align-middle items-center justify-between w-full'>
-                                        <p className='font-medium text-gray-500 text-xl'>308</p>
-                                    </span>
-
-                                </div>
-                            </div>
-                        </div>
-                        <div className="pointer-events-none absolute inset-px rounded-lg shadow-sm outline outline-black/5 max-lg:rounded-b-4xl lg:rounded-r-4xl" />
-                    </div>
-                </div>
+            </motion.div>
+            <div className="px-5">
+              <motion.p
+                className="font-headingmd lg:text-[18px] text-[16px] mb-3"
+                initial={{ opacity: 0 }}
+                whileInView={{
+                  opacity: 1,
+                  transition: {
+                    duration: 0.4,
+                    delay: 0.1,
+                  },
+                }}
+                viewport={{ once: true }}
+              >
+                {step.title}
+              </motion.p>
+              <motion.p
+                className="lg:text-[18px] text-[14px] text-[#6B7280]"
+                initial={{ opacity: 0 }}
+                whileInView={{
+                  opacity: 1,
+                  transition: {
+                    duration: 0.4,
+                    delay: 0.2,
+                  },
+                }}
+                viewport={{ once: true }}
+              >
+                {step.description}
+              </motion.p>
             </div>
-        </div>
-    )
-}
+          </motion.div>
+        ))}
+      </motion.div>
+    </section>
+  );
+};
 
-export default Features
+export default Features;

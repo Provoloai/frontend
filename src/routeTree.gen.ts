@@ -16,8 +16,12 @@ import { Route as LayoutIndexRouteImport } from './routes/_layout.index'
 import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-password'
 import { Route as AuthForgotPasswordRouteImport } from './routes/_auth/forgot-password'
 import { Route as AuthProtectRouteImport } from './routes/_auth/_protect'
+import { Route as SidebarlayoutProtectedUserprofileRouteImport } from './routes/_sidebarlayout._protected/userprofile'
+import { Route as SidebarlayoutProtectedResumeRouteImport } from './routes/_sidebarlayout._protected/resume'
 import { Route as SidebarlayoutProtectedProposalRouteImport } from './routes/_sidebarlayout._protected/proposal'
+import { Route as SidebarlayoutProtectedPricingRouteImport } from './routes/_sidebarlayout._protected/pricing'
 import { Route as SidebarlayoutProtectedOptimizerRouteImport } from './routes/_sidebarlayout._protected/optimizer'
+import { Route as SidebarlayoutProtectedLearnRouteImport } from './routes/_sidebarlayout._protected/learn'
 import { Route as SidebarlayoutProtectedExampleRouteImport } from './routes/_sidebarlayout._protected/example'
 import { Route as AuthProtectSignupRouteImport } from './routes/_auth/_protect.signup'
 import { Route as AuthProtectLoginRouteImport } from './routes/_auth/_protect.login'
@@ -54,16 +58,40 @@ const AuthProtectRoute = AuthProtectRouteImport.update({
   id: '/_auth/_protect',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SidebarlayoutProtectedUserprofileRoute =
+  SidebarlayoutProtectedUserprofileRouteImport.update({
+    id: '/_protected/userprofile',
+    path: '/userprofile',
+    getParentRoute: () => SidebarlayoutRoute,
+  } as any)
+const SidebarlayoutProtectedResumeRoute =
+  SidebarlayoutProtectedResumeRouteImport.update({
+    id: '/_protected/resume',
+    path: '/resume',
+    getParentRoute: () => SidebarlayoutRoute,
+  } as any)
 const SidebarlayoutProtectedProposalRoute =
   SidebarlayoutProtectedProposalRouteImport.update({
     id: '/_protected/proposal',
     path: '/proposal',
     getParentRoute: () => SidebarlayoutRoute,
   } as any)
+const SidebarlayoutProtectedPricingRoute =
+  SidebarlayoutProtectedPricingRouteImport.update({
+    id: '/_protected/pricing',
+    path: '/pricing',
+    getParentRoute: () => SidebarlayoutRoute,
+  } as any)
 const SidebarlayoutProtectedOptimizerRoute =
   SidebarlayoutProtectedOptimizerRouteImport.update({
     id: '/_protected/optimizer',
     path: '/optimizer',
+    getParentRoute: () => SidebarlayoutRoute,
+  } as any)
+const SidebarlayoutProtectedLearnRoute =
+  SidebarlayoutProtectedLearnRouteImport.update({
+    id: '/_protected/learn',
+    path: '/learn',
     getParentRoute: () => SidebarlayoutRoute,
   } as any)
 const SidebarlayoutProtectedExampleRoute =
@@ -91,8 +119,12 @@ export interface FileRoutesByFullPath {
   '/login': typeof AuthProtectLoginRoute
   '/signup': typeof AuthProtectSignupRoute
   '/example': typeof SidebarlayoutProtectedExampleRoute
+  '/learn': typeof SidebarlayoutProtectedLearnRoute
   '/optimizer': typeof SidebarlayoutProtectedOptimizerRoute
+  '/pricing': typeof SidebarlayoutProtectedPricingRoute
   '/proposal': typeof SidebarlayoutProtectedProposalRoute
+  '/resume': typeof SidebarlayoutProtectedResumeRoute
+  '/userprofile': typeof SidebarlayoutProtectedUserprofileRoute
 }
 export interface FileRoutesByTo {
   '/error': typeof ErrorRoute
@@ -102,8 +134,12 @@ export interface FileRoutesByTo {
   '/login': typeof AuthProtectLoginRoute
   '/signup': typeof AuthProtectSignupRoute
   '/example': typeof SidebarlayoutProtectedExampleRoute
+  '/learn': typeof SidebarlayoutProtectedLearnRoute
   '/optimizer': typeof SidebarlayoutProtectedOptimizerRoute
+  '/pricing': typeof SidebarlayoutProtectedPricingRoute
   '/proposal': typeof SidebarlayoutProtectedProposalRoute
+  '/resume': typeof SidebarlayoutProtectedResumeRoute
+  '/userprofile': typeof SidebarlayoutProtectedUserprofileRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -117,8 +153,12 @@ export interface FileRoutesById {
   '/_auth/_protect/login': typeof AuthProtectLoginRoute
   '/_auth/_protect/signup': typeof AuthProtectSignupRoute
   '/_sidebarlayout/_protected/example': typeof SidebarlayoutProtectedExampleRoute
+  '/_sidebarlayout/_protected/learn': typeof SidebarlayoutProtectedLearnRoute
   '/_sidebarlayout/_protected/optimizer': typeof SidebarlayoutProtectedOptimizerRoute
+  '/_sidebarlayout/_protected/pricing': typeof SidebarlayoutProtectedPricingRoute
   '/_sidebarlayout/_protected/proposal': typeof SidebarlayoutProtectedProposalRoute
+  '/_sidebarlayout/_protected/resume': typeof SidebarlayoutProtectedResumeRoute
+  '/_sidebarlayout/_protected/userprofile': typeof SidebarlayoutProtectedUserprofileRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -130,8 +170,12 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/example'
+    | '/learn'
     | '/optimizer'
+    | '/pricing'
     | '/proposal'
+    | '/resume'
+    | '/userprofile'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/error'
@@ -141,8 +185,12 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/example'
+    | '/learn'
     | '/optimizer'
+    | '/pricing'
     | '/proposal'
+    | '/resume'
+    | '/userprofile'
   id:
     | '__root__'
     | '/_layout'
@@ -155,8 +203,12 @@ export interface FileRouteTypes {
     | '/_auth/_protect/login'
     | '/_auth/_protect/signup'
     | '/_sidebarlayout/_protected/example'
+    | '/_sidebarlayout/_protected/learn'
     | '/_sidebarlayout/_protected/optimizer'
+    | '/_sidebarlayout/_protected/pricing'
     | '/_sidebarlayout/_protected/proposal'
+    | '/_sidebarlayout/_protected/resume'
+    | '/_sidebarlayout/_protected/userprofile'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -219,6 +271,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthProtectRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_sidebarlayout/_protected/userprofile': {
+      id: '/_sidebarlayout/_protected/userprofile'
+      path: '/userprofile'
+      fullPath: '/userprofile'
+      preLoaderRoute: typeof SidebarlayoutProtectedUserprofileRouteImport
+      parentRoute: typeof SidebarlayoutRoute
+    }
+    '/_sidebarlayout/_protected/resume': {
+      id: '/_sidebarlayout/_protected/resume'
+      path: '/resume'
+      fullPath: '/resume'
+      preLoaderRoute: typeof SidebarlayoutProtectedResumeRouteImport
+      parentRoute: typeof SidebarlayoutRoute
+    }
     '/_sidebarlayout/_protected/proposal': {
       id: '/_sidebarlayout/_protected/proposal'
       path: '/proposal'
@@ -226,11 +292,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SidebarlayoutProtectedProposalRouteImport
       parentRoute: typeof SidebarlayoutRoute
     }
+    '/_sidebarlayout/_protected/pricing': {
+      id: '/_sidebarlayout/_protected/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof SidebarlayoutProtectedPricingRouteImport
+      parentRoute: typeof SidebarlayoutRoute
+    }
     '/_sidebarlayout/_protected/optimizer': {
       id: '/_sidebarlayout/_protected/optimizer'
       path: '/optimizer'
       fullPath: '/optimizer'
       preLoaderRoute: typeof SidebarlayoutProtectedOptimizerRouteImport
+      parentRoute: typeof SidebarlayoutRoute
+    }
+    '/_sidebarlayout/_protected/learn': {
+      id: '/_sidebarlayout/_protected/learn'
+      path: '/learn'
+      fullPath: '/learn'
+      preLoaderRoute: typeof SidebarlayoutProtectedLearnRouteImport
       parentRoute: typeof SidebarlayoutRoute
     }
     '/_sidebarlayout/_protected/example': {
@@ -270,14 +350,23 @@ const LayoutRouteWithChildren =
 
 interface SidebarlayoutRouteChildren {
   SidebarlayoutProtectedExampleRoute: typeof SidebarlayoutProtectedExampleRoute
+  SidebarlayoutProtectedLearnRoute: typeof SidebarlayoutProtectedLearnRoute
   SidebarlayoutProtectedOptimizerRoute: typeof SidebarlayoutProtectedOptimizerRoute
+  SidebarlayoutProtectedPricingRoute: typeof SidebarlayoutProtectedPricingRoute
   SidebarlayoutProtectedProposalRoute: typeof SidebarlayoutProtectedProposalRoute
+  SidebarlayoutProtectedResumeRoute: typeof SidebarlayoutProtectedResumeRoute
+  SidebarlayoutProtectedUserprofileRoute: typeof SidebarlayoutProtectedUserprofileRoute
 }
 
 const SidebarlayoutRouteChildren: SidebarlayoutRouteChildren = {
   SidebarlayoutProtectedExampleRoute: SidebarlayoutProtectedExampleRoute,
+  SidebarlayoutProtectedLearnRoute: SidebarlayoutProtectedLearnRoute,
   SidebarlayoutProtectedOptimizerRoute: SidebarlayoutProtectedOptimizerRoute,
+  SidebarlayoutProtectedPricingRoute: SidebarlayoutProtectedPricingRoute,
   SidebarlayoutProtectedProposalRoute: SidebarlayoutProtectedProposalRoute,
+  SidebarlayoutProtectedResumeRoute: SidebarlayoutProtectedResumeRoute,
+  SidebarlayoutProtectedUserprofileRoute:
+    SidebarlayoutProtectedUserprofileRoute,
 }
 
 const SidebarlayoutRouteWithChildren = SidebarlayoutRoute._addFileChildren(

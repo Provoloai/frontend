@@ -1,21 +1,18 @@
-import React, { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "../../lib/firebase";
+import { useState } from "react";
+import { getIdToken, signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../lib/firebase";
 import Logo from "../../Reusables/Logo";
 import TextInputField from "../../Reusables/TextInputField";
 import CustomButton from "../../Reusables/CustomButton";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { getCleanErrorMessage } from "../../utils/firebaseError.util";
-import { ensureUserExists } from "../../utils/firebase.util";
-import useAuthStore from "../../stores/authStore";
 import { Key, Mail } from "lucide-react";
 import CustomSnackbar from "../../Reusables/CustomSnackbar";
+import Vector from "../../assets/img/Vector.png";
+import Vector2 from "../../assets/img/Vector2.png";
 
 const Login = () => {
   const navigate = useNavigate();
-  // Zustand auth store
-  const setUser = useAuthStore((state) => state.setUser);
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -26,15 +23,20 @@ const Login = () => {
     try {
       setLoading(true);
       setError("");
-      
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-
-      // Ensure user exists in Firestore
-      await ensureUserExists(db, user);
-      
-      setUser(user);
-      navigate({ to: "/optimizer", replace: true });
+      const idToken = await getIdToken(user, true);
+      const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ idToken }),
+      });
+      if (response.ok) {
+        navigate({ to: "/optimizer", replace: true });
+      } else {
+        throw new Error("Server authentication failed");
+      }
     } catch (error) {
       setError(getCleanErrorMessage(error));
     } finally {
@@ -50,13 +52,15 @@ const Login = () => {
     }
     await signInWithEmail(email, password);
   };
-  
+
   return (
-    <div className="flex min-h-screen flex-1 flex-col justify-center px-6 py-12 lg:px-8 bg-gray-50">
+    <div className="flex min-h-screen flex-1 flex-col justify-center px-6 py-12 lg:px-8 bg-gray-50 relative">
       <Logo />
       <div className="sm:mx-auto sm:w-full sm:max-w-lg bg-white p-10 mt-10 rounded-md border ">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          <h2 className="text-center text-2xl/9 font-medium tracking-tight text-gray-900">Welcome to Provolo</h2>
+          <h2 className="text-center text-2xl/9 font-medium tracking-tight text-gray-900">
+            Welcome to Provolo
+          </h2>
         </div>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
@@ -97,14 +101,16 @@ const Login = () => {
             </div>
           </div>
           <div className="flex justify-end">
-            <Link to="/forgot-password" className="underline text-gray-600 hover:text-gray-500 text-xs text-right">
+            <Link
+              to="/forgot-password"
+              className="underline text-gray-600 hover:text-gray-500 text-xs text-right"
+            >
               Forgot Password?
             </Link>
           </div>
 
           <div>
-            <CustomButton type="submit" disabled={loading} className="btn-primary">
-              {" "}
+            <CustomButton type="submit" disabled={loading} className="btn-primary text-sm">
               {loading ? "Logging in..." : "Login"}
             </CustomButton>
           </div>
@@ -113,15 +119,14 @@ const Login = () => {
         <p className="mt-5 text-center text-xs text-gray-500">
           Don't have an account?{" "}
           <Link to={"/signup"}>
-            <span className="underline text-gray-600 hover:text-gray-500">Sign Up</span>
+            <span className="underline text-gray-600 hover:text-gray-500 ">Sign Up</span>
           </Link>
         </p>
       </div>
-      {error && (
-        <>
-          <CustomSnackbar open={error} snackbarColor={"danger"} snackbarMessage={error} />
-        </>
-      )}
+      {error && <CustomSnackbar open={error} snackbarColor={"danger"} snackbarMessage={error} />}
+
+      <img alt="Provolo" src={Vector} className="absolute top-0 left-0 lg:w-1/5 w-1/2 opacity-40" />
+      <img alt="Provolo" src={Vector2} className="absolute bottom-0 right-0 w-1/3 opacity-40" />
     </div>
   );
 };

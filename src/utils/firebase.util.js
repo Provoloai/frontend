@@ -163,7 +163,6 @@ export const ensureUserExists = async (db, user) => {
     if (!querySnapshot.empty) {
       // User exists, return existing data
       const existingDoc = querySnapshot.docs[0];
-      console.log("User already exists in Firestore");
       return { id: existingDoc.id, ...existingDoc.data() };
     } else {
       // User doesn't exist, create new user document

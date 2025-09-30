@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { useState, useRef } from "react";
+import { createUserWithEmailAndPassword, getIdToken } from "firebase/auth";
 import { z } from "zod";
 import { Check, Key, Mail, X } from "lucide-react";
 import { auth, db } from "../../lib/firebase";
@@ -9,17 +9,16 @@ import Logo from "../../Reusables/Logo";
 import TextInputField from "../../Reusables/TextInputField";
 import CustomButton from "../../Reusables/CustomButton";
 import { Link, useNavigate } from "@tanstack/react-router";
-import useAuthStore from "../../stores/authStore";
 import CustomSnackbar from "../../Reusables/CustomSnackbar";
 import { isDisposableEmail } from "../../utils/disposableEmails.util";
+import Vector from "../../assets/img/Vector.png";
+import Vector2 from "../../assets/img/Vector2.png";
 
 // Updated Zod schema for signup form with disposable email check
 const signupSchema = z.object({
-  email: z
-    .email("Enter a valid email address")
-    .refine((email) => !isDisposableEmail(email), {
-      message: "Temporary or disposable email addresses are not allowed. Please use a permanent email address."
-    }),
+  email: z.email("Enter a valid email address").refine((email) => !isDisposableEmail(email), {
+    message: "Temporary or disposable email addresses are not allowed. Please use a permanent email address.",
+  }),
   password: z
     .string()
     .min(8, "Password must be at least 8 characters")
@@ -30,9 +29,6 @@ const signupSchema = z.object({
 
 export default function Authentication() {
   const navigate = useNavigate();
-  // Zustand auth store
-  const setUser = useAuthStore((state) => state.setUser);
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -70,13 +66,13 @@ export default function Authentication() {
       if (error instanceof z.ZodError) {
         // Safe error message extraction
         let errorMessage = "Invalid input";
-        
+
         if (error.errors && error.errors.length > 0 && error.errors[0].message) {
           errorMessage = error.errors[0].message;
         } else if (error.issues && error.issues.length > 0 && error.issues[0].message) {
           errorMessage = error.issues[0].message;
         }
-        
+
         setValidationErrors((prev) => ({
           ...prev,
           [name]: errorMessage,
@@ -89,24 +85,24 @@ export default function Authentication() {
     try {
       setLoading(true);
       setError("");
-
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-
-      // Ensure user exists in Firestore
-      await ensureUserExists(db, user);
-
-      const userData = {
-        uid: user.uid,
-        email: user.email,
-        emailVerified: user.emailVerified,
-        displayName: user.displayName,
-        photoURL: user.photoURL,
-        createdAt: user.metadata.creationTime,
-        lastLoginAt: user.metadata.lastSignInTime,
-      };
-      setUser(userData);
-      navigate({ to: "/optimizer", replace: true });
+      // await ensureUserExists(db, user);
+      const idToken = await getIdToken(user, true);
+      const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/auth/signup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ idToken }),
+      });
+      if (response.ok) {
+        navigate({ to: "/optimizer", replace: true });
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Server authentication failed");
+      }
     } catch (error) {
       setError(getCleanErrorMessage(error));
     } finally {
@@ -116,28 +112,28 @@ export default function Authentication() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     // Run form validation
     const validationResult = signupSchema.safeParse({ email, password });
-  
+
     if (!validationResult.success) {
       const newErrors = {};
-      
+
       // Handle Zod validation errors
       validationResult.error?.errors?.forEach((error) => {
         const field = error.path[0];
         newErrors[field] = error.message;
       });
-      
+
       setValidationErrors(newErrors);
       setError("Please fix the errors below");
       return;
     }
-  
+
     // Clear any previous errors
     setValidationErrors({});
     setError("");
-  
+
     await signUpWithEmail(email, password);
   };
 
@@ -146,7 +142,7 @@ export default function Authentication() {
 
   return (
     <>
-      <div className="flex min-h-screen flex-1 flex-col justify-center px-6 py-12 lg:px-8 bg-gray-50">
+      <div className="flex min-h-screen flex-1 flex-col justify-center px-6 py-12 lg:px-8 bg-gray-50 relative">
         <Logo />
         <div className="sm:mx-auto sm:w-full sm:max-w-lg bg-white p-10 mt-10 rounded-md border ">
           <div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -211,7 +207,7 @@ export default function Authentication() {
             </div>
 
             <div>
-              <CustomButton type="submit" disabled={loading} className="btn-primary">
+              <CustomButton type="submit" disabled={loading} className="btn-primary text-sm">
                 {loading ? "Signing up..." : "Sign up"}
               </CustomButton>
             </div>
@@ -230,6 +226,13 @@ export default function Authentication() {
           </>
         )}
         <p className="mt-10 text-center text-xs text-gray-500">By signing up, you consent to receive occasional emails from us.</p>
+
+
+
+
+
+            <img alt="Provolo" src={Vector} className='absolute top-0 left-0 lg:w-1/5 w-1/2 opacity-40' />
+            <img alt="Provolo" src={Vector2} className='absolute bottom-0 right-0 w-1/3 opacity-40' />
       </div>
     </>
   );
