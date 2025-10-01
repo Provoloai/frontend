@@ -2,11 +2,9 @@ import LandingpageButton from "./LandingpageButton";
 
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react";
-import vidFive from "../../assets/vids/vidFive.MOV";
-import vidSix from "../../assets/vids/vidSix.MOV";
-import vidTwo from "../../assets/vids/vidTwo.MOV";
-
-
+import vidFive from "../../assets/vids/vidFive.mov";
+import vidSix from "../../assets/vids/vidSix.mov";
+import vidTwo from "../../assets/vids/vidTwo.mov";
 
 const STEPS = [
   {
