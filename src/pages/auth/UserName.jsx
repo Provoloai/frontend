@@ -6,17 +6,16 @@ import TextInputField from "../../Reusables/TextInputField";
 import { auth, db } from "../../lib/firebase";
 import { updateUserDisplayName } from "../../utils/firebase.util";
 import { getCleanErrorMessage } from "../../utils/firebaseError.util";
-import useAuthStore from "../../stores/authStore";
 
 export default function UserName() {
-  const [open,] = useState(true);
+  const [open] = useState(true);
   const [username, setUsername] = useState("");
   const [touched, setTouched] = useState({});
   const [validationErrors, setValidationErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  
-  const setUser = useAuthStore((state) => state.setUser);
+
+  // No Zustand store needed
 
   // Demo function to console log the displayname and update it
   const handleContinue = async () => {
@@ -28,25 +27,21 @@ export default function UserName() {
     try {
       setLoading(true);
       setError("");
-      
       const currentUser = auth.currentUser;
       if (currentUser) {
-        // Pass db as the third parameter
         await updateUserDisplayName(currentUser, username, db);
-        
-        // Update the auth store with the new user data
-        const updatedUserData = {
-          uid: currentUser.uid,
-          email: currentUser.email,
-          emailVerified: currentUser.emailVerified,
-          displayName: username,
-          photoURL: currentUser.photoURL,
-          createdAt: currentUser.metadata.creationTime,
-          lastLoginAt: currentUser.metadata.lastSignInTime,
-        };
-        
-        setUser(updatedUserData);
+        // Refresh backend session with new display name
+        const idToken = await currentUser.getIdToken(true);
+        const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/auth/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ idToken }),
+        });
         setValidationErrors({});
+        if (response.ok) {
+          window.location.href = "/optimizer";
+        }
       } else {
         setError("No authenticated user found. Please sign in again.");
       }
@@ -111,12 +106,7 @@ export default function UserName() {
                       />
                     </div>
 
-                    <CustomButton 
-                      onClick={handleContinue} 
-                      type="submit" 
-                      className="btn-primary"
-                      disabled={loading}
-                    >
+                    <CustomButton onClick={handleContinue} type="submit" className="btn-primary text-sm" disabled={loading}>
                       {loading ? "Updating..." : "Continue"}
                     </CustomButton>
                   </div>

@@ -1,4 +1,4 @@
-import { ChevronDown, Layers2 } from "lucide-react";
+import { ChevronDown, File, FileText, Layers2, List } from "lucide-react";
 import React from "react";
 import ReactMarkdown from "react-markdown";
 
@@ -12,8 +12,8 @@ const colorMap = {
 
 const ResultsAccordion = ({ sections }) => {
   return (
-    <div className="mt-10 p-6 sm:p-10 max-w-4xl mx-auto w-full bg-white rounded-xl border border-gray-200 card">
-      <h2 className="text-3xl font-medium mb-8 text-center">📜 Your Optimization Insights</h2>
+    <div className="mt-10 p-6 max-w-4xl mx-auto w-full bg-white rounded-xl border border-gray-200 card">
+      <h2 className="text-xl font-medium mb-8 text-center flex items-center gap-3"><FileText size={20} className="text-gray-500" /> Your Optimization Insights</h2>
 
       {sections.map(({ title, content }, idx) => {
         const color = colorMap[title] || "gray";
