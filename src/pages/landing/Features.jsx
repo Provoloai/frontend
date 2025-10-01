@@ -1,10 +1,9 @@
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react";
-import vidOne from "../../assets/vids/vidOne.MOV";
-import vidTwo from "../../assets/vids/vidTwo.MOV";
-import vidThree from "../../assets/vids/vidThree.MOV";
-import vidFour from "../../assets/vids/vidFour.MOV";
-
+import vidOne from "../../assets/vids/vidOne.mov";
+import vidTwo from "../../assets/vids/vidTwo.mov";
+import vidThree from "../../assets/vids/vidThree.mov";
+import vidFour from "../../assets/vids/vidFour.mov";
 
 const FEATURES = [
   "Rank higher in Upwork search",
@@ -205,9 +204,7 @@ const Features = () => {
                 transition: { duration: 0.3 },
               }}
             >
-
               <video src={step.vidSrc} autoPlay loop muted></video>
-
             </motion.div>
             <div className="px-5">
               <motion.p
