@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "motion/react";
-import { listCustomer, proSubscription } from "../../server/checkout";
+import { proSubscription } from "../../server/checkout";
 import { fetchTiers } from "../../server/tiers";
 import useSession from "../../hooks/useSession";
 import { useState, useMemo } from "react";
@@ -97,10 +97,6 @@ const PricingSkeleton = () => {
     },
   };
 
-  useEffect(() => {
-    listCustomer();
-  }, []);
-
   return (
     <div className="flex-1 overflow-y-auto px-6 py-24 sm:py-32 lg:px-8 bg-gray-50 w-full">
       <motion.div
@@ -133,25 +129,37 @@ const PricingSkeleton = () => {
               <div className="space-y-6">
                 {/* Plan Name */}
                 <SkeletonBox
-                  className={`h-7 w-32 ${index === 1 ? "bg-gradient-to-r from-slate-600 via-slate-500 to-slate-600" : ""}`}
+                  className={`h-7 w-32 ${
+                    index === 1 ? "bg-gradient-to-r from-slate-600 via-slate-500 to-slate-600" : ""
+                  }`}
                   delay={0.2 + index * 0.1}
                 />
 
                 {/* Price */}
                 <div className="flex items-center gap-x-2">
                   <SkeletonBox
-                    className={`h-16 w-28 ${index === 1 ? "bg-gradient-to-r from-slate-600 via-slate-500 to-slate-600" : ""}`}
+                    className={`h-16 w-28 ${
+                      index === 1
+                        ? "bg-gradient-to-r from-slate-600 via-slate-500 to-slate-600"
+                        : ""
+                    }`}
                     delay={0.3 + index * 0.1}
                   />
                   <SkeletonBox
-                    className={`h-8 w-16 ${index === 1 ? "bg-gradient-to-r from-slate-700 via-slate-600 to-slate-700" : ""}`}
+                    className={`h-8 w-16 ${
+                      index === 1
+                        ? "bg-gradient-to-r from-slate-700 via-slate-600 to-slate-700"
+                        : ""
+                    }`}
                     delay={0.35 + index * 0.1}
                   />
                 </div>
 
                 {/* Description */}
                 <SkeletonBox
-                  className={`h-5 w-full ${index === 1 ? "bg-gradient-to-r from-slate-600 via-slate-500 to-slate-600" : ""}`}
+                  className={`h-5 w-full ${
+                    index === 1 ? "bg-gradient-to-r from-slate-600 via-slate-500 to-slate-600" : ""
+                  }`}
                   delay={0.4 + index * 0.1}
                 />
 
@@ -160,13 +168,21 @@ const PricingSkeleton = () => {
                   {[0, 1, 2, 3, 4].map((featureIndex) => (
                     <div key={featureIndex} className="flex items-center gap-3">
                       <SkeletonBox
-                        className={`h-5 w-5 rounded-full ${index === 1 ? "bg-gradient-to-r from-blue-400 via-indigo-300 to-indigo-400" : "bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500"}`}
+                        className={`h-5 w-5 rounded-full ${
+                          index === 1
+                            ? "bg-gradient-to-r from-blue-400 via-indigo-300 to-indigo-400"
+                            : "bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500"
+                        }`}
                         delay={0.5 + index * 0.1 + featureIndex * 0.05}
                       />
                       <SkeletonBox
                         className={`h-4 ${
                           featureIndex % 3 === 0 ? "w-40" : featureIndex % 3 === 1 ? "w-32" : "w-36"
-                        } ${index === 1 ? "bg-gradient-to-r from-slate-600 via-slate-500 to-slate-600" : ""}`}
+                        } ${
+                          index === 1
+                            ? "bg-gradient-to-r from-slate-600 via-slate-500 to-slate-600"
+                            : ""
+                        }`}
                         delay={0.52 + index * 0.1 + featureIndex * 0.05}
                       />
                     </div>
@@ -175,7 +191,11 @@ const PricingSkeleton = () => {
 
                 {/* CTA Button */}
                 <SkeletonBox
-                  className={`h-12 w-full mt-8 ${index === 1 ? "bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500" : "bg-gradient-to-r from-slate-300 via-slate-200 to-slate-300"}`}
+                  className={`h-12 w-full mt-8 ${
+                    index === 1
+                      ? "bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500"
+                      : "bg-gradient-to-r from-slate-300 via-slate-200 to-slate-300"
+                  }`}
                   delay={0.7 + index * 0.1}
                 />
               </div>
@@ -353,8 +373,8 @@ export default function Pricing() {
                 tier.featured
                   ? ""
                   : tierIdx === 0
-                    ? "rounded-t-3xl sm:rounded-b-none lg:rounded-tr-none lg:rounded-bl-3xl"
-                    : "sm:rounded-t-none lg:rounded-tr-3xl lg:rounded-bl-none",
+                  ? "rounded-t-3xl sm:rounded-b-none lg:rounded-tr-none lg:rounded-bl-3xl"
+                  : "sm:rounded-t-none lg:rounded-tr-3xl lg:rounded-bl-none",
                 "rounded-3xl p-8 ring-1 ring-gray-900/10 sm:p-10"
               )}
               initial={{ opacity: 0, y: 20, scale: 0.95 }}
