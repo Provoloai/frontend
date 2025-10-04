@@ -25,7 +25,7 @@ function RouteComponent() {
     }
   }, [loading, user, isFetching]);
 
-  if (loading) return <VerifyingAuth />;
+  if (loading || isFetching) return <VerifyingAuth />;
   if (!user) return null;
 
   const isMobile = operatingSystem === "android" || operatingSystem === "ios";
