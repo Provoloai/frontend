@@ -8,8 +8,8 @@ export const Route = createFileRoute("/_auth/_protect/login")({
 });
 
 function RouteComponent() {
-  const { loading, isFetching } = useSession();
-  if (loading || isFetching) {
+  const { loading, isFetching, user } = useSession();
+  if (loading || isFetching || user) {
     return <VerifyingAuth />;
   }
   return <Login />;
