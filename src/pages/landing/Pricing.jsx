@@ -26,7 +26,6 @@ import {
   Sparkles,
   Globe,
 } from "lucide-react";
-import { useEffect } from "react";
 
 // Icon mapping for different feature types
 const getFeatureIcon = (featureName) => {
