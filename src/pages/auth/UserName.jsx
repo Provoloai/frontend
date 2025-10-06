@@ -69,7 +69,7 @@ export default function UserName() {
               <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <div className="text-center">
                   <div className="w-full flex items-center flex-col">
-                    <div className=" flex size-12 shrink-0 items-center justify-center rounded-full bg-gray-100 sm:mx-0 sm:size-10">
+                    <div className=" flex size-12 shrink-0 items-center justify-center rounded-full bg-blue-50 sm:mx-0 sm:size-10 text-primary">
                       <Sparkles />
                     </div>
                   </div>
