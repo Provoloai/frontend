@@ -364,6 +364,16 @@ export default function Pricing() {
         {displayTiers.map((tier, tierIdx) => {
           const IconComponent = getFeatureIcon(tier.name);
 
+          // Compute inherited and new features
+          let inherited = null;
+          let newFeatures = tier.features;
+          if (tierIdx > 0) {
+            const prevTier = displayTiers[tierIdx - 1];
+            const prevSlugs = new Set(prevTier.features.map((f) => f.slug));
+            newFeatures = tier.features.filter((f) => !prevSlugs.has(f.slug));
+            inherited = prevTier.name;
+          }
+
           return (
             <motion.div
               key={tier.id}
@@ -447,7 +457,25 @@ export default function Pricing() {
                   "mt-8 space-y-3 text-lg sm:mt-10"
                 )}
               >
-                {tier.features.map((feature, index) => {
+                {inherited && (
+                  <li className="font-semibold mb-2 flex items-center gap-x-5">
+                    <div
+                      className={classNames(
+                        tier.featured ? "bg-gray-100/20" : "bg-gray-100",
+                        "p-1 rounded-md"
+                      )}
+                    >
+                      <Star
+                        className={classNames(
+                          tier.featured ? "text-gray-100" : "text-primary",
+                          "h-3 w-3"
+                        )}
+                      />
+                    </div>
+                    <span className="font-semibold">All features from {inherited}</span>
+                  </li>
+                )}
+                {newFeatures.map((feature, index) => {
                   const FeatureIcon = getFeatureIcon(feature.name);
                   return (
                     <motion.li
