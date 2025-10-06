@@ -1,8 +1,6 @@
-import { UserCircleIcon } from "@heroicons/react/24/solid";
 import TextInputField from "../../Reusables/TextInputField";
 import { Link, Mail, UserRound } from "lucide-react";
 import { useState } from "react";
-import CustomButton from "../../Reusables/CustomButton";
 import useSession from "../../hooks/useSession";
 import { getCustomerPortalUrl } from "../../server/checkout";
 import { GenerateAvatar } from "../../Reusables/GenerateAvatar";
@@ -38,7 +36,7 @@ export default function Example() {
   };
 
   return (
-    <form className="flex-1 flex flex-col overflow-y-auto relative h-screen py-36 px-20">
+    <form className="flex-1 flex flex-col overflow-y-auto relative h-screen px-20">
       <div className="space-y-10  m-auto max-w-3xl ">
         <div className="border-b border-gray-900/10 pb-5">
           <div className="grid grid-cols-1 gap-x-6  sm:grid-cols-6 ">
@@ -66,7 +64,7 @@ export default function Example() {
             <div className="sm:col-span-3">
               <TextInputField
                 id="fullname"
-                label="Full Name"
+                label="UserName"
                 placeholder="John Doe"
                 iconStart={<UserRound size={20} />}
                 value={user?.displayName}
@@ -86,7 +84,7 @@ export default function Example() {
               />
             </div>
 
-            <div className="sm:col-span-6">
+            <div className="sm:col-span-6 ">
               <TextInputField
                 id="profileLink"
                 label="Profile Link"
@@ -158,9 +156,9 @@ export default function Example() {
               <img
                 alt="Provolo"
                 src={provoolosvg}
-                className="lg:w-1/2 opacity-80 hover:opacity-100 duration-300 transition-all rounded-2xl"
+                className="w-[80%] opacity-80 hover:opacity-100 duration-300 transition-all rounded-2xl"
               />
-              <p className="text-sm text-gray-400">Scan QR</p>
+              <p className="text-xs text-gray-400">Scan QR</p>
             </a>
           </div>
         </div>

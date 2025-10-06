@@ -5,7 +5,7 @@ import { auth } from "../../lib/firebase";
 import Logo from "../../Reusables/Logo";
 import TextInputField from "../../Reusables/TextInputField";
 import CustomButton from "../../Reusables/CustomButton";
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { getCleanErrorMessage } from "../../utils/firebaseError.util";
 import { Mail } from "lucide-react";
 import Vector from "../../assets/img/Vector.png";
@@ -103,8 +103,13 @@ const ForgotPassword = () => {
 
   return (
     <div className="flex min-h-screen flex-1 flex-col justify-center px-6 py-12 lg:px-8 bg-gray-50">
-      <Logo />
-      <div className="sm:mx-auto sm:w-full sm:max-w-lg bg-white p-10 mt-10 rounded-md border">
+      <Link
+        to="/"
+        className="w-fit mx-auto z-50"
+      >
+        <Logo />
+      </Link>
+      <div className="sm:mx-auto sm:w-full sm:max-w-lg bg-white lg:p-10 md:p-8 p-5  mt-10 rounded-md border z-50">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <h2 className="text-center text-2xl/9 font-bold tracking-tight text-gray-900">{emailSent ? "Email Sent!" : "Forgot Password?"}</h2>
           {emailSent && <p className="mt-2 text-center text-sm text-gray-600">Redirecting you to login...</p>}
