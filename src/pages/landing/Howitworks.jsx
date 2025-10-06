@@ -1,7 +1,7 @@
 import LandingpageButton from "./LandingpageButton";
-
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react";
+import { useState, useEffect, useRef } from "react";
 import vidFive from "../../assets/vids/vidFive.mov";
 import vidSix from "../../assets/vids/vidSix.mov";
 import vidTwo from "../../assets/vids/vidTwo.mov";
@@ -17,7 +17,7 @@ const STEPS = [
     title: "AI Optimizes Your Copy",
     vidSrc: vidSix,
     description:
-      "Provolo applies proven copywriting strategies to rewrite your profile into a client-magnet. Watch weak words transform into persuasive ones in real time.",
+      "Provolo applies proven copywriting strategies to rewrite your profile into a client-magnet.",
   },
   {
     title: "Get Seen & Hired",
@@ -28,73 +28,86 @@ const STEPS = [
 ];
 
 const HowItWorks = () => {
-  // Minimal container animation
+  const [videosLoaded, setVideosLoaded] = useState({});
+  const videoRefs = useRef([]);
+
+  // Lazy load videos on intersection
+  useEffect(() => {
+    const options = {
+      root: null,
+      rootMargin: "100px",
+      threshold: 0.1,
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const video = entry.target;
+          if (video.dataset.src && !videosLoaded[video.dataset.index]) {
+            video.src = video.dataset.src;
+            video.load();
+            setVideosLoaded(prev => ({ ...prev, [video.dataset.index]: true }));
+          }
+        }
+      });
+    }, options);
+
+    videoRefs.current.forEach((video) => {
+      if (video) observer.observe(video);
+    });
+
+    return () => observer.disconnect();
+  }, [videosLoaded]);
+
+  // Optimized animation variants with reduced complexity
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        duration: 0.6,
-        staggerChildren: 0.1,
-        delayChildren: 0.1,
+        duration: 0.4,
+        staggerChildren: 0.08,
       },
     },
   };
 
-  // Subtle fade up for header elements
   const fadeUpVariants = {
-    hidden: {
-      opacity: 0,
-      y: 15,
-    },
+    hidden: { opacity: 0, y: 10 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: {
-        duration: 0.5,
-        ease: [0.25, 0.46, 0.45, 0.94],
-      },
+      transition: { duration: 0.4, ease: "easeOut" },
     },
   };
 
-  // Step card animation with minimal movement
   const cardVariants = {
-    hidden: {
-      opacity: 0,
-      y: 20,
-      scale: 0.98,
-    },
+    hidden: { opacity: 0, y: 15 },
     visible: {
       opacity: 1,
       y: 0,
-      scale: 1,
-      transition: {
-        duration: 0.5,
-        ease: [0.25, 0.46, 0.45, 0.94],
-      },
+      transition: { duration: 0.4, ease: "easeOut" },
     },
   };
 
-  // Grid container for staggered card animations
   const gridVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2,
+        staggerChildren: 0.08,
+        delayChildren: 0.15,
       },
     },
   };
 
   return (
-    <section className="lg:py-32 py-10 px-5" id="howitworks">
+    <section className="lg:pt-32 py-10 lg:px-32 md:px-10 px-5" id="howitworks">
       <motion.div
-        className="mx-auto mmd:ax-w-full lg:max-w-[93.75rem] flex flex-col gap-10"
+        className="mx-auto max-w-full lg:max-w-[93.75rem] flex flex-col gap-10"
         variants={containerVariants}
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, margin: "-50px" }}
+        viewport={{ once: true, margin: "-50px", amount: 0.2 }}
       >
         {/* Section header */}
         <motion.header variants={fadeUpVariants}>
@@ -105,7 +118,7 @@ const HowItWorks = () => {
             From Profile to Paycheck in 3 Steps.
           </motion.p>
           <motion.p
-            className="font-headingmd text-[#6B7280] lg:text-[22px] text-[14px]"
+            className="text-[#6B7280] lg:text-[22px] text-[14px]"
             variants={fadeUpVariants}
           >
             No learning curve. No guesswork. Just connect, optimize, and start landing clients.
@@ -123,40 +136,27 @@ const HowItWorks = () => {
               variants={cardVariants}
               whileHover={{
                 y: -3,
-                transition: {
-                  duration: 0.3,
-                  ease: "easeOut",
-                },
+                transition: { duration: 0.2 },
               }}
             >
               <motion.div
-                className="bg-[#F0F1F2] mb-8 lg:h-[500px] h-[420px] rounded-3xl lg:p-10 flex "
+                className="bg-[#F0F1F2] mb-8 lg:h-[500px] h-[420px] rounded-3xl lg:p-10 flex overflow-hidden"
                 whileHover={{
-                  // backgroundColor: "#EAEBEC",
-                  transition: { duration: 0.3 },
+                  transition: { duration: 0.2 },
                 }}
               >
-                <video src={step.vidSrc} autoPlay loop muted></video>
-                {/* <motion.div
-                  className="w-8 h-8 bg-white/80 rounded-full flex items-center justify-center text-sm font-headingmd text-gray-600"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileInView={{
-                    opacity: 1,
-                    scale: 1,
-                    transition: {
-                      duration: 0.4,
-                      delay: index * 0.1 + 0.5
-                    }
-                  }}
-                  viewport={{ once: true }}
-                  whileHover={{
-                    scale: 1.1,
-                    backgroundColor: "rgba(255, 255, 255, 0.9)",
-                    transition: { duration: 0.2 }
-                  }}
-                >
-                  {index + 1}
-                </motion.div> */}
+                <video
+                  ref={(el) => (videoRefs.current[index] = el)}
+                  data-src={step.vidSrc}
+                  data-index={index}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  preload="metadata"
+                  className="w-full h-full object-fit"
+                  style={{ willChange: "transform" }}
+                />
               </motion.div>
               <div className="px-5">
                 <motion.p
@@ -164,10 +164,7 @@ const HowItWorks = () => {
                   initial={{ opacity: 0 }}
                   whileInView={{
                     opacity: 1,
-                    transition: {
-                      duration: 0.4,
-                      delay: 0.1,
-                    },
+                    transition: { duration: 0.3, delay: 0.05 },
                   }}
                   viewport={{ once: true }}
                 >
@@ -178,10 +175,7 @@ const HowItWorks = () => {
                   initial={{ opacity: 0 }}
                   whileInView={{
                     opacity: 1,
-                    transition: {
-                      duration: 0.4,
-                      delay: 0.2,
-                    },
+                    transition: { duration: 0.3, delay: 0.1 },
                   }}
                   viewport={{ once: true }}
                 >
@@ -199,7 +193,7 @@ const HowItWorks = () => {
           <motion.div
             whileHover={{
               scale: 1.02,
-              transition: { duration: 0.2, ease: "easeOut" },
+              transition: { duration: 0.15 },
             }}
             whileTap={{ scale: 0.98 }}
           >

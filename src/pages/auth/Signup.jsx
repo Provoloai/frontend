@@ -143,8 +143,13 @@ export default function Authentication() {
   return (
     <>
       <div className="flex min-h-screen flex-1 flex-col justify-center px-6 py-12 lg:px-8 bg-gray-50 relative">
-        <Logo />
-        <div className="sm:mx-auto sm:w-full sm:max-w-lg bg-white p-10 mt-10 rounded-md border ">
+        <Link
+          to="/"
+          className="w-fit mx-auto z-50"
+        >
+          <Logo />
+        </Link>
+        <div className="sm:mx-auto sm:w-full sm:max-w-lg bg-white lg:p-10 md:p-8 p-5 mt-10 rounded-md border z-50">
           <div className="sm:mx-auto sm:w-full sm:max-w-sm">
             <h2 className="text-center text-2xl/9 font-medium tracking-tight text-gray-900">Create your account</h2>
           </div>
@@ -231,8 +236,8 @@ export default function Authentication() {
 
 
 
-            <img alt="Provolo" src={Vector} className='absolute top-0 left-0 lg:w-1/5 w-1/2 opacity-40' />
-            <img alt="Provolo" src={Vector2} className='absolute bottom-0 right-0 w-1/3 opacity-40' />
+        <img alt="Provolo" src={Vector} className='absolute top-0 left-0 lg:w-1/5 w-1/2 opacity-40' />
+        <img alt="Provolo" src={Vector2} className='absolute bottom-0 right-0 w-1/3 opacity-40' />
       </div>
     </>
   );

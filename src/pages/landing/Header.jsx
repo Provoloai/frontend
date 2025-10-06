@@ -25,7 +25,7 @@ import {
 import { ChevronDownIcon, PhoneIcon, PlayCircleIcon } from "@heroicons/react/20/solid";
 import Logo from "../../Reusables/Logo";
 import { Link } from "@tanstack/react-router";
-import { MailIcon, MoveRight, Send } from "lucide-react";
+import { Book, LibraryBig, MailIcon, MoveRight, Send } from "lucide-react";
 import Vector from "../../assets/img/Vector.png";
 import Vector2 from "../../assets/img/Vector2.png";
 
@@ -49,10 +49,10 @@ const products = [
   //   icon: FingerPrintIcon,
   // },
   // {
-  //   name: "Integrations",
+  //   name: "Substack",
   //   description: "Connect with third-party tools",
   //   href: "#",
-  //   icon: SquaresPlusIcon,
+  //   icon: LibraryBig,
   // },
   // {
   //   name: "Automations",
@@ -153,7 +153,7 @@ export default function Example() {
 
   return (
     <motion.header
-      className="bg-transparent pt-10 fixed z-20 w-screen px-5"
+      className="bg-transparent lg:pt-10 md:pt-8 pt-10 fixed z-20 w-screen px-5"
       variants={headerVariants}
       initial="hidden"
       animate="visible"
@@ -308,7 +308,7 @@ export default function Example() {
               "#features",
               "#howitworks",
               "https://buildsbyesuoladaniel.hashnode.space/provolo/faqs",
-              "https://substack.com/@provoloai",
+              "https://provoloai.substack.com/",
             ];
             const isExternal = index >= 2;
 
@@ -332,7 +332,7 @@ export default function Example() {
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Link
               to={"/login"}
-              className="bg-primary hover:bg-primary/90 transition-all duration-300 py-[18px] px-[24px] rounded-full text-sm text-white h-[44px] text-center align-middle flex justify-center items-center gap-x-3"
+              className="bg-primary hover:bg-primary/90 transition-all duration-300 py-[18px] px-[24px] rounded-full text-sm text-white h-[44px] text-center align-middle flex justify-center items-center"
             >
               Log in
               <motion.span
@@ -341,7 +341,7 @@ export default function Example() {
                 whileHover={{ x: 3 }}
                 transition={{ duration: 0.2 }}
               >
-                <MoveRight size={20} />
+                {/* <MoveRight size={20} /> */}
               </motion.span>
             </Link>
           </motion.div>
@@ -422,7 +422,7 @@ export default function Example() {
                         "#features",
                         "#howitworks",
                         "https://buildsbyesuoladaniel.hashnode.space/provolo/faqs",
-                        "https://substack.com/@provoloai",
+                        "https://provoloai.substack.com/",
                       ];
                       const isExternal = index >= 2;
 
@@ -444,11 +444,11 @@ export default function Example() {
                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                       <Link
                         to={"/login"}
-                        className="bg-primary hover:bg-primary/90 transition-all duration-300 py-[18px] px-[24px] rounded-full text-sm text-white h-[44px] text-center align-middle flex justify-center items-center gap-x-3 w-fit"
+                        className="bg-primary hover:bg-primary/90 transition-all duration-300 py-[18px] px-[24px] rounded-full text-sm text-white h-[44px] text-center align-middle flex justify-center items-center w-fit"
                       >
                         Log in
                         <motion.span aria-hidden="true" whileHover={{ x: 3 }}>
-                          <MoveRight size={20} />
+                          {/* <MoveRight size={20} /> */}
                         </motion.span>
                       </Link>
                     </motion.div>

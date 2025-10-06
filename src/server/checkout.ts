@@ -15,24 +15,6 @@ interface SessionUser {
   polarId?: string;
 }
 
-export const listSubscription = async () => {
-  const result = await polar.products.list({
-    organizationId: POLAR_ORG_ID,
-  });
-
-  return result;
-};
-
-export async function listCustomer() {
-  const result = await polar.customers.list({
-    organizationId: POLAR_ORG_ID,
-  });
-
-  for await (const page of result) {
-    console.log(page);
-  }
-}
-
 export const proSubscription = async (polarRefId: string, user: SessionUser) => {
   console.log(user);
   if (!polarRefId)
