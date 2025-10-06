@@ -1,29 +1,29 @@
-import { Eye, EyeClosed } from 'lucide-react';
-import React, { useState } from 'react';
+import { Eye, EyeClosed } from "lucide-react";
+import React, { useState } from "react";
 
 const TextInputField = ({
-    id,
-    label,
-    placeholder,
-    value,
-    onChange,
-    onBlur,
-    touched,
-    type,
-    iconStart,
-    required = false,
-    error,
-    disabled = false
+  id,
+  label,
+  placeholder,
+  value,
+  onChange,
+  onBlur,
+  touched,
+  type,
+  iconStart,
+  required = false,
+  error,
+  disabled = false,
 }) => {
-    const [showPassword, setShowPassword] = useState(false);
-    const isInvalid = (touched && required && !value.trim()) || (error && error.length > 0);
+  const [showPassword, setShowPassword] = useState(false);
+  const isInvalid = (touched && required && !value.trim()) || (error && error.length > 0);
 
-    const isPassword = type === 'password';
-    const currentType = isPassword && showPassword ? 'text' : type;
+  const isPassword = type === "password";
+  const currentType = isPassword && showPassword ? "text" : type;
 
-    const togglePasswordVisibility = () => {
-        setShowPassword((prev) => !prev);
-    };
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
 
     return (
         <div>
