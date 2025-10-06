@@ -283,7 +283,7 @@ function FooterSection() {
 export default function Example() {
   return (
     <div className="bg-white p-5">
-      <div className="mx-auto max-w-[93.75rem] lg:pt-24 sm:py-10 lg:p-0">
+      <div className="mx-auto max-w-[93.75rem] sm:py-10 lg:p-0">
         <HeroSection />
         <FooterSection />
       </div>

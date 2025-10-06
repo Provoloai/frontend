@@ -11,8 +11,8 @@ export default function Example() {
     <>
       <Hero />
       <Features />
-      <Description />
-      <Howitworks />
+      {/* <Description /> */}
+      {/* <Howitworks /> */}
       {/* <Testimonials /> */}
       <Footer />
     </>
