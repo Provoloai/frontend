@@ -13,19 +13,19 @@ export const Route = createFileRoute("/_sidebarlayout")({
 
 function RouteComponent() {
   const [operatingSystem, setOperatingSystem] = useState(null);
-  const { user, loading } = useSession();
+  const { user, loading, isFetching } = useSession();
 
   useEffect(() => {
     setOperatingSystem(detectSystem());
   }, []);
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!loading && !user && !isFetching) {
       window.location.replace("/login");
     }
-  }, [loading, user]);
+  }, [loading, user, isFetching]);
 
-  if (loading) return <VerifyingAuth />;
+  if (loading || isFetching) return <VerifyingAuth />;
   if (!user) return null;
 
   const isMobile = operatingSystem === "android" || operatingSystem === "ios";

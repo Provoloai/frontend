@@ -19,9 +19,8 @@ export default function useSession() {
   } = useQuery({
     queryKey: ["session"],
     queryFn: fetchSession,
-    // Cache for 30 minutes to avoid refetches if hook mounts again
-    staleTime: 5 * 60 * 1000, // 5 minutes considered fresh
-    gcTime: 30 * 60 * 1000, // keep cache around for 30 minutes
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     retry: 1,
