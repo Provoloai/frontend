@@ -31,16 +31,29 @@ export default function User({ open }) {
   };
   return (
     <Menu as="div" className="rounded-lg z-10 mt-3 w-full">
-      <MenuButton className="relative flex pl-3 w-full items-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
-        <span className="absolute" />
-        {loadingUserData ? <div className="size-8 rounded-full bg-gray-300 animate-pulse"></div> : <GenerateAvatar name={userData?.displayName} size={32} />}
-        {open && (
-          <span className="ml-3">
-            <p className="text-sm">{user.name}</p>
-            <p className=" text-xs text-gray-400 text-start">{userData?.tierId}</p>
-          </span>
-        )}
-      </MenuButton>
+      <div className="flex">
+        <MenuButton className="relative flex pl-3 w-full items-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+
+          <span className="absolute" />
+
+          {loadingUserData ? <div className="size-8 rounded-full bg-gray-300 animate-pulse"></div> : <GenerateAvatar name={userData?.displayName} size={32} />}
+
+          {open && (
+            <span className="ml-3">
+              <p className="text-sm">{user.name}</p>
+              <p className=" text-xs text-gray-400 text-start">{userData?.tierId}</p>
+            </span>
+          )}
+        </MenuButton>
+
+        {open &&
+          <Link to={"/pricing"}
+            className="inline-flex h-fit my-auto items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-400 ring-1 ring-gray-500/10 ring-inset ml-auto hover:bg-gray-100 hover:text-gray-700 transition-all duration-300">
+            Upgrade
+          </Link>
+        }
+
+      </div>
 
       <MenuItems
         transition
@@ -61,6 +74,6 @@ export default function User({ open }) {
           Log Out
         </button>
       </MenuItems>
-    </Menu>
+    </Menu >
   );
 }

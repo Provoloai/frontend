@@ -99,7 +99,7 @@ export default function UserName() {
                         }}
                         onBlur={() => setTouched((prev) => ({ ...prev, username: true }))}
                         type="text"
-                        label="Username"
+                        label="Full Name"
                         placeholder="danielafriheart"
                         touched={touched.username}
                         error={validationErrors.username}

@@ -233,7 +233,7 @@ const PortfolioOptimizer = () => {
                     : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                 }`}
                 rows="8"
-                placeholder="Paste your Upwork profile overview & summary of your services here..."
+                placeholder="Paste your profile overview & summary of your services here..."
                 value={profileDescription}
                 onChange={(e) => setProfileDescription(e.target.value)}
                 onBlur={() => setTouched((prev) => ({ ...prev, description: true }))}
