@@ -1,19 +1,35 @@
-import { collection, addDoc, query, where, getDocs, updateDoc, doc } from "firebase/firestore";
-import { updateProfile } from "firebase/auth";
+import {
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs,
+  updateDoc,
+  doc,
+} from "firebase/firestore";
 import { isSameDay, parseFirestoreTimestamp } from "./helper.util";
 
 // Retry function for Firestore operations with exponential backoff
-export const retryFirestoreOperation = async (operation, maxRetries = 3, delay = 1000) => {
+export const retryFirestoreOperation = async (
+  operation,
+  maxRetries = 3,
+  delay = 1000
+) => {
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       await operation();
       return true; // Success
     } catch (error) {
-      console.error(`Firestore attempt ${attempt} failed:`, error);
+      // Only log errors in development
+      if (import.meta.env.DEV) {
+        console.error(`Firestore attempt ${attempt} failed:`, error);
+      }
 
       if (attempt === maxRetries) {
-        console.error("All Firestore retry attempts failed");
-        return false; // All retries failed
+        if (import.meta.env.DEV) {
+          console.error("All Firestore retry attempts failed");
+        }
+        return false;
       }
 
       // Wait before retrying with exponential backoff
@@ -81,7 +97,12 @@ export const checkAndUpdateUserPromptLimit = async (db, userId, limit = 3) => {
  * Helper function to save newsletter subscription with retry
  * Checks if email exists and updates instead of duplicating
  */
-export const saveNewsletterSubscription = async (db, email, userId, subscribed = true) => {
+export const saveNewsletterSubscription = async (
+  db,
+  email,
+  userId,
+  subscribed = true
+) => {
   const firestoreOperation = async () => {
     // Check if email already exists in newsletter collection
     const newsletterRef = collection(db, "users");
@@ -98,8 +119,6 @@ export const saveNewsletterSubscription = async (db, email, userId, subscribed =
         userId: userId,
         updatedAt: new Date(),
       });
-
-      console.log("Newsletter subscription updated for existing email");
     } else {
       // Email doesn't exist, create new document
       await addDoc(collection(db, "users"), {
@@ -110,46 +129,10 @@ export const saveNewsletterSubscription = async (db, email, userId, subscribed =
         updatedAt: new Date(),
         createdAt: new Date(),
       });
-
-      console.log("New newsletter subscription created");
     }
   };
 
   return await retryFirestoreOperation(firestoreOperation);
-};
-// Updates the user's display name in Firebase Auth
-export const updateUserDisplayName = async (user, displayName, db) => {
-  try {
-    // Update Firebase Auth profile
-    await updateProfile(user, {
-      displayName: displayName
-    });
-    
-    // Update display name in newsletter collection if user exists there
-    const newsletterRef = collection(db, "users");
-    const q = query(newsletterRef, where("userId", "==", user.uid));
-    const querySnapshot = await getDocs(q);
-    
-    if (!querySnapshot.empty) {
-      // Update existing newsletter document with new display name
-      const existingDoc = querySnapshot.docs[0];
-      const docRef = doc(db, "users", existingDoc.id);
-      
-      await updateDoc(docRef, {
-        displayName: displayName,
-        updatedAt: new Date(),
-      });
-      
-      console.log("Newsletter collection display name updated successfully");
-    }
-    
-    console.log("Display name updated successfully:", displayName);
-    return true;
-  } catch (error) {
-    console.error("Error updating display name:", error);
-    // Throw the error instead of returning false so it can be caught by the calling function
-    throw error;
-  }
 };
 
 // Checks if user exists in Firestore and creates profile if not
@@ -159,7 +142,7 @@ export const ensureUserExists = async (db, user) => {
     const usersRef = collection(db, "users");
     const q = query(usersRef, where("userId", "==", user.uid));
     const querySnapshot = await getDocs(q);
-    
+
     if (!querySnapshot.empty) {
       // User exists, return existing data
       const existingDoc = querySnapshot.docs[0];
@@ -174,14 +157,16 @@ export const ensureUserExists = async (db, user) => {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      
+
       const docRef = await addDoc(collection(db, "users"), newUserData);
-      console.log("New user created in Firestore with ID:", docRef.id);
-      
+      // New user created in Firestore
+
       return { id: docRef.id, ...newUserData };
     }
   } catch (error) {
-    console.error("Error ensuring user exists:", error);
+    if (import.meta.env.DEV) {
+      console.error("Error ensuring user exists:", error);
+    }
     throw error;
   }
 };
