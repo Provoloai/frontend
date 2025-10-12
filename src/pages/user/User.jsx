@@ -68,7 +68,7 @@ export default function User({ open }) {
           {open && (
             <span className="ml-3">
               <p className="text-sm">{user.name}</p>
-              <p className=" text-xs text-gray-400 text-start">
+              <p className=" text-xs text-gray-400 text-start capitalize">
                 {userData?.tierId}
               </p>
             </span>
@@ -81,7 +81,9 @@ export default function User({ open }) {
               <button
                 onClick={openSubscriptionPortal}
                 disabled={portalLoading}
-                 className="inline-flex h-fit my-auto items-center gap-1 rounded bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-800 border border-blue-300 hover:bg-blue-200 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-300 ml-auto"
+                //  className="inline-flex h-fit my-auto items-center gap-1 rounded bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-800 border border-blue-300 hover:bg-blue-200 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-300 ml-auto"
+                className="inline-flex h-fit my-auto items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-500 ring-1 ring-blue-600/10 ring-inset ml-auto hover:bg-gray-100 hover:text-blue-700 transition-all duration-300"
+
               >
                 {portalLoading && (
                   <svg
@@ -104,7 +106,7 @@ export default function User({ open }) {
                     ></path>
                   </svg>
                 )}
-                Pro
+                 Dashboard
               </button>
             ) : (
               <Link
