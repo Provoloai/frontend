@@ -6,7 +6,7 @@ const ReactCompilerConfig = {
   target: "19",
 };
 
-export default defineConfig(({ mode }) => ({
+export default defineConfig(() => ({
   build: {
     sourcemap: false,
     minify: "terser",
@@ -19,29 +19,29 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     tanstackRouter({ target: "react", autoCodeSplitting: true }),
     react(),
-    {
-      name: "inject-devtools-blocker",
-      transformIndexHtml(html) {
-        if (mode === "production") {
-          return html.replace(
-            "</body>",
-            `<script>
-              (function () {
-                function detectDevTools() {
-                  const start = performance.now();
-                  debugger;
-                  if (performance.now() - start > 100) {
-                    window.location.href = "about:blank";
-                  }
-                }
-                setInterval(detectDevTools, 1000);
-                detectDevTools();
-              })();
-            </script></body>`
-          );
-        }
-        return html;
-      },
-    },
+    // {
+    //   name: "inject-devtools-blocker",
+    //   transformIndexHtml(html) {
+    //     if (mode === "production") {
+    //       return html.replace(
+    //         "</body>",
+    //         `<script>
+    //           (function () {
+    //             function detectDevTools() {
+    //               const start = performance.now();
+    //               debugger;
+    //               if (performance.now() - start > 100) {
+    //                 window.location.href = "about:blank";
+    //               }
+    //             }
+    //             setInterval(detectDevTools, 1000);
+    //             detectDevTools();
+    //           })();
+    //         </script></body>`
+    //       );
+    //     }
+    //     return html;
+    //   },
+    // },
   ],
 }));
