@@ -15,7 +15,7 @@ const userNavigation = [
 
 export default function User({ open }) {
   const { user: userData, loading: loadingUserData } = useSession();
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const [portalLoading, setPortalLoading] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -84,10 +84,10 @@ export default function User({ open }) {
               <button
                 onClick={openSubscriptionPortal}
                 disabled={portalLoading}
-                //  className="inline-flex h-fit my-auto items-center gap-1 rounded bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-800 border border-blue-300 hover:bg-blue-200 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-300 ml-auto"
-                className="inline-flex h-fit my-auto items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-500 ring-1 ring-blue-600/10 ring-inset ml-auto hover:bg-gray-100 hover:text-blue-700 transition-all duration-300"
+                className="inline-flex h-fit my-auto items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-primary ring-1 ring-primary/10 ring-inset ml-auto hover:bg-blue-50 hover:text-primary/80 transition-all duration-300"
 
               >
+
                 {portalLoading && (
                   <svg
                     className="size-3 animate-spin"
@@ -109,7 +109,8 @@ export default function User({ open }) {
                     ></path>
                   </svg>
                 )}
-                 Dashboard
+                Dashboard
+
               </button>
             ) : (
               <Link
@@ -148,7 +149,7 @@ export default function User({ open }) {
           Log Out
         </button>
       </MenuItems>
-      
+
       <CustomSnackbar
         snackbarMessage={snackbarMessage}
         snackbarColor="danger"

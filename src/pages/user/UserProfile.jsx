@@ -38,9 +38,10 @@ export default function Example() {
   return (
     <form className="flex-1 flex flex-col overflow-y-auto relative h-screen px-20">
       <div className="space-y-10  m-auto max-w-3xl ">
-        <div className="border-b border-gray-900/10 pb-5">
-          <div className="grid grid-cols-1 gap-x-6  sm:grid-cols-6 ">
-            <div className="grid grid-cols-2 align-middle gap-5 items-center">
+        <div className="border-b border-gray-900/10 pb-5 flex justify-between">
+
+          <div className="gap-x-6">
+            <div className="flex align-middle gap-5 items-center">
               {loadingUserData ? (
                 <div className="size-12 rounded-full bg-gray-300 animate-pulse"></div>
               ) : (
@@ -52,6 +53,38 @@ export default function Example() {
               </p>
             </div>
           </div>
+
+          {user?.polarId && (
+            <div className="flex flex-col align-bottom">
+              <button
+                type="button"
+                onClick={openSubscriptionPortal}
+                disabled={portalLoading}
+                className="h-fit mt-auto items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-primary ring-1 ring-primary/10 ring-inset hover:bg-blue-50 hover:text-primary/80 transition-all duration-300 flex w-fit "
+
+              >
+                {portalLoading && (
+                  <svg className="size-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                    ></path>
+                  </svg>
+                )}
+                Manage Subscription
+              </button>
+              {portalError && <p className="mt-2 text-xs text-red-600">{portalError}</p>}
+            </div>
+          )}
         </div>
 
         <div className="border-b border-gray-900/10 pb-10 ">
@@ -109,41 +142,12 @@ export default function Example() {
             </p>
             <p className="text-sm text-gray-500">
               Need to update or remove any of your information? Reach out to us anytime at{" "}
-              <a href="mailto:heyprovolo@gmail.com" className="underline">
-                Heyprovolo@gmail.com{" "}
+              <a href="mailto:Support@provolo.org" className="underline">
+                Support@provolo.org{" "}
               </a>
               and we’ll take care of it.
             </p>
-            {user?.polarId && (
-              <div className="mt-4">
-                <button
-                  type="button"
-                  onClick={openSubscriptionPortal}
-                  disabled={portalLoading}
-                  className="inline-flex items-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                >
-                  {portalLoading && (
-                    <svg className="size-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                      ></path>
-                    </svg>
-                  )}
-                  Manage Subscription
-                </button>
-                {portalError && <p className="mt-2 text-xs text-red-600">{portalError}</p>}
-              </div>
-            )}
+
           </div>
 
           <div className="lg:border-l-2 lg:pt-0 pt-10 border-gray-300 border-dashed flex items-center">
@@ -156,7 +160,7 @@ export default function Example() {
               <img
                 alt="Provolo"
                 src={provoolosvg}
-                className="w-[80%] opacity-80 hover:opacity-100 duration-300 transition-all rounded-2xl"
+                className="w-[50%] opacity-80 hover:opacity-100 duration-300 transition-all rounded-2xl"
               />
               <p className="text-xs text-gray-400">Scan QR</p>
             </a>
