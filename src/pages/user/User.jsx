@@ -6,6 +6,7 @@ import { LogOut, UserRound } from "lucide-react";
 import { logout } from "../../utils/logout.util";
 import { getCustomerPortalUrl } from "../../server/checkout";
 import { useState } from "react";
+import CustomSnackbar from "../../Reusables/CustomSnackbar";
 
 const userNavigation = [
   { name: "My profile", href: "/userprofile" },
@@ -14,25 +15,27 @@ const userNavigation = [
 
 export default function User({ open }) {
   const { user: userData, loading: loadingUserData } = useSession();
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
 
   const [portalLoading, setPortalLoading] = useState(false);
-  const [portalError, setPortalError] = useState("");
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const openSubscriptionPortal = async () => {
     if (!userData?.polarId) {
-      setPortalError("No subscription found. Please contact support.");
+      setSnackbarMessage("No subscription found. Please contact support.");
+      setSnackbarOpen(true);
       return;
     }
     setPortalLoading(true);
-    setPortalError("");
     try {
       const url = await getCustomerPortalUrl(userData);
       if (url) window.location.href = url;
     } catch (e) {
-      setPortalError(
+      setSnackbarMessage(
         e instanceof Error ? e.message : "Unable to open subscription portal."
       );
+      setSnackbarOpen(true);
     } finally {
       setPortalLoading(false);
     }
@@ -116,9 +119,6 @@ export default function User({ open }) {
                 Upgrade
               </Link>
             )}
-            {portalError && (
-              <p className="mt-1 text-xs text-red-600">{portalError}</p>
-            )}
           </>
         )}
       </div>
@@ -148,6 +148,13 @@ export default function User({ open }) {
           Log Out
         </button>
       </MenuItems>
+      
+      <CustomSnackbar
+        snackbarMessage={snackbarMessage}
+        snackbarColor="danger"
+        open={snackbarOpen}
+        close={() => setSnackbarOpen(false)}
+      />
     </Menu>
   );
 }
