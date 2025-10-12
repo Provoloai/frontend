@@ -5,6 +5,7 @@ import useSession from "../../hooks/useSession";
 import { getCustomerPortalUrl } from "../../server/checkout";
 import { GenerateAvatar } from "../../Reusables/GenerateAvatar";
 import provoolosvg from "../../assets/img/Provoloaisvg.png";
+import CustomSnackbar from "../../Reusables/CustomSnackbar";
 
 export default function Example() {
   const { user, loading: loadingUserData } = useSession();
@@ -19,17 +20,22 @@ export default function Example() {
   const [profileLink, setProfileLink] = useState("");
 
   const [portalLoading, setPortalLoading] = useState(false);
-  const [portalError, setPortalError] = useState("");
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const openSubscriptionPortal = async () => {
-    if (!user?.polarId) return;
+    if (!user?.polarId) {
+      setSnackbarMessage("No subscription found. Please contact support.");
+      setSnackbarOpen(true);
+      return;
+    }
     setPortalLoading(true);
-    setPortalError("");
     try {
       const url = await getCustomerPortalUrl(user);
       if (url) window.location.href = url;
     } catch (e) {
-      setPortalError(e instanceof Error ? e.message : "Unable to open subscription portal.");
+      setSnackbarMessage(e instanceof Error ? e.message : "Unable to open subscription portal.");
+      setSnackbarOpen(true);
     } finally {
       setPortalLoading(false);
     }
@@ -141,7 +147,6 @@ export default function Example() {
                   )}
                   Manage Subscription
                 </button>
-                {portalError && <p className="mt-2 text-xs text-red-600">{portalError}</p>}
               </div>
             )}
           </div>
@@ -353,6 +358,13 @@ export default function Example() {
           </div>
         </div>
       </div>
+      
+      <CustomSnackbar
+        snackbarMessage={snackbarMessage}
+        snackbarColor="danger"
+        open={snackbarOpen}
+        close={() => setSnackbarOpen(false)}
+      />
     </form>
   );
 }
