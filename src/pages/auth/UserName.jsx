@@ -190,8 +190,8 @@ export default function UserName() {
                           setTouched((prev) => ({ ...prev, username: true }))
                         }
                         type="text"
-                        label="Username"
-                        placeholder="john doe"
+                        label="Full Name"
+                        placeholder="danielafriheart"
                         touched={touched.username}
                         error={validationErrors.username}
                         maxLength={32}

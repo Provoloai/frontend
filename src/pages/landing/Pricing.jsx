@@ -118,47 +118,42 @@ const PricingSkeleton = () => {
           {[0, 1].map((index) => (
             <motion.div
               key={index}
-              className={`${
-                index === 1
-                  ? "bg-slate-900 shadow-2xl ring-1 ring-slate-800"
-                  : "bg-white/80 shadow-lg ring-1 ring-slate-200"
-              } rounded-3xl p-8 sm:p-10`}
+              className={`${index === 1
+                ? "bg-slate-900 shadow-2xl ring-1 ring-slate-800"
+                : "bg-white/80 shadow-lg ring-1 ring-slate-200"
+                } rounded-3xl p-8 sm:p-10`}
               variants={cardVariants}
             >
               <div className="space-y-6">
                 {/* Plan Name */}
                 <SkeletonBox
-                  className={`h-7 w-32 ${
-                    index === 1 ? "bg-gradient-to-r from-slate-600 via-slate-500 to-slate-600" : ""
-                  }`}
+                  className={`h-7 w-32 ${index === 1 ? "bg-gradient-to-r from-slate-600 via-slate-500 to-slate-600" : ""
+                    }`}
                   delay={0.2 + index * 0.1}
                 />
 
                 {/* Price */}
                 <div className="flex items-center gap-x-2">
                   <SkeletonBox
-                    className={`h-16 w-28 ${
-                      index === 1
-                        ? "bg-gradient-to-r from-slate-600 via-slate-500 to-slate-600"
-                        : ""
-                    }`}
+                    className={`h-16 w-28 ${index === 1
+                      ? "bg-gradient-to-r from-slate-600 via-slate-500 to-slate-600"
+                      : ""
+                      }`}
                     delay={0.3 + index * 0.1}
                   />
                   <SkeletonBox
-                    className={`h-8 w-16 ${
-                      index === 1
-                        ? "bg-gradient-to-r from-slate-700 via-slate-600 to-slate-700"
-                        : ""
-                    }`}
+                    className={`h-8 w-16 ${index === 1
+                      ? "bg-gradient-to-r from-slate-700 via-slate-600 to-slate-700"
+                      : ""
+                      }`}
                     delay={0.35 + index * 0.1}
                   />
                 </div>
 
                 {/* Description */}
                 <SkeletonBox
-                  className={`h-5 w-full ${
-                    index === 1 ? "bg-gradient-to-r from-slate-600 via-slate-500 to-slate-600" : ""
-                  }`}
+                  className={`h-5 w-full ${index === 1 ? "bg-gradient-to-r from-slate-600 via-slate-500 to-slate-600" : ""
+                    }`}
                   delay={0.4 + index * 0.1}
                 />
 
@@ -167,21 +162,18 @@ const PricingSkeleton = () => {
                   {[0, 1, 2, 3, 4].map((featureIndex) => (
                     <div key={featureIndex} className="flex items-center gap-3">
                       <SkeletonBox
-                        className={`h-5 w-5 rounded-full ${
-                          index === 1
-                            ? "bg-gradient-to-r from-blue-400 via-indigo-300 to-indigo-400"
-                            : "bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500"
-                        }`}
+                        className={`h-5 w-5 rounded-full ${index === 1
+                          ? "bg-gradient-to-r from-blue-400 via-indigo-300 to-indigo-400"
+                          : "bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500"
+                          }`}
                         delay={0.5 + index * 0.1 + featureIndex * 0.05}
                       />
                       <SkeletonBox
-                        className={`h-4 ${
-                          featureIndex % 3 === 0 ? "w-40" : featureIndex % 3 === 1 ? "w-32" : "w-36"
-                        } ${
-                          index === 1
+                        className={`h-4 ${featureIndex % 3 === 0 ? "w-40" : featureIndex % 3 === 1 ? "w-32" : "w-36"
+                          } ${index === 1
                             ? "bg-gradient-to-r from-slate-600 via-slate-500 to-slate-600"
                             : ""
-                        }`}
+                          }`}
                         delay={0.52 + index * 0.1 + featureIndex * 0.05}
                       />
                     </div>
@@ -190,11 +182,10 @@ const PricingSkeleton = () => {
 
                 {/* CTA Button */}
                 <SkeletonBox
-                  className={`h-12 w-full mt-8 ${
-                    index === 1
-                      ? "bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500"
-                      : "bg-gradient-to-r from-slate-300 via-slate-200 to-slate-300"
-                  }`}
+                  className={`h-12 w-full mt-8 ${index === 1
+                    ? "bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500"
+                    : "bg-gradient-to-r from-slate-300 via-slate-200 to-slate-300"
+                    }`}
                   delay={0.7 + index * 0.1}
                 />
               </div>
@@ -286,7 +277,7 @@ export default function Pricing() {
             <div className="mt-10">
               <motion.button
                 onClick={() => window.location.reload()}
-                className="rounded-full bg-primary px-10 py-3 text-sm font-semibold text-white shadow-sm hover:bg-primary/80 transition-all duration-300"
+                className="rounded-full bg-primary px-10 py-3 text-sm text-white shadow-sm hover:bg-primary/80 transition-all duration-300"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -309,7 +300,7 @@ export default function Pricing() {
         transition={{ duration: 0.4 }}
       >
         <div className="mx-auto max-w-4xl text-center">
-          <h2 className="text-base/7 font-semibold text-primary">Pricing</h2>
+          <h2 className="text-base font-semibold text-primary">Pricing</h2>
           <p className="mt-2 text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
             No pricing plans available
           </p>
@@ -334,10 +325,10 @@ export default function Pricing() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1 }}
       >
-        <h2 className="text-4xl tracking-tight text-pretty text-gray-900 sm:text-5xl">
+        <h2 className="text-5xl tracking-tight text-pretty text-gray-900">
           Upgrade your plan
         </h2>
-        <p className="mx-auto mt-2 max-w-2xl text-center text-gray-600 text-lg/8 text-pretty">
+        <p className="mx-auto mt-1 max-w-2xl text-center text-gray-600 text-lg/8 text-pretty">
           Need more capabilities for your Freelance business?
         </p>
         <AnimatePresence>
@@ -356,7 +347,7 @@ export default function Pricing() {
       </motion.div>
 
       <motion.div
-        className="mx-auto mt-16 grid max-w-lg grid-cols-1 items-center gap-y-6 sm:mt-20 sm:gap-y-0 lg:max-w-6xl lg:grid-cols-2"
+        className="mx-auto mt-16 grid max-w-lg grid-cols-1 items-center gap-y-6 sm:mt-20 sm:gap-y-0 lg:max-w-4xl lg:grid-cols-2"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
@@ -382,8 +373,8 @@ export default function Pricing() {
                 tier.featured
                   ? ""
                   : tierIdx === 0
-                  ? "rounded-t-3xl sm:rounded-b-none lg:rounded-tr-none lg:rounded-bl-3xl"
-                  : "sm:rounded-t-none lg:rounded-tr-3xl lg:rounded-bl-none",
+                    ? "rounded-t-3xl sm:rounded-b-none lg:rounded-tr-none lg:rounded-bl-3xl"
+                    : "sm:rounded-t-none lg:rounded-tr-3xl lg:rounded-bl-none",
                 "rounded-3xl p-8 ring-1 ring-gray-900/10 sm:p-10"
               )}
               initial={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -415,7 +406,7 @@ export default function Pricing() {
                 <h3
                   className={classNames(
                     tier.featured ? "text-white" : "text-black",
-                    "text-lg/8 font-semibold"
+                    "text-sm"
                   )}
                 >
                   {tier.name}
@@ -426,7 +417,7 @@ export default function Pricing() {
                 <span
                   className={classNames(
                     tier.featured ? "text-white" : "text-gray-900",
-                    "text-5xl font-semibold tracking-tight"
+                    "text-4xl tracking-tight"
                   )}
                 >
                   {tier.priceMonthly}
@@ -444,7 +435,7 @@ export default function Pricing() {
               <p
                 className={classNames(
                   tier.featured ? "text-gray-300" : "text-gray-600",
-                  "mt-6 text-lg"
+                  "mt-6 text-sm"
                 )}
               >
                 {tier.description}
@@ -454,7 +445,7 @@ export default function Pricing() {
                 role="list"
                 className={classNames(
                   tier.featured ? "text-gray-300" : "text-gray-600",
-                  "mt-8 space-y-3 text-lg sm:mt-10"
+                  "mt-8 space-y-3 text-sm sm:mt-10"
                 )}
               >
                 {inherited && (
@@ -472,7 +463,7 @@ export default function Pricing() {
                         )}
                       />
                     </div>
-                    <span className="font-semibold">All features from {inherited}</span>
+                    <span>All features from {inherited}</span>
                   </li>
                 )}
                 {newFeatures.map((feature, index) => {
@@ -518,7 +509,7 @@ export default function Pricing() {
                         tier.featured
                           ? "bg-indigo-600/20 text-indigo-200 ring-1 ring-inset ring-indigo-500/30"
                           : "text-indigo-700 ring-1 ring-indigo-200 ring-inset",
-                        "block rounded-md px-3.5 py-2.5 text-center text-sm font-semibold cursor-default"
+                        "block rounded-md px-3.5 py-2.5 text-center text-sm  cursor-default"
                       )}
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
@@ -533,7 +524,7 @@ export default function Pricing() {
                       tier.featured
                         ? "bg-indigo-600/20 text-indigo-200 ring-1 ring-inset ring-indigo-500/30"
                         : "text-indigo-700 ring-1 ring-indigo-200 ring-inset",
-                      "block rounded-md px-3.5 py-2.5 text-center text-sm font-semibold cursor-default"
+                      "block rounded-md px-3.5 py-2.5 text-center text-sm cursor-default"
                     )}
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -548,7 +539,7 @@ export default function Pricing() {
                       tier.featured
                         ? "bg-indigo-500 text-white shadow-xs hover:bg-indigo-400 focus-visible:outline-indigo-500"
                         : "text-indigo-600 ring-1 ring-indigo-200 ring-inset hover:ring-indigo-300 focus-visible:outline-indigo-600",
-                      "block rounded-md px-3.5 py-2.5 text-center text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 w-full transition-all duration-200"
+                      "block rounded-md px-3.5 py-2.5 text-center text-sm focus-visible:outline-2 focus-visible:outline-offset-2 w-full transition-all duration-200"
                     )}
                     disabled={checkoutLoading}
                     initial={{ opacity: 0, scale: 0.95 }}
