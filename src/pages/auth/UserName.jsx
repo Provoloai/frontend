@@ -1,11 +1,17 @@
-import { useState } from "react";
-import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
+import {
+  Dialog,
+  DialogBackdrop,
+  DialogPanel,
+  DialogTitle,
+} from "@headlessui/react";
 import { AtSign, Sparkles } from "lucide-react";
 import CustomButton from "../../Reusables/CustomButton";
 import TextInputField from "../../Reusables/TextInputField";
-import { auth, db } from "../../lib/firebase";
-import { updateUserDisplayName } from "../../utils/firebase.util";
-import { getCleanErrorMessage } from "../../utils/firebaseError.util";
+import {
+  updateUserDisplayName,
+  refreshUserSession,
+} from "../../utils/api.util";
 
 export default function UserName() {
   const [open] = useState(true);
@@ -15,42 +21,118 @@ export default function UserName() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // No Zustand store needed
+  // Ref to prevent race conditions
+  const isSubmittingRef = useRef(false);
 
-  // Demo function to console log the displayname and update it
-  const handleContinue = async () => {
-    if (!username.trim()) {
-      setValidationErrors({ username: "Username is required" });
+  // Secure username validation function with debouncing
+  const validateField = useCallback(
+    (fieldName, value) => {
+      const errors = { ...validationErrors };
+
+      if (fieldName === "username") {
+        // Sanitize input first
+        const sanitizedValue = value.trim().replace(/[<>"'&]/g, "");
+
+        if (!sanitizedValue) {
+          errors.username = "Username is required";
+        } else if (sanitizedValue.length < 3) {
+          errors.username = "Username must be at least 3 characters";
+        } else if (sanitizedValue.length > 32) {
+          errors.username = "Username must be no more than 32 characters";
+        } else if (!/^[a-zA-Z0-9_\- ]+$/.test(sanitizedValue)) {
+          errors.username =
+            "Username can only contain letters, numbers, underscores, hyphens, and spaces";
+        } else if (/^[_-]|[_-]$/.test(sanitizedValue)) {
+          errors.username =
+            "Username cannot start or end with underscore or hyphen";
+        } else if (/_{2,}|-{2,}/.test(sanitizedValue)) {
+          errors.username =
+            "Username cannot contain consecutive underscores or hyphens";
+        } else {
+          // Check for reserved usernames
+          const reservedUsernames = [
+            "admin",
+            "root",
+            "api",
+            "www",
+            "mail",
+            "ftp",
+            "support",
+            "help",
+            "test",
+            "demo",
+          ];
+          if (reservedUsernames.includes(sanitizedValue.toLowerCase())) {
+            errors.username = "This username is reserved and cannot be used";
+          } else {
+            delete errors.username;
+          }
+        }
+      }
+
+      setValidationErrors(errors);
+    },
+    [validationErrors]
+  );
+
+  // Simple username update handler
+  const handleContinue = useCallback(async () => {
+    // Prevent multiple simultaneous submissions
+    if (isSubmittingRef.current) {
+      return;
+    }
+
+    // Sanitize and validate username before submitting
+    const sanitizedUsername = username.trim().replace(/[<>"'&]/g, "");
+    validateField("username", sanitizedUsername);
+
+    if (validationErrors.username || !sanitizedUsername) {
+      setTouched({ username: true });
       return;
     }
 
     try {
+      isSubmittingRef.current = true;
       setLoading(true);
       setError("");
-      const currentUser = auth.currentUser;
-      if (currentUser) {
-        await updateUserDisplayName(currentUser, username, db);
-        // Refresh backend session with new display name
-        const idToken = await currentUser.getIdToken(true);
-        const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/auth/login`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ idToken }),
-        });
-        setValidationErrors({});
-        if (response.ok) {
-          window.location.href = "/optimizer";
-        }
-      } else {
-        setError("No authenticated user found. Please sign in again.");
-      }
+
+      // Update username
+      await updateUserDisplayName(sanitizedUsername);
+
+      // Refresh user session to get updated data
+      await refreshUserSession();
+
+      // Clear validation errors and redirect
+      setValidationErrors({});
+      window.location.replace("/optimizer");
     } catch (error) {
-      setError(getCleanErrorMessage(error));
+      // Simple error handling
+      const userFriendlyMessage = error.message.includes("Invalid")
+        ? "Please check your username format and try again."
+        : error.message.includes("reserved")
+        ? "This username is not available. Please choose a different one."
+        : error.message.includes("timeout")
+        ? "Request timed out. Please check your connection and try again."
+        : error.message.includes("Too many")
+        ? "Too many attempts. Please wait a moment and try again."
+        : "Unable to update username. Please try again.";
+
+      setError(userFriendlyMessage);
     } finally {
       setLoading(false);
+      isSubmittingRef.current = false;
     }
-  };
+  }, [username, validationErrors, validateField]);
+
+  // Simple cleanup function
+  const cleanup = useCallback(() => {
+    isSubmittingRef.current = false;
+  }, []);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return cleanup;
+  }, [cleanup]);
 
   return (
     <div>
@@ -75,7 +157,10 @@ export default function UserName() {
                   </div>
 
                   <div className="text-center sm:mt-0 sm:text-left w-full">
-                    <DialogTitle as="h3" className="text-2xl/9 font-medium tracking-tight text-gray-900 text-center mt-4">
+                    <DialogTitle
+                      as="h3"
+                      className="text-2xl/9 font-medium tracking-tight text-gray-900 text-center mt-4"
+                    >
                       What should we call you?
                     </DialogTitle>
 
@@ -90,23 +175,37 @@ export default function UserName() {
                         id="username"
                         name="username"
                         required
-                        autoComplete="current-username"
+                        autoComplete="username"
                         value={username}
                         iconStart={<AtSign size={20} />}
                         onChange={(e) => {
-                          setUsername(e.target.value);
-                          validateField("username", e.target.value);
+                          // Limit input length and sanitize in real-time
+                          const sanitized = e.target.value
+                            .replace(/[<>"'&]/g, "")
+                            .substring(0, 32);
+                          setUsername(sanitized);
+                          validateField("username", sanitized);
                         }}
-                        onBlur={() => setTouched((prev) => ({ ...prev, username: true }))}
+                        onBlur={() =>
+                          setTouched((prev) => ({ ...prev, username: true }))
+                        }
                         type="text"
                         label="Full Name"
                         placeholder="danielafriheart"
                         touched={touched.username}
                         error={validationErrors.username}
+                        maxLength={32}
+                        pattern="[a-zA-Z0-9_\- ]+"
+                        title="Username can only contain letters, numbers, underscores, hyphens, and spaces"
                       />
                     </div>
 
-                    <CustomButton onClick={handleContinue} type="submit" className="btn-primary text-sm" disabled={loading}>
+                    <CustomButton
+                      onClick={handleContinue}
+                      type="submit"
+                      className="btn-primary text-sm"
+                      disabled={loading}
+                    >
                       {loading ? "Updating..." : "Continue"}
                     </CustomButton>
                   </div>
