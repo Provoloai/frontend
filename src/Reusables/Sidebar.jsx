@@ -112,7 +112,7 @@ const Sidebar = () => {
 
       {/* Logo */}
       <div className={`flex gap-3 mb-10 ${isOpen ? "px-3" : "px-0 mx-auto"} w-fit relative`}>
-        <Logo/>
+        <Logo />
         {/* <p className="text-primary absolute -top-3 right-0 text-lg">✦</p> */}
       </div>
 
