@@ -40,7 +40,7 @@ export default function CustomSnackbar({
             color={snackbarColor}
             open={typeof close === 'function' ? open : internalOpen}
             onClose={handleClose}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
             startDecorator={<PlaylistAddCheckCircleRoundedIcon />}
             endDecorator={
                 <Button
