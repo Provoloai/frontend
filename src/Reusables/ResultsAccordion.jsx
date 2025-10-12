@@ -13,7 +13,7 @@ const colorMap = {
 const ResultsAccordion = ({ sections }) => {
   return (
     <div className="mt-10 p-6 max-w-4xl mx-auto w-full bg-white rounded-xl border border-gray-200 card">
-      <h2 className="text-xl font-medium mb-8 text-center flex items-center gap-3"><FileText size={20} className="text-gray-500" /> Your Optimization Insights</h2>
+      <h2 className="font-medium mb-8 text-center flex items-center gap-3 text-2xl">Optimization Insights ✦︎</h2>
 
       {sections.map(({ title, content }, idx) => {
         const color = colorMap[title] || "gray";
