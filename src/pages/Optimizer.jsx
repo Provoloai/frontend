@@ -113,7 +113,7 @@ const PortfolioOptimizer = () => {
       }
 
       const result = await response.json();
-      
+
       // Set the analysis results from backend response
       setAnalysisResults(result.data.fullAnalysis || "Analysis completed successfully");
       setWeaknessesSummary(result.data.weaknessesAndOptimization || "N/A");
@@ -171,7 +171,7 @@ const PortfolioOptimizer = () => {
         variants={containerVariants}
       >
         <div>
-          <motion.h2 className="text-2xl mb-3 text-center" variants={itemVariants}>
+          <motion.h2 className="text-3xl mb-3 text-center" variants={itemVariants}>
             Let's Get to Know Your Profile, {displayName}
           </motion.h2>
 
@@ -219,11 +219,10 @@ const PortfolioOptimizer = () => {
               <textarea
                 required
                 id="profileDescription"
-                className={`w-full p-3 border rounded-md transition duration-150 ease-in-out bg-gray-50 placeholder:text-sm ${
-                  error || (touched.description && !profileDescription.trim())
+                className={`w-full p-3 border rounded-md transition duration-150 ease-in-out bg-gray-50 placeholder:text-sm ${error || (touched.description && !profileDescription.trim())
                     ? "ring-1 ring-red-600/10 ring-inset focus:ring-red-500 bg-red-50 placeholder-red-700"
                     : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                }`}
+                  }`}
                 rows="8"
                 placeholder="Paste your profile overview & summary of your services here..."
                 value={profileDescription}

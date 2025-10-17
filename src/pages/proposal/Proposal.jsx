@@ -143,7 +143,7 @@ const PortfolioOptimizer = () => {
       >
         <motion.div className="text-start pt-10" variants={itemVariants}>
           <h2 className="text-3xl font-medium mb-3 text-center flex items-center gap-3">
-            <Sparkles /> Proposals
+            Proposals <Sparkles /> 
           </h2>
           <p className="mb-6 w-1/3 text-gray-400">
             Create winning proposals in minutes with AI-powered personalization and professional templates
@@ -218,7 +218,7 @@ const PortfolioOptimizer = () => {
               )}
             </div>
 
-            <div className="w-1/3 flex justify-end">
+            <div className="w-fit flex justify-end">
               <CustomButton onClick={analyzePortfolio} isLoading={isLoading} className="btn-primary">
                 Generate Proposal
               </CustomButton>
@@ -278,7 +278,7 @@ const PortfolioOptimizer = () => {
           variants={cardVariants}
         >
           <div className="col-span-2">
-            <p className="mb-6 text-gray-400">How would you like to improve the proposal</p>
+            <p className="mb-6">How would you like to improve the proposal</p>
 
             <motion.div
               className="grid grid-cols-2 grid-rows-2 gap-5"
