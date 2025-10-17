@@ -26,12 +26,8 @@
   h4,
   h5,
   h6 {
-    @apply font-headingmd text-gray-900;
+    @apply font-headingmd text-gray-900 leading-none;
   }
-
-  /* a {
-    @apply text-primary hover:text-secondary transition-colors;
-  } */
 }
 
 @layer utilities {
@@ -50,11 +46,6 @@
   transform: translateY(-2px);
   box-shadow: 0 4px 15px #dcd6fc;
 }
-
-/* 
-.card {
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-} */
 
 .loading-spinner {
   border: 4px solid rgba(0, 0, 0, 0.1);
