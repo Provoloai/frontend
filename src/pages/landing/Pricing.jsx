@@ -325,10 +325,11 @@ export default function Pricing() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1 }}
       >
-        <h2 className="text-5xl tracking-tight text-pretty text-gray-900">
+        <h2 className="text-3xl font-medium mb-3 text-center gap-3"
+        >
           Upgrade your plan
         </h2>
-        <p className="mx-auto mt-1 max-w-2xl text-center text-gray-600 text-lg/8 text-pretty">
+        <p className="text-gray-400">
           Need more capabilities for your Freelance business?
         </p>
         <AnimatePresence>

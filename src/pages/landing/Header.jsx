@@ -63,7 +63,7 @@ const products = [
 ];
 const callsToAction = [
   { name: "Watch Demo", href: "https://www.youtube.com/@Provoloai", icon: PlayCircleIcon },
-  { name: "Contact Support", href: "mailto:heyprovolo@gmail.com", icon: Send },
+  { name: "Contact Support", href: "mailto:support@provolo.org", icon: Send },
 ];
 
 export default function Example() {
