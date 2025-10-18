@@ -16,8 +16,16 @@ export default defineConfig(() => ({
       format: { comments: false },
     },
   },
+  server: {
+    hmr: {
+      overlay: false,
+    },
+  },
+  optimizeDeps: {
+    include: ['@tanstack/react-router'],
+  },
   plugins: [
-    tanstackRouter({ target: "react", autoCodeSplitting: true }),
+    tanstackRouter({ target: "react" }),
     react(),
     // {
     //   name: "inject-devtools-blocker",
