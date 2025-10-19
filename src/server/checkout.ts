@@ -15,21 +15,28 @@ interface SessionUser {
   polarId?: string;
 }
 
-export const proSubscription = async (polarRefId: string, user: SessionUser) => {
+export const proSubscription = async (
+  polarRefId: string,
+  user: SessionUser
+) => {
   console.log(user);
   if (!polarRefId)
-    throw new Error("No subscription ref ID provided, if error persists, contact support.");
+    throw new Error(
+      "No subscription ref ID provided, if error persists, contact support."
+    );
   if (!user || !user.userId || !user.email)
-    throw new Error("You must be logged in to subscribe, if error persists, contact support.");
-  const checkoutData: any = {
+    throw new Error(
+      "You must be logged in to subscribe, if error persists, contact support."
+    );
+  const checkout = await polar.checkouts.create({
     products: [polarRefId],
     metadata: {
       user_id: user.userId,
     },
-    customer_id: user.polarId,
+    customerId: user.polarId,
     customerEmail: user.email,
-  };
-  const checkout = await polar.checkouts.create(checkoutData);
+    successUrl: import.meta.env?.VITE_POLAR_SUCCESS_URL,
+  });
   console.log("Checkout created:", checkout);
   return checkout.url;
 };
@@ -37,17 +44,21 @@ export const proSubscription = async (polarRefId: string, user: SessionUser) => 
 // Create (or reuse) a customer session to access the Polar customer portal
 export const getCustomerPortalUrl = async (user: SessionUser) => {
   if (!user) throw new Error("Not authenticated");
-  if (!user.polarId) throw new Error("No Polar customer ID associated with this account.");
+  if (!user.polarId)
+    throw new Error("No Polar customer ID associated with this account.");
 
   try {
     const session = await polar.customerSessions.create({
       customerId: user.polarId,
     });
-    const portalUrl = (session as any)?.customerPortalUrl || (session as any)?.url;
+    const portalUrl =
+      (session as any)?.customerPortalUrl || (session as any)?.url;
     if (!portalUrl) throw new Error("Unable to retrieve customer portal URL.");
     return portalUrl;
   } catch (err) {
     console.error("Failed to create Polar customer session:", err);
-    throw new Error("Could not open subscription portal. Please try again later.");
+    throw new Error(
+      "Could not open subscription portal. Please try again later."
+    );
   }
 };
