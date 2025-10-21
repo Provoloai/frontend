@@ -1,10 +1,18 @@
 import React from 'react';
 
-const CustomButton = ({
+interface CustomButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+    onClick?: () => void;
+    isLoading?: boolean;
+    children: React.ReactNode;
+    className?: string;
+}
+
+const CustomButton: React.FC<CustomButtonProps> = ({
     onClick,
-    isLoading,
+    isLoading = false,
     children,
-    className = '', ...props
+    className = '', 
+    ...props
 }) => {
     return (
         <button

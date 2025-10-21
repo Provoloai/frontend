@@ -1,15 +1,32 @@
 import { Eye, EyeClosed } from "lucide-react";
 import React, { useState } from "react";
 
-const TextInputField = ({
+interface TextInputFieldProps {
+  id: string;
+  name?: string;
+  label: string;
+  placeholder?: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  touched?: boolean;
+  type?: "text" | "password" | "email" | "number";
+  iconStart?: React.ReactNode;
+  required?: boolean;
+  error?: string;
+  disabled?: boolean;
+}
+
+const TextInputField: React.FC<TextInputFieldProps> = ({
   id,
+  name,
   label,
   placeholder,
   value,
   onChange,
   onBlur,
   touched,
-  type,
+  type = "text",
   iconStart,
   required = false,
   error,
@@ -40,6 +57,7 @@ const TextInputField = ({
                     required={required}
                     type={currentType ?? "text"}
                     id={id}
+                    name={name}
                     className={`w-full p-3 border border-gray-200 rounded-md transition duration-150 ease-in-out bg-gray-50 placeholder:text-sm ${isInvalid
                         ? 'ring-1 ring-red-600/10 ring-inset bg-red-50 placeholder-red-700 border-red-300'
                         : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'

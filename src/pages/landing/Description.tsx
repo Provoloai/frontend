@@ -2,6 +2,7 @@ import { motion } from "motion/react";
 import { useState, useEffect, useRef } from "react";
 import LandingpageButton from "./LandingpageButton";
 import vidSeven from "../../assets/vids/vidSeven.mov";
+import { containerVariants, fadeInVariants, slideInVariants, scaleVariants } from "../../types/motion";
 
 export default function Description() {
   const [videoLoaded, setVideoLoaded] = useState(false);
@@ -41,42 +42,15 @@ export default function Description() {
     return () => observer.disconnect();
   }, [videoLoaded]);
 
-  // Optimized animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
+  // Use properly typed motion variants
+  const customContainerVariants = {
+    ...containerVariants,
     visible: {
-      opacity: 1,
+      ...containerVariants.visible,
       transition: {
         duration: 0.4,
         staggerChildren: 0.08,
       },
-    },
-  };
-
-  const fadeUpVariants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.4, ease: "easeOut" },
-    },
-  };
-
-  const featureVariants = {
-    hidden: { opacity: 0, x: -8 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: { duration: 0.3, ease: "easeOut" },
-    },
-  };
-
-  const videoVariants = {
-    hidden: { opacity: 0, scale: 0.95 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: { duration: 0.5, ease: "easeOut" },
     },
   };
 
@@ -87,23 +61,23 @@ export default function Description() {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-50px", amount: 0.2 }}
-        variants={containerVariants}
+        variants={customContainerVariants}
       >
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-0">
           <motion.div
             className="flex flex-col lg:gap-20 gap-10 text-start"
             variants={containerVariants}
           >
-            <motion.header className="flex flex-col" variants={fadeUpVariants}>
+            <motion.header className="flex flex-col" variants={fadeInVariants}>
               <motion.p
                 className="font-headingmd lg:text-[28px] text-[18px] mb-3"
-                variants={fadeUpVariants}
+                variants={fadeInVariants}
               >
                 Every Word Works Harder.
               </motion.p>
               <motion.p
                 className="text-[#6B7280] lg:text-[22px] lg:pr-32 text-[14px]"
-                variants={fadeUpVariants}
+                variants={fadeInVariants}
               >
                 Provolo isn't just about writing faster, it's about writing smarter.
               </motion.p>
@@ -117,7 +91,7 @@ export default function Description() {
                 <motion.li
                   key={index}
                   className="flex items-center font-headingmd text-x"
-                  variants={featureVariants}
+                  variants={slideInVariants}
                   whileHover={{
                     x: 2,
                     transition: { duration: 0.15 },
@@ -138,7 +112,7 @@ export default function Description() {
               ))}
             </motion.ol>
 
-            <motion.div variants={fadeUpVariants}>
+            <motion.div variants={fadeInVariants}>
               <motion.div
                 whileHover={{
                   scale: 1.02,
@@ -153,7 +127,7 @@ export default function Description() {
 
           <motion.div
             className="flex mt-10 lg:mt-0 lg:text-center justify-end items-center overflow-hidden"
-            variants={videoVariants}
+            variants={scaleVariants}
           >
             <video
               ref={videoRef}

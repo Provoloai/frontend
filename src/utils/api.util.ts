@@ -1,6 +1,6 @@
 // Generic API utility functions for all API calls
 
-const sanitizeInput = (input) => {
+const sanitizeInput = (input: string): string => {
   if (typeof input !== "string") return "";
 
   return input
@@ -9,20 +9,27 @@ const sanitizeInput = (input) => {
     .substring(0, 100); // Limit length
 };
 
+interface ApiRequestOptions extends RequestInit {
+  method?: string;
+  headers?: Record<string, string>;
+  credentials?: RequestCredentials;
+  body?: string;
+}
+
 // Generic API request function
-const makeApiRequest = async (endpoint, options = {}) => {
+const makeApiRequest = async (endpoint: string, options: ApiRequestOptions = {}): Promise<any> => {
   if (!import.meta.env.VITE_SERVER_URL) {
     throw new Error("Server configuration error");
   }
 
   const url = `${import.meta.env.VITE_SERVER_URL}${endpoint}`;
   
-  const defaultOptions = {
+  const defaultOptions: ApiRequestOptions = {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
     },
-    credentials: "include",
+    credentials: "include" as RequestCredentials,
     ...options,
   };
 
@@ -44,7 +51,7 @@ const makeApiRequest = async (endpoint, options = {}) => {
 };
 
 // Updates the user's username via backend API
-export const updateUserDisplayName = async (username) => {
+export const updateUserDisplayName = async (username: string): Promise<any> => {
   const sanitizedUsername = sanitizeInput(username);
   
   if (!sanitizedUsername) {
@@ -64,21 +71,21 @@ export const updateUserDisplayName = async (username) => {
 };
 
 // Refreshes user session after username update
-export const refreshUserSession = async () => {
+export const refreshUserSession = async (): Promise<any> => {
   const data = await makeApiRequest("/auth/verify");
   return data?.data || null;
 };
 
 // Generic API functions for common operations
-export const apiGet = (endpoint) => makeApiRequest(endpoint);
-export const apiPost = (endpoint, data) => makeApiRequest(endpoint, {
+export const apiGet = (endpoint: string): Promise<any> => makeApiRequest(endpoint);
+export const apiPost = (endpoint: string, data: any): Promise<any> => makeApiRequest(endpoint, {
   method: "POST",
   body: JSON.stringify(data),
 });
-export const apiPut = (endpoint, data) => makeApiRequest(endpoint, {
+export const apiPut = (endpoint: string, data: any): Promise<any> => makeApiRequest(endpoint, {
   method: "PUT", 
   body: JSON.stringify(data),
 });
-export const apiDelete = (endpoint) => makeApiRequest(endpoint, {
+export const apiDelete = (endpoint: string): Promise<any> => makeApiRequest(endpoint, {
   method: "DELETE",
 });
