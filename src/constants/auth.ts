@@ -49,3 +49,18 @@ export const RESERVED_USERNAMES = [
   "demo",
 ] as const;
 
+export const FORGOT_PASSWORD_CONFIG = {
+  title: "Forgot Password?",
+  emailSentTitle: "Email Sent!",
+  emailSentSubtitle: "Redirecting you to login...",
+  emailPlaceholder: "example@mail.com",
+  submitText: "Send Reset Email",
+  loadingText: "Sending...",
+  emailSentText: "Email Sent",
+  successMessage: "Password reset email sent! Check your inbox and spam folder.",
+  checkEmailMessage: "Check your email for the password reset link.",
+  rememberPasswordText: "Remember your password?",
+  signInText: "Sign In",
+  redirectDelay: 15000,
+} as const;
+

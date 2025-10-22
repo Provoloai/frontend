@@ -118,3 +118,32 @@ export interface UsernameDialogProps {
   isOpen: boolean;
   children: React.ReactNode;
 }
+
+export interface ForgotPasswordFormData {
+  email: string;
+}
+
+export interface ForgotPasswordTouchedFields {
+  email: boolean;
+}
+
+export interface ForgotPasswordValidationErrors {
+  email: string;
+}
+
+export interface ForgotPasswordFormProps {
+  formData: ForgotPasswordFormData;
+  touched: ForgotPasswordTouchedFields;
+  validationErrors: ForgotPasswordValidationErrors;
+  isLoading: boolean;
+  error: string;
+  emailSent: boolean;
+  success: string;
+  onInputChange: (field: keyof ForgotPasswordFormData, value: string) => void;
+  onBlur: (field: keyof ForgotPasswordTouchedFields) => void;
+  onSubmit: (e: React.FormEvent) => void;
+}
+
+export interface ForgotPasswordLayoutProps {
+  children: React.ReactNode;
+}
