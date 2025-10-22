@@ -1,31 +1,21 @@
-"use client";
-
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   Dialog,
   DialogPanel,
-  Disclosure,
-  DisclosureButton,
-  DisclosurePanel,
   Popover,
   PopoverButton,
   PopoverGroup,
   PopoverPanel,
 } from "@headlessui/react";
 import {
-  ArrowPathIcon,
-  Bars3Icon,
   ChartPieIcon,
   CursorArrowRaysIcon,
-  FingerPrintIcon,
-  SquaresPlusIcon,
-  XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { ChevronDownIcon, PhoneIcon, PlayCircleIcon } from "@heroicons/react/20/solid";
+import { ChevronDownIcon, PlayCircleIcon } from "@heroicons/react/20/solid";
 import Logo from "../../Reusables/Logo";
 import { Link } from "@tanstack/react-router";
-import { Book, LibraryBig, MailIcon, MoveRight, Send } from "lucide-react";
+import { Send } from "lucide-react";
 import Vector from "../../assets/img/Vector.png";
 import Vector2 from "../../assets/img/Vector2.png";
 
@@ -42,24 +32,6 @@ const products = [
     href: "https://web.facebook.com/profile.php?id=61581683004716",
     icon: CursorArrowRaysIcon,
   },
-  // {
-  //   name: "Security",
-  //   description: "Your customers data will be safe and secure",
-  //   href: "#",
-  //   icon: FingerPrintIcon,
-  // },
-  // {
-  //   name: "Substack",
-  //   description: "Connect with third-party tools",
-  //   href: "#",
-  //   icon: LibraryBig,
-  // },
-  // {
-  //   name: "Automations",
-  //   description: "Build strategic funnels that will convert",
-  //   href: "#",
-  //   icon: ArrowPathIcon,
-  // },
 ];
 const callsToAction = [
   { name: "Watch Demo", href: "https://www.youtube.com/@Provoloai", icon: PlayCircleIcon },
@@ -82,7 +54,7 @@ export default function Example() {
       backdropFilter: "blur(10px)",
       transition: {
         duration: 0.6,
-        ease: [0.25, 0.46, 0.45, 0.94],
+        ease: [0.25, 0.46, 0.45, 0.94] as const,
         staggerChildren: 0.1,
         delayChildren: 0.2,
       },
@@ -97,7 +69,7 @@ export default function Example() {
       y: 0,
       transition: {
         duration: 0.4,
-        ease: "easeOut",
+        ease: "easeOut" as const,
       },
     },
   };
@@ -109,7 +81,7 @@ export default function Example() {
       y: "100%",
       transition: {
         duration: 0.3,
-        ease: "easeInOut",
+        ease: "easeInOut" as const,
       },
     },
     visible: {
@@ -117,7 +89,7 @@ export default function Example() {
       y: 0,
       transition: {
         duration: 0.4,
-        ease: [0.25, 0.46, 0.45, 0.94],
+        ease: [0.25, 0.46, 0.45, 0.94] as const,
         staggerChildren: 0.05,
         delayChildren: 0.1,
       },
@@ -137,7 +109,7 @@ export default function Example() {
       y: 0,
       transition: {
         duration: 0.2,
-        ease: "easeOut",
+        ease: "easeOut" as const,
       },
     },
     exit: {
@@ -146,7 +118,7 @@ export default function Example() {
       y: -10,
       transition: {
         duration: 0.15,
-        ease: "easeIn",
+        ease: "easeIn" as const,
       },
     },
   };
@@ -161,13 +133,6 @@ export default function Example() {
       <motion.nav
         aria-label="Global"
         className="mx-auto flex max-w-[906.67px] items-center justify-between lg:p-[15px] py-2 px-4 bg-white rounded-full"
-      // style={{
-      //     boxShadow: "0 4px 20px rgba(0, 0, 0, 0.06)"
-      // }}
-      // whileHover={{
-      //     boxShadow: "0 8px 30px rgba(0, 0, 0, 0.12)",
-      //     transition: { duration: 0.3, ease: "easeOut" }
-      // }}
       >
         <motion.div className="flex mr-10" variants={navItemVariants}>
           <motion.a href="/" className="" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
@@ -340,9 +305,7 @@ export default function Example() {
                 animate={{ x: 0 }}
                 whileHover={{ x: 3 }}
                 transition={{ duration: 0.2 }}
-              >
-                {/* <MoveRight size={20} /> */}
-              </motion.span>
+              />
             </Link>
           </motion.div>
         </motion.div>
@@ -447,9 +410,7 @@ export default function Example() {
                         className="bg-primary hover:bg-primary/90 transition-all duration-300 py-[18px] px-[24px] rounded-full text-sm text-white h-[44px] text-center align-middle flex justify-center items-center w-fit"
                       >
                         Log in
-                        <motion.span aria-hidden="true" whileHover={{ x: 3 }}>
-                          {/* <MoveRight size={20} /> */}
-                        </motion.span>
+                        <motion.span aria-hidden="true" whileHover={{ x: 3 }} />
                       </Link>
                     </motion.div>
                   </motion.div>

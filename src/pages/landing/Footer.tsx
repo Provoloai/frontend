@@ -278,7 +278,6 @@ function FooterSection() {
     </motion.footer>
   );
 }
-
 /* ---------------------- Main Component ---------------------- */
 export default function Example() {
   return (

@@ -1,5 +1,4 @@
 import LandingpageButton from "./LandingpageButton";
-// eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react";
 import { useState, useEffect, useRef } from "react";
 import vidFive from "../../assets/vids/vidFive.mov";
@@ -28,8 +27,8 @@ const STEPS = [
 ];
 
 const HowItWorks = () => {
-  const [videosLoaded, setVideosLoaded] = useState({});
-  const videoRefs = useRef([]);
+  const [videosLoaded, setVideosLoaded] = useState<Record<string, boolean>>({});
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
   // Lazy load videos on intersection
   useEffect(() => {
@@ -42,11 +41,11 @@ const HowItWorks = () => {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          const video = entry.target;
-          if (video.dataset.src && !videosLoaded[video.dataset.index]) {
+          const video = entry.target as HTMLVideoElement;
+          if (video.dataset.src && video.dataset.index && !videosLoaded[video.dataset.index]) {
             video.src = video.dataset.src;
             video.load();
-            setVideosLoaded(prev => ({ ...prev, [video.dataset.index]: true }));
+            setVideosLoaded(prev => ({ ...prev, [video.dataset.index as string]: true }));
           }
         }
       });
@@ -76,7 +75,7 @@ const HowItWorks = () => {
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.4, ease: "easeOut" },
+      transition: { duration: 0.4, ease: "easeOut" as const },
     },
   };
 
@@ -85,7 +84,7 @@ const HowItWorks = () => {
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.4, ease: "easeOut" },
+      transition: { duration: 0.4, ease: "easeOut" as const },
     },
   };
 
@@ -146,7 +145,7 @@ const HowItWorks = () => {
                 }}
               >
                 <video
-                  ref={(el) => (videoRefs.current[index] = el)}
+                  ref={(el) => { videoRefs.current[index] = el; }}
                   data-src={step.vidSrc}
                   data-index={index}
                   autoPlay
