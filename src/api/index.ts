@@ -75,6 +75,12 @@ export const authApi = {
       body: JSON.stringify({ idToken }),
     });
   },
+  updateUsername: async (username: string) => {
+    return apiRequest<{ success: boolean; message?: string }>("/auth/update-username", {
+      method: "POST",
+      body: JSON.stringify({ username }),
+    });
+  },
 };
 
 // Export the generic API request function for custom use cases

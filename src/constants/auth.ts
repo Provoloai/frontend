@@ -28,3 +28,24 @@ export const PASSWORD_REQUIREMENTS = [
   { key: "hasSpecial", label: "At least 1 special character" },
 ] as const;
 
+export const USERNAME_CONFIG = {
+  title: "What should we call you?",
+  placeholder: "danielafriheart",
+  submitText: "Continue",
+  loadingText: "Updating...",
+  maxLength: 32,
+} as const;
+
+export const RESERVED_USERNAMES = [
+  "admin",
+  "root",
+  "api",
+  "www",
+  "mail",
+  "ftp",
+  "support",
+  "help",
+  "test",
+  "demo",
+] as const;
+

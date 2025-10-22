@@ -90,3 +90,31 @@ export interface SignupFormProps {
 export interface SignupLayoutProps {
   children: React.ReactNode;
 }
+
+export interface UsernameFormData {
+  username: string;
+}
+
+export interface UsernameTouchedFields {
+  username: boolean;
+}
+
+export interface UsernameValidationErrors {
+  username: string;
+}
+
+export interface UsernameFormProps {
+  formData: UsernameFormData;
+  touched: UsernameTouchedFields;
+  validationErrors: UsernameValidationErrors;
+  isLoading: boolean;
+  error: string;
+  onInputChange: (field: keyof UsernameFormData, value: string) => void;
+  onBlur: (field: keyof UsernameTouchedFields) => void;
+  onSubmit: () => void;
+}
+
+export interface UsernameDialogProps {
+  isOpen: boolean;
+  children: React.ReactNode;
+}
