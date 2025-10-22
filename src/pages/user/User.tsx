@@ -13,7 +13,7 @@ const userNavigation = [
   { name: "My profile", href: "/userprofile" },
 ];
 
-export default function User({ open }) {
+export default function User({ open }: any) {
   const { user: userData, loading: loadingUserData } = useSession();
   const navigate = useNavigate();
 
