@@ -61,5 +61,21 @@ export const optimizerApi = {
   },
 };
 
+// Auth API functions
+export const authApi = {
+  login: async (idToken: string) => {
+    return apiRequest<{ success: boolean; message?: string }>("/auth/login", {
+      method: "POST",
+      body: JSON.stringify({ idToken }),
+    });
+  },
+  signup: async (idToken: string) => {
+    return apiRequest<{ success: boolean; message?: string }>("/auth/signup", {
+      method: "POST",
+      body: JSON.stringify({ idToken }),
+    });
+  },
+};
+
 // Export the generic API request function for custom use cases
 export { apiRequest };
