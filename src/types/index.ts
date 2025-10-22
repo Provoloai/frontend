@@ -39,7 +39,6 @@ export interface TouchedFields {
 }
 
 export interface ImprovementOption {
-  to: string;
   icon: React.ComponentType<{ size?: number }>;
   title: string;
   description: string;
