@@ -7,29 +7,30 @@ import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { FilePlus, PenLine, Scissors, Sparkles, Workflow } from "lucide-react";
 import CustomButton from "../../Reusables/CustomButton";
 import { Link } from "@tanstack/react-router";
+import { ProposalData, ProposalFormData, TouchedFields, ImprovementOption } from "../../types";
 
-const PortfolioOptimizer = () => {
+const PortfolioOptimizer: React.FC = () => {
   // State variables for input data
-  const [clientName, setClientName] = useState("");
-  const [proposalTone, setProposalTone] = useState("");
-  const [jobSummary, setJobSummary] = useState("");
+  const [clientName, setClientName] = useState<string>("");
+  const [proposalTone, setProposalTone] = useState<ProposalFormData['proposalTone'] | "">("");
+  const [jobSummary, setJobSummary] = useState<string>("");
 
   // State variables for output from the AI
-  const [generatedProposal, setGeneratedProposal] = useState(null);
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedProposal, setGeneratedProposal] = useState<ProposalData | null>(null);
+  const [isGenerating, setIsGenerating] = useState<boolean>(false);
 
   // State for error handling
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string>("");
 
   // Input Field States for UI Styling
-  const [touched, setTouched] = useState({
+  const [touched, setTouched] = useState<TouchedFields>({
     name: false,
     title: false,
     description: false,
   });
 
   // Memoized improvement options to prevent re-renders
-  const improvementOptions = useMemo(
+  const improvementOptions: ImprovementOption[] = useMemo(
     () => [
       {
         to: "/proposal/optimize-overview",
@@ -68,7 +69,7 @@ const PortfolioOptimizer = () => {
   );
 
   // Function to call the AI model
-  const generateProposal = async () => {
+  const generateProposal = async (): Promise<void> => {
     // Validation
     if (!clientName.trim() || !proposalTone || !jobSummary.trim()) {
       setError("Please fill in all required fields");
@@ -109,7 +110,7 @@ const PortfolioOptimizer = () => {
   };
 
   // Copy proposal to clipboard
-  const copyToClipboard = async () => {
+  const copyToClipboard = async (): Promise<void> => {
     if (generatedProposal?.mdx) {
       try {
         await navigator.clipboard.writeText(generatedProposal.mdx);
