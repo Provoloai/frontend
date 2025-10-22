@@ -47,5 +47,19 @@ export const proposalApi = {
   },
 };
 
+// Optimizer API functions
+export const optimizerApi = {
+  optimizePortfolio: async (data: {
+    full_name: string;
+    professional_title: string;
+    profile: string;
+  }) => {
+    return apiRequest<{ data: any }>("/ai/optimize-upwork", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+};
+
 // Export the generic API request function for custom use cases
 export { apiRequest };

@@ -231,6 +231,7 @@ const PortfolioOptimizer: React.FC = () => {
                     : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                 }`}
                 rows={8}
+                style={{ maxHeight: "28em", resize: "vertical" }}
                 placeholder="Paste Job Summary here..."
                 value={jobSummary}
                 onChange={(e) => setJobSummary(e.target.value)}
