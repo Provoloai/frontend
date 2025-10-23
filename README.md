@@ -1,13 +1,96 @@
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
 # Provolo
+
+A React + Vite application with TypeScript, Tailwind CSS, and automated code quality checks.
+
+## 🚀 Quick Setup
+
+### Prerequisites
+- Node.js (v18 or higher)
+- pnpm (will be installed automatically if not present)
+
+### Installation
+
+#### macOS/Linux:
+```bash
+chmod +x setup.sh
+./setup.sh
+```
+
+#### Windows:
+```cmd
+setup.bat
+```
+
+#### Manual Setup:
+```bash
+pnpm install
+pnpm exec husky init
+```
+
+## 🛠️ Development
+
+```bash
+# Start development server
+pnpm run dev
+
+# Build for production
+pnpm run build
+
+# Run linting
+pnpm run lint
+
+# Fix linting issues
+pnpm run lint:fix
+
+# Run type checking
+pnpm run type-check
+
+# Format code
+pnpm run format
+```
+
+## 🔧 Git Hooks
+
+This project uses Husky for automated code quality checks:
+
+- **Pre-commit**: Runs linting and type checking
+- **Pre-push**: Runs build to ensure everything compiles
+
+## 📁 Project Structure
+
+```
+src/
+├── components/          # Reusable UI components
+│   ├── auth/           # Authentication components
+│   ├── landing/        # Landing page components
+│   ├── header/         # Header components
+│   ├── footer/         # Footer components
+│   └── ...
+├── pages/              # Main page components
+│   ├── auth/           # Login, signup, etc.
+│   ├── landing/        # Landing page sections
+│   └── ...
+├── hooks/              # Custom React hooks
+├── types/              # TypeScript type definitions
+├── constants/          # Application constants
+├── utils/              # Utility functions
+├── assets/             # Images, fonts, etc.
+└── routes/             # TanStack Router routes
+```
+
+## 🚀 Running the App
+
+```bash
+# Start development server
+pnpm run dev
+
+# Open http://localhost:5173 in your browser
+```
+
+## 🧪 Testing
+
+```bash
+# Test git hooks
+git add .
+git commit -m "test: setup verification"
+```
