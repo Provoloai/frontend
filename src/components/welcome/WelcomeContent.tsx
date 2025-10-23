@@ -7,9 +7,9 @@ const WelcomeContent: React.FC<WelcomeContentProps> = ({ onContinue }) => {
     <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
       <div className="text-center">
         <div className="w-full flex items-center flex-col">
-          <p className="flex size-16 shrink-0 items-center justify-center rounded-full bg-blue-100 sm:mx-0 sm:size-10 text-primary text-2xl">
-            {WELCOME_CONFIG.emoji}
-          </p>
+          <div className=" flex size-12 shrink-0 items-center justify-center rounded-full bg-blue-50 sm:mx-0 sm:size-10 text-primary">
+            <WELCOME_CONFIG.icon />
+          </div>
         </div>
 
         <div className="text-center sm:mt-0 sm:text-left w-full">

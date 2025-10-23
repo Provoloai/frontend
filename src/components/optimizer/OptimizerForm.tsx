@@ -2,8 +2,15 @@ import { motion } from "motion/react";
 import TextInputField from "../../Reusables/TextInputField";
 import CustomButton from "../../Reusables/CustomButton";
 import CustomSnackbar from "../../Reusables/CustomSnackbar";
-import { optimizerContainerVariants, optimizerItemVariants, optimizerCardVariants } from "@/constants/animations";
-import type { OptimizerFormData, OptimizerTouchedFields } from "@/types/optimizer";
+import {
+  optimizerContainerVariants,
+  optimizerItemVariants,
+  optimizerCardVariants,
+} from "@/constants/animations";
+import type {
+  OptimizerFormData,
+  OptimizerTouchedFields,
+} from "@/types/optimizer";
 
 interface OptimizerFormProps {
   formData: OptimizerFormData;
@@ -71,7 +78,8 @@ const OptimizerForm: React.FC<OptimizerFormProps> = ({
           required
           id="profileDescription"
           className={`w-full p-3 border rounded-md transition duration-150 ease-in-out bg-gray-50 placeholder:text-sm ${
-            error || (touched.description && !formData.profileDescription.trim())
+            error ||
+            (touched.description && !formData?.profileDescription?.trim())
               ? "ring-1 ring-red-600/10 ring-inset focus:ring-red-500 bg-red-50 placeholder-red-700"
               : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
           }`}
@@ -83,13 +91,18 @@ const OptimizerForm: React.FC<OptimizerFormProps> = ({
           onBlur={() => onBlur("description")}
         />
 
-        {(error || (touched.description && !formData.profileDescription.trim())) && (
+        {(error ||
+          (touched.description && !formData.profileDescription.trim())) && (
           <p className="text-xs text-red-700">Required</p>
         )}
       </motion.div>
 
       <motion.div variants={optimizerItemVariants}>
-        <CustomButton onClick={onSubmit} isLoading={isLoading} className="btn-primary">
+        <CustomButton
+          onClick={onSubmit}
+          isLoading={isLoading}
+          className="btn-primary"
+        >
           Run Optimization
         </CustomButton>
       </motion.div>

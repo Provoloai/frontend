@@ -16,7 +16,7 @@ const FeaturesContent: React.FC<FeaturesContentProps> = ({
   onVideoLoad,
 }) => {
   return (
-    <section className="lg:py-32 pt-20 lg:p-32 md:p-10 sm:px-0 px-5" id="features">
+    <section className="lg:p-28 pt-20 md:p-10 sm:px-0 px-5" id="features">
       <motion.div
         className="mx-auto max-w-full lg:max-w-[93.75rem] flex flex-col lg:gap-[102px] gap-[70px]"
         variants={FEATURES_ANIMATIONS.container}

@@ -30,7 +30,7 @@ export default function UserProfile() {
       animate="visible"
       variants={USER_PROFILE_ANIMATIONS.container}
     >
-      <div className="space-y-10 m-auto max-w-3xl w-full py-10">
+      <div className="space-y-10 m-auto max-w-3xl w-full p-10">
         <UserProfileHeader
           displayName={displayName}
           loadingUserData={loadingUserData}

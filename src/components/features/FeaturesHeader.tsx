@@ -5,7 +5,7 @@ import type { FeaturesHeaderProps } from "@/types/features";
 const FeaturesHeader: React.FC<FeaturesHeaderProps> = ({ config }) => {
   return (
     <motion.p
-      className="lg:w-[69%] w-full font-headingmd lg:text-3xl text-base"
+      className="lg:w-[75%] w-full font-headingmd lg:text-3xl text-base"
       variants={FEATURES_ANIMATIONS.fadeUp}
     >
       {config.intro.main}{" "}

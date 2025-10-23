@@ -21,7 +21,7 @@ const FooterHero: React.FC<FooterHeroProps> = ({ config }) => {
     >
       {/* Gradient Overlay */}
       <motion.div
-        className="absolute z-20 h-full left-0 w-full bg-gradient-to-b from-white/0 to-white/30 top-32 pointer-events-none"
+        className="absolute z-20 h-full left-0 w-full bg-gradient-to-b from-white/0 to-white/30 top-0 pointer-events-none"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1, transition: { duration: 0.8, delay: 0.3 } }}
       />
@@ -31,7 +31,7 @@ const FooterHero: React.FC<FooterHeroProps> = ({ config }) => {
         variants={FOOTER_ANIMATIONS.container}
       >
         <motion.h2
-          className="tracking-tight leading-tight text-balance lg:text-[44px] text-2xl font-headingmd text-white"
+          className="tracking-tight leading-tight text-balance lg:text-xl md:text-7xl text-4xl font-medium text-white"
           variants={FOOTER_ANIMATIONS.fadeUp}
         >
           {config.hero.title}

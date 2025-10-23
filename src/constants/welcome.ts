@@ -1,9 +1,11 @@
+import { Sparkle } from "lucide-react";
+
 export const WELCOME_CONFIG = {
-  title: "Welcome to Pro!",
-  message: "A big welcome to Provolo Premium, we're excited to have you onboard! 🎉",
+  title: "Welcome to Plus!",
+  message: "Enjoy Profile Optimizers and more.",
   continueText: "Continue",
   continueLink: "/optimizer",
-  emoji: "🥳",
+  icon: Sparkle,
 } as const;
 
 export const CONFETTI_CONFIG = {

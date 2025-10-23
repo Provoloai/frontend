@@ -17,7 +17,7 @@ export default function Learn() {
   return (
     <section className="flex-1 flex flex-col overflow-y-auto relative">
       <motion.div
-        className="w-full max-w-3xl mx-auto"
+        className="w-full max-w-3xl mx-auto px-10"
         initial="hidden"
         whileInView="visible"
         viewport={VIEWPORT_CONFIG}
