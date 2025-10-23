@@ -1,6 +1,6 @@
-import { useHeader } from "../../hooks/useHeader";
-import { HEADER_CONFIG } from "../../constants/header";
-import HeaderContent from "../../components/header/HeaderContent";
+import { useHeader } from "@/hooks/useHeader";
+import { HEADER_CONFIG } from "@/constants/header";
+import HeaderContent from "@/components/header/HeaderContent";
 
 export default function Header() {
   const { mobileMenuOpen, setMobileMenuOpen } = useHeader();

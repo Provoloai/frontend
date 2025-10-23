@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "motion/react";
-import { proSubscription } from "../../server/checkout";
-import { fetchTiers } from "../../server/tiers";
-import useSession from "../../hooks/useSession";
+import { proSubscription } from "@/server/checkout";
+import { fetchTiers } from "@/server/tiers";
+import useSession from "@/hooks/useSession";
 import { useState, useMemo } from "react";
 import {
   Loader2,

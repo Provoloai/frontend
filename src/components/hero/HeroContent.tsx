@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import LandingpageButton from "@/pages/landing/LandingpageButton";
+import LandingpageButton from "@/components/landing/LandingpageButton";
 import HeroFloatingImages from "./HeroFloatingImages";
 import { HERO_ANIMATIONS, HERO_STYLES } from "@/constants/hero";
 import type { HeroContentProps } from "@/types/hero";

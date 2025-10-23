@@ -1,9 +1,9 @@
 import { motion } from "motion/react";
 import { LANDING_PAGE_CONFIG, LANDING_PAGE_STYLES } from "@/constants/landingPage";
-import { Hero } from "./Hero";
-import Header from "./Header";
-import Features from "./Features";
-import Footer from "./Footer";
+import { Hero } from "@/components/landing/Hero";
+import Header from "@/components/landing/Header";
+import Features from "@/components/landing/Features";
+import Footer from "@/components/landing/Footer";
 import type { LandingPageProps } from "@/types/landingPage";
 
 const LandingPage: React.FC<LandingPageProps> = () => {
