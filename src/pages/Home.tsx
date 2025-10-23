@@ -1,14 +1,5 @@
-import { Hero } from './landing/Hero'
-import Features from './landing/Features'
-import Footer from './landing/Footer'
+import LandingPage from './landing/LandingPage';
 
-export default function Example() {
-
-  return (
-    <>
-      <Hero />
-      <Features />
-      <Footer />
-    </>
-  )
+export default function Home() {
+  return <LandingPage />;
 }

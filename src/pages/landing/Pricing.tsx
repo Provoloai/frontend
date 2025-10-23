@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "motion/react";
 import { proSubscription } from "../../server/checkout";
 import { fetchTiers } from "../../server/tiers";
@@ -7,15 +6,9 @@ import useSession from "../../hooks/useSession";
 import { useState, useMemo } from "react";
 import {
   Loader2,
-  Check,
   Zap,
   Target,
-  Users,
-  TrendingUp,
-  Shield,
-  Clock,
   Star,
-  Rocket,
   Award,
   Search,
   MessageSquare,
@@ -26,9 +19,10 @@ import {
   Sparkles,
   Globe,
 } from "lucide-react";
+import type { PricingTier, PricingFeature } from "@/types/pricing";
 
 // Icon mapping for different feature types
-const getFeatureIcon = (featureName) => {
+const getFeatureIcon = (featureName: string) => {
   const name = featureName.toLowerCase();
 
   if (name.includes("profile") || name.includes("optimization")) return Target;
@@ -49,7 +43,7 @@ const getFeatureIcon = (featureName) => {
 };
 
 // Enhanced Skeleton Components
-const SkeletonBox = ({ className = "", delay = 0 }) => (
+const SkeletonBox = ({ className = "", delay = 0 }: { className?: string; delay?: number }) => (
   <motion.div
     className={`bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 bg-[length:200%_100%] rounded-xl ${className}`}
     initial={{ opacity: 0, scale: 0.95 }}
@@ -91,7 +85,7 @@ const PricingSkeleton = () => {
       scale: 1,
       transition: {
         duration: 0.4,
-        ease: [0.25, 0.46, 0.45, 0.94],
+        ease: "easeOut" as const,
       },
     },
   };
@@ -198,7 +192,7 @@ const PricingSkeleton = () => {
 };
 
 // Transform backend tier to UI format
-const transformTierForUI = (tier) => ({
+const transformTierForUI = (tier: any): PricingTier => ({
   ...tier,
   id: tier.slug,
   priceMonthly: `$${(tier.price / 100).toFixed(2)}`,
@@ -206,7 +200,7 @@ const transformTierForUI = (tier) => ({
   href: "#",
 });
 
-function classNames(...classes) {
+function classNames(...classes: (string | undefined | null | false)[]): string {
   return classes.filter(Boolean).join(" ");
 }
 
@@ -231,11 +225,11 @@ export default function Pricing() {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [subscriptionError, setSubscriptionError] = useState("");
 
-  const checkout = async (polarRefId) => {
+  const checkout = async (polarRefId: string) => {
     setCheckoutLoading(true);
     setSubscriptionError("");
     try {
-      const paymentUrl = await proSubscription(polarRefId, user);
+      const paymentUrl = await proSubscription(polarRefId, user as any);
       if (paymentUrl) window.location.href = paymentUrl;
     } catch (error) {
       console.error("Subscription error:", error);
@@ -357,12 +351,12 @@ export default function Pricing() {
           const IconComponent = getFeatureIcon(tier.name);
 
           // Compute inherited and new features
-          let inherited = null;
-          let newFeatures = tier.features;
+          let inherited: string | null = null;
+          let newFeatures: PricingFeature[] = tier.features;
           if (tierIdx > 0) {
             const prevTier = displayTiers[tierIdx - 1];
-            const prevSlugs = new Set(prevTier.features.map((f) => f.slug));
-            newFeatures = tier.features.filter((f) => !prevSlugs.has(f.slug));
+            const prevSlugs = new Set(prevTier.features.map((f: PricingFeature) => f.slug));
+            newFeatures = tier.features.filter((f: PricingFeature) => !prevSlugs.has(f.slug));
             inherited = prevTier.name;
           }
 
@@ -397,12 +391,21 @@ export default function Pricing() {
                     "p-2 rounded-lg"
                   )}
                 >
-                  <IconComponent
-                    className={classNames(
-                      tier.featured ? "text-indigo-200" : "text-primary",
-                      "h-5 w-5"
-                    )}
-                  />
+                  {typeof IconComponent === 'function' ? (
+                    <IconComponent
+                      className={classNames(
+                        tier.featured ? "text-indigo-200" : "text-primary",
+                        "h-5 w-5"
+                      )}
+                    />
+                  ) : (
+                    <Star
+                      className={classNames(
+                        tier.featured ? "text-indigo-200" : "text-primary",
+                        "h-5 w-5"
+                      )}
+                    />
+                  )}
                 </div>
                 <h3
                   className={classNames(
@@ -467,7 +470,7 @@ export default function Pricing() {
                     <span>All features from {inherited}</span>
                   </li>
                 )}
-                {newFeatures.map((feature, index) => {
+                {newFeatures.map((feature: PricingFeature, index: number) => {
                   const FeatureIcon = getFeatureIcon(feature.name);
                   return (
                     <motion.li
@@ -487,12 +490,21 @@ export default function Pricing() {
                           "p-1 rounded-md"
                         )}
                       >
-                        <FeatureIcon
-                          className={classNames(
-                            tier.featured ? "text-gray-100" : "text-primary",
-                            "h-3 w-3"
-                          )}
-                        />
+                        {typeof FeatureIcon === 'function' ? (
+                          <FeatureIcon
+                            className={classNames(
+                              tier.featured ? "text-gray-100" : "text-primary",
+                              "h-3 w-3"
+                            )}
+                          />
+                        ) : (
+                          <Star
+                            className={classNames(
+                              tier.featured ? "text-gray-100" : "text-primary",
+                              "h-3 w-3"
+                            )}
+                          />
+                        )}
                       </div>
 
                       <span>{feature.name}</span>

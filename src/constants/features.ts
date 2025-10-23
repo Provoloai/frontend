@@ -9,8 +9,6 @@ export const FEATURES_CONFIG: FeaturesConfig = {
     main: "Provolo is an AI-powered copywriting platform built for freelancers on Upwork.",
     highlight: "It doesn't just write faster, it writes smarter, applying proven strategies to optimize your profile and proposals. The result? More visibility, more interviews, and more jobs, without the guesswork.",
   },
-  sectionTitle: "Why Provolo Works",
-  stepsTitle: "How Provolo Gets You Hired",
   features: [
     { id: 1, text: "Rank higher in Upwork search" },
     { id: 2, text: "Convert profile views into interviews" },
@@ -43,6 +41,7 @@ export const FEATURES_CONFIG: FeaturesConfig = {
       description: "Rank higher, get noticed, and turn views into conversations with client-focused copy.",
     },
   ],
+  sectionTitle: "How Provolo Gets You Hired",
 };
 
 export const FEATURES_ANIMATIONS = {
@@ -61,7 +60,7 @@ export const FEATURES_ANIMATIONS = {
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.4, ease: "easeOut" },
+      transition: { duration: 0.4, ease: [0.25, 0.1, 0.25, 1] as const },
     },
   },
   featureItem: {
@@ -69,7 +68,7 @@ export const FEATURES_ANIMATIONS = {
     visible: {
       opacity: 1,
       x: 0,
-      transition: { duration: 0.3, ease: "easeOut" },
+      transition: { duration: 0.3, ease: [0.25, 0.1, 0.25, 1] as const },
     },
   },
   card: {
@@ -77,10 +76,10 @@ export const FEATURES_ANIMATIONS = {
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.4, ease: "easeOut" },
+      transition: { duration: 0.4, ease: [0.25, 0.1, 0.25, 1] as const },
     },
   },
-  stepsContainer: {
+  stepContainer: {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,

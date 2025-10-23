@@ -15,14 +15,13 @@ export interface FeaturesConfig {
     main: string;
     highlight: string;
   };
-  sectionTitle: string;
-  stepsTitle: string;
   features: Feature[];
   steps: Step[];
+  sectionTitle: string;
 }
 
 export interface FeaturesState {
-  videosLoaded: Record<string, boolean>;
+  videosLoaded: Record<number, boolean>;
 }
 
 export interface FeaturesHeaderProps {
@@ -36,14 +35,12 @@ export interface FeaturesListProps {
 export interface FeaturesStepsProps {
   config: FeaturesConfig;
   videoRefs: React.MutableRefObject<(HTMLVideoElement | null)[]>;
-  videosLoaded: Record<string, boolean>;
-  setVideosLoaded: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+  onVideoLoad: (index: number) => void;
 }
 
 export interface FeaturesStepItemProps {
   step: Step;
   index: number;
-  videoRef: React.RefObject<HTMLVideoElement | null>;
-  isLoaded: boolean;
-  onLoad: (index: number) => void;
+  videoRef: (el: HTMLVideoElement | null) => void;
+  onVideoLoad: () => void;
 }

@@ -97,23 +97,6 @@ export interface FooterSectionProps {
   // No props needed as it's static content
 }
 
-// Banner component types
-export interface BannerProps {
-  // No props needed as it's static content
-}
-
-// Description component types
-export interface DescriptionFeature {
-  text: string;
-}
-
-export interface DescriptionContentProps {
-  features: DescriptionFeature[];
-}
-
-export interface DescriptionVideoProps {
-  videoSrc: string;
-}
 
 // Testimonials component types
 export interface TestimonialPost {
@@ -162,16 +145,6 @@ export interface PricingCardProps {
   onCheckout: (polarRefId: string) => void;
 }
 
-// How it works component types
-export interface HowItWorksStep {
-  title: string;
-  vidSrc: string;
-  description: string;
-}
-
-export interface HowItWorksContentProps {
-  steps: HowItWorksStep[];
-}
 
 // Common animation variants
 export interface AnimationVariants {
