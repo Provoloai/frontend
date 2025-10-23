@@ -1,10 +1,12 @@
 import { motion } from "motion/react";
+import { PopoverGroup } from "@headlessui/react";
 import HeaderLogo from "./HeaderLogo";
+import HeaderMobileButton from "./HeaderMobileButton";
 import HeaderCommunity from "./HeaderCommunity";
-import HeaderMobileMenuButton from "./HeaderMobileMenuButton";
-import HeaderCTA from "./HeaderCTA";
+import HeaderNavigation from "./HeaderNavigation";
+import HeaderLoginButton from "./HeaderLoginButton";
 import HeaderMobileMenu from "./HeaderMobileMenu";
-import { HEADER_ANIMATIONS } from "@/constants/header";
+import { HEADER_STYLES } from "@/constants/header";
 import type { HeaderContentProps } from "@/types/header";
 
 const HeaderContent: React.FC<HeaderContentProps> = ({
@@ -13,28 +15,29 @@ const HeaderContent: React.FC<HeaderContentProps> = ({
   setMobileMenuOpen,
 }) => {
   return (
-    <motion.header
-      className="bg-transparent lg:pt-10 md:pt-8 pt-10 fixed z-20 w-screen px-5"
-      variants={HEADER_ANIMATIONS.header}
-      initial="hidden"
-      animate="visible"
-    >
+    <>
       <motion.nav
         aria-label="Global"
-        className="mx-auto flex max-w-[906.67px] items-center justify-between lg:p-[15px] py-2 px-4 bg-white rounded-full"
+        className={HEADER_STYLES.nav}
       >
-        <HeaderLogo config={config} />
-        <HeaderMobileMenuButton onClick={() => setMobileMenuOpen(true)} />
-        <HeaderCommunity config={config} />
-        <HeaderCTA config={config} />
+        <HeaderLogo />
+
+        <HeaderMobileButton onClick={() => setMobileMenuOpen(true)} />
+
+        <PopoverGroup className={HEADER_STYLES.navigation}>
+          <HeaderCommunity config={config} />
+          <HeaderNavigation config={config} />
+        </PopoverGroup>
+
+        <HeaderLoginButton />
       </motion.nav>
 
       <HeaderMobileMenu
-        config={config}
         isOpen={mobileMenuOpen}
         onClose={() => setMobileMenuOpen(false)}
+        config={config}
       />
-    </motion.header>
+    </>
   );
 };
 

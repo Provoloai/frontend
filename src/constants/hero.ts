@@ -127,7 +127,7 @@ export const HERO_ANIMATIONS = {
 } as const;
 
 export const HERO_STYLES = {
-  container: "min-h-screen lg:h-screen h-[800px] overflow-hidden relative bg-light flex flex-col items-center justify-center",
+  container: "min-h-screen lg:h-screen h-[800px] overflow-hidden relative bg-light flex flex-col items-center justify-center pt-20 lg:pt-24",
   content: "relative isolate px-6 lg:px-8 z-10 lg:pb-0 pb-44",
   inner: "mx-auto max-w-[75rem] flex flex-col lg:gap-[60px] gap-[100px]",
   textContainer: "text-center lg:w-[629px] mx-auto flex flex-col lg:gap-[20px] gap-[20px] relative items-center",
