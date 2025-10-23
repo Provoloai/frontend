@@ -1,5 +1,4 @@
-import React from 'react'
-import ComingSoon from '../../Reusables/ComingSoon'
+import ComingSoon from '@/Reusables/ComingSoon'
 
 export const Resume = () => {
   return (

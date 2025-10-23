@@ -1,15 +1,21 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
+import path from "path";
 
 const ReactCompilerConfig = {
   target: "19",
 };
 
 export default defineConfig(() => ({
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "src"),
+    },
+  },
   build: {
     sourcemap: false,
-    minify: "terser",
+    minify: "terser" as const,
     terserOptions: {
       compress: { drop_console: true, drop_debugger: true },
       mangle: true,
@@ -22,7 +28,7 @@ export default defineConfig(() => ({
     },
   },
   optimizeDeps: {
-    include: ['@tanstack/react-router'],
+    include: ["@tanstack/react-router"],
   },
   plugins: [
     tanstackRouter({ target: "react" }),
