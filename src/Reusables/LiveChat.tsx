@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { Send, Paperclip, X, MessageCircle, Minimize2 } from 'lucide-react';
 
 interface FormData {
