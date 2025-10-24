@@ -21,6 +21,17 @@ const WelcomeContent: React.FC<WelcomeContentProps> = ({ onContinue }) => {
             {WELCOME_CONFIG.message}
           </p>
 
+          {WELCOME_CONFIG.features && (
+            <ul className="text-sm text-gray-600 space-y-2 mb-6 text-left inline-block">
+              {WELCOME_CONFIG.features.map((feature, index) => (
+                <li key={index} className="flex items-center space-x-2">
+                  <span><WELCOME_CONFIG.featureIcon /></span>
+                  <span>{feature}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+
           <Link
             to={WELCOME_CONFIG.continueLink}
             onClick={onContinue}
