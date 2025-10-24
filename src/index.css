@@ -57,14 +57,14 @@
 }
 
 .homeBg {
-  background-image: url(@/assets/img/hero.png);
+  background-image: url("@/assets/img/hero.png");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: bottom;
 }
 
 .feedback {
-  background-image: url(@/assets/img/feedback.jpg);
+  background-image: url("@/assets/img/feedback.jpg");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: top;
