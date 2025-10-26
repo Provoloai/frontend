@@ -28,7 +28,7 @@ export const HEADER_CONFIG: HeaderConfig = {
   navigation: [
     { name: "Features", href: "#features", isExternal: false },
     { name: "FAQs", href: "https://buildsbyesuoladaniel.hashnode.space/provolo/faqs", isExternal: true },
-    { name: "Notes", href: "https://provoloai.substack.com/", isExternal: true },
+    { name: "Blog", href: "https://provoloai.substack.com/", isExternal: true },
   ],
 };
 
