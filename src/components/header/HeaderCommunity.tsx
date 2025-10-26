@@ -51,7 +51,7 @@ const HeaderCommunity: React.FC<HeaderCommunityProps> = ({ config }) => {
     <Popover className="relative">
       <motion.div variants={navItemVariants}>
         <PopoverButton className="focus:outline-none flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900 hover:text-primary transition-colors duration-200">
-          Community
+          Resources
           <motion.div
             animate={{ rotate: 0 }}
             whileHover={{ rotate: 180 }}
