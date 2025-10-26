@@ -56,15 +56,8 @@
   animation: spin 1s linear infinite;
 }
 
-.homeBg {
-  background-image: url(../src/assets/img/hero.png);
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: bottom;
-}
-
 .feedback {
-  background-image: url(../src/assets/img/feedback.jpg);
+  background-image: url(./assets/img/feedback.jpg);
   background-size: cover;
   background-repeat: no-repeat;
   background-position: top;
