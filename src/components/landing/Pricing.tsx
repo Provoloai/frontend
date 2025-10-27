@@ -563,7 +563,7 @@ export default function Pricing() {
                   >
                     <span className="flex items-center justify-center gap-2">
                       {checkoutLoading ? <Loader2 className="animate-spin h-4 w-4" /> : null}
-                      Get started today
+                      Get Plus 
                     </span>
                   </motion.button>
                 )}

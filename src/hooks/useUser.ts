@@ -20,7 +20,7 @@ export const useUser = (userData: any) => {
     [userData]
   );
 
-  const isPro = useMemo(() => userData?.tierId === "pro", [userData?.tierId]);
+  const isPro = useMemo(() => userData?.tierId === "plus", [userData?.tierId]);
 
   // Optimized subscription portal handler
   const openSubscriptionPortal = useCallback(async () => {

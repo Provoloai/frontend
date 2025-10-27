@@ -11,7 +11,7 @@ export const WELCOME_CONFIG = {
     "Freelancer Growth Tools"
   ],
   continueText: "Continue",
-  continueLink: "/optimizer",
+  continueLink: "/proposal",
   icon: Sparkle,
   featureIcon: Check,
 } as const;
