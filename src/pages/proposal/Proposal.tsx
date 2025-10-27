@@ -225,11 +225,10 @@ const PortfolioOptimizer: React.FC = () => {
               <textarea
                 required
                 id="jobSummary"
-                className={`w-full p-3 border rounded-md transition duration-150 ease-in-out bg-gray-50 placeholder:text-sm ${
-                  error || (touched.description && !jobSummary.trim())
+                className={`w-full p-3 border rounded-md transition duration-150 ease-in-out bg-gray-50 placeholder:text-sm ${error || (touched.description && !jobSummary.trim())
                     ? "ring-1 ring-red-600/10 ring-inset focus:ring-red-500 bg-red-50 placeholder-red-700"
                     : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                }`}
+                  }`}
                 rows={8}
                 style={{ maxHeight: "28em", resize: "vertical" }}
                 placeholder="Paste Job Summary here..."
@@ -387,7 +386,7 @@ const PortfolioOptimizer: React.FC = () => {
                   Cooking up your proposal...
                 </h3>
                 <p className="text-base leading-tight text-center w-2/3 mx-auto text-gray-400">
-                  Our AI is crafting a personalized proposal just for you
+                  Provolo is crafting a personalized proposal just for you
                 </p>
               </div>
             ) : (
@@ -446,27 +445,27 @@ const PortfolioOptimizer: React.FC = () => {
                 className="grid grid-cols-2 grid-rows-2 gap-5"
                 variants={proposalContainerVariants}
               >
-                 {improvementOptions.map((option, index) => (
-                   <motion.div key={index} variants={proposalItemVariants}>
-                     <button
-                       onClick={() => {
-                         // TODO: Implement improvement action
-                         console.log(`Improve proposal: ${option.title}`);
-                       }}
-                       className={`p-5 rounded-2xl transition-all duration-200 ${option.bgColor} ${option.hoverColor} py-[24px] px-5 block w-full text-left`}
-                     >
-                       <span className="flex items-center align-middle gap-2 mb-3">
-                         <option.icon size={16} />
-                         <p className="font-medium">{option.title}</p>
-                       </span>
-                       <span>
-                         <p className="font-thin text-sm">
-                           {option.description}
-                         </p>
-                       </span>
-                     </button>
-                   </motion.div>
-                 ))}
+                {improvementOptions.map((option, index) => (
+                  <motion.div key={index} variants={proposalItemVariants}>
+                    <button
+                      onClick={() => {
+                        // TODO: Implement improvement action
+                        console.log(`Improve proposal: ${option.title}`);
+                      }}
+                      className={`p-5 rounded-2xl transition-all duration-200 ${option.bgColor} ${option.hoverColor} py-[24px] px-5 block w-full text-left`}
+                    >
+                      <span className="flex items-center align-middle gap-2 mb-3">
+                        <option.icon size={16} />
+                        <p className="font-medium">{option.title}</p>
+                      </span>
+                      <span>
+                        <p className="font-thin text-sm">
+                          {option.description}
+                        </p>
+                      </span>
+                    </button>
+                  </motion.div>
+                ))}
               </motion.div>
             </div>
 

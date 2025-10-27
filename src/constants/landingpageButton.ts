@@ -8,7 +8,7 @@ export const LANDINGPAGE_BUTTON_CONFIG: LandingpageButtonConfig = {
   },
   sizes: {
     sm: "py-2 px-4 text-xs w-[140px] h-[36px]",
-    md: "py-[18px] px-[24px] text-sm w-[180px] h-[44px]",
+    md: "py-[18px] px-[30px] text-sm w-[180px] h-[45px]",
     lg: "py-4 px-8 text-base w-[220px] h-[52px]",
   },
   base: "transition-all duration-300 rounded-full text-center align-middle flex justify-center items-center font-medium",
