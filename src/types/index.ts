@@ -35,6 +35,7 @@ export interface TouchedFields {
   name: boolean;
   title: boolean;
   description: boolean;
+  tone: boolean;
   profileLink?: boolean;
 }
 
