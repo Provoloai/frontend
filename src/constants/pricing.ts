@@ -24,7 +24,7 @@ export const PRICING_CONFIG: PricingConfig = {
   },
   buttons: {
     tryAgain: "Try Again",
-    getStarted: "Get started today",
+    getStarted: "Get Plus",
     currentPlan: "Current plan",
   },
 };
