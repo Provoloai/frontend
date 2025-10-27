@@ -78,11 +78,13 @@ const PortfolioOptimizer: React.FC = () => {
     name: false,
     title: false,
     description: false,
+    tone: false,
   });
 
   // Function to call the AI model
   const generateProposal = useCallback(async (): Promise<void> => {
     if (!clientName.trim() || !proposalTone || !jobSummary.trim()) {
+      setTouched({ name: true, title: false, description: true, tone: true });
       setError("Please fill in all required fields");
       return;
     }
@@ -123,7 +125,7 @@ const PortfolioOptimizer: React.FC = () => {
           copyTimeoutRef.current = null;
         }, 2000);
       }
-    } catch (error) {
+    } catch {
       setCopyState("idle");
     }
   }, [copyState, generatedProposal?.mdx]);
@@ -188,7 +190,12 @@ const PortfolioOptimizer: React.FC = () => {
                 </label>
                 <MenuButton
                   id="proposal-tone-selector"
-                  className="capitalize inline-flex w-full gap-x-1.5 rounded-md px-3 py-4 text-sm text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset bg-gray-50 duration-200 transition-all hover:bg-gray-100"
+                  onClick={() => setTouched((prev) => ({ ...prev, tone: true }))}
+                  className={`capitalize inline-flex w-full gap-x-1.5 rounded-md px-3 py-4 text-sm text-gray-900 shadow-xs ring-1 duration-200 transition-all ${
+                    (error && !proposalTone) || (touched.tone && !proposalTone)
+                      ? "ring-red-600/10 ring-inset bg-red-50 hover:bg-red-100"
+                      : "ring-gray-300 ring-inset bg-gray-50 hover:bg-gray-100"
+                  }`}
                   aria-label="Select proposal tone"
                 >
                   {proposalTone ?? "Select Option"}
@@ -197,6 +204,9 @@ const PortfolioOptimizer: React.FC = () => {
                     className="ml-auto size-5 text-gray-400"
                   />
                 </MenuButton>
+                {((error && !proposalTone) || (touched.tone && !proposalTone)) && (
+                  <p className="text-xs text-red-700 mt-1">Required</p>
+                )}
                 <MenuItems
                   transition
                   className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-none data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
