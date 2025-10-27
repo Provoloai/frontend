@@ -50,7 +50,7 @@ const FooterHero: React.FC<FooterHeroProps> = ({ config }) => {
             whileTap={FOOTER_ANIMATIONS.ctaTap}
           >
             <Link
-              to={config.hero.ctaLink}
+              to={config.hero.ctaLink} 
               className="bg-white hover:bg-white/90 transition-all duration-200 py-[18px] px-[30px] rounded-full mx-auto w-[180px] h-[45px] flex items-center justify-center text-sm text-black font-headingmd"
             >
               {config.hero.ctaText}
