@@ -56,12 +56,12 @@
   animation: spin 1s linear infinite;
 }
 
-.homeBg {
+/* .homeBg {
   background-image: url("@/assets/img/hero.png");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: bottom;
-}
+} */
 
 .feedback {
   background-image: url("@/assets/img/feedback.jpg");
