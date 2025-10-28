@@ -5,7 +5,7 @@ import Header from "@/components/landing/Header";
 import Features from "@/components/landing/Features";
 import Footer from "@/components/landing/Footer";
 import type { LandingPageProps } from "@/types/landingPage";
-import LiveChat from "@/Reusables/LiveChat";
+// import LiveChat from "@/Reusables/LiveChat";
 
 const LandingPage: React.FC<LandingPageProps> = () => {
   return (
@@ -19,7 +19,7 @@ const LandingPage: React.FC<LandingPageProps> = () => {
       <main className={LANDING_PAGE_STYLES.main}>
         <Hero />
         <Features />
-        <LiveChat />
+        {/* <LiveChat /> */}
       </main>
       <Footer />
     </motion.div>
