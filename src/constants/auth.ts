@@ -30,7 +30,7 @@ export const PASSWORD_REQUIREMENTS = [
 
 export const USERNAME_CONFIG = {
   title: "What should we call you?",
-  placeholder: "danielafriheart",
+  placeholder: "John Doe",
   submitText: "Continue",
   loadingText: "Updating...",
   maxLength: 32,
