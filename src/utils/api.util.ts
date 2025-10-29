@@ -16,21 +16,47 @@ interface ApiRequestOptions extends RequestInit {
   body?: string;
 }
 
+// Generic API functions for common operations
+export const apiGet = (
+  endpoint: string,
+  options?: ApiRequestOptions
+): Promise<any> => makeApiRequest(endpoint, options);
+
+export const apiPost = (endpoint: string, data: any): Promise<any> =>
+  makeApiRequest(endpoint, {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+
+export const apiPut = (endpoint: string, data: any): Promise<any> =>
+  makeApiRequest(endpoint, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+
+export const apiDelete = (endpoint: string): Promise<any> =>
+  makeApiRequest(endpoint, {
+    method: "DELETE",
+  });
+
 // Generic API request function
-const makeApiRequest = async (endpoint: string, options: ApiRequestOptions = {}): Promise<any> => {
+const makeApiRequest = async (
+  endpoint: string,
+  options: ApiRequestOptions = {}
+): Promise<any> => {
   if (!import.meta.env.VITE_SERVER_URL) {
     throw new Error("Server configuration error");
   }
 
   const url = `${import.meta.env.VITE_SERVER_URL}${endpoint}`;
-  
+
   const defaultOptions: ApiRequestOptions = {
-    method: "GET",
-    headers: {
+    method: options.method || "GET",
+    headers: options.headers || {
       "Content-Type": "application/json",
     },
-    credentials: "include" as RequestCredentials,
-    ...options,
+    credentials: options.credentials || ("include" as RequestCredentials),
+    body: options.body || undefined,
   };
 
   try {
@@ -53,17 +79,17 @@ const makeApiRequest = async (endpoint: string, options: ApiRequestOptions = {})
 // Updates the user's username via backend API
 export const updateUserDisplayName = async (username: string): Promise<any> => {
   const sanitizedUsername = sanitizeInput(username);
-  
+
   if (!sanitizedUsername) {
     throw new Error("Username is required");
   }
-  
+
   if (!/^[a-zA-Z0-9_\- ]{3,32}$/.test(sanitizedUsername)) {
     throw new Error(
       "Username must be 3-32 characters and contain only letters, numbers, underscores, hyphens, and spaces"
     );
   }
-  
+
   return makeApiRequest("/auth/update-username", {
     method: "PUT",
     body: JSON.stringify({ username: sanitizedUsername }),
@@ -75,17 +101,3 @@ export const refreshUserSession = async (): Promise<any> => {
   const data = await makeApiRequest("/auth/verify");
   return data?.data || null;
 };
-
-// Generic API functions for common operations
-export const apiGet = (endpoint: string): Promise<any> => makeApiRequest(endpoint);
-export const apiPost = (endpoint: string, data: any): Promise<any> => makeApiRequest(endpoint, {
-  method: "POST",
-  body: JSON.stringify(data),
-});
-export const apiPut = (endpoint: string, data: any): Promise<any> => makeApiRequest(endpoint, {
-  method: "PUT", 
-  body: JSON.stringify(data),
-});
-export const apiDelete = (endpoint: string): Promise<any> => makeApiRequest(endpoint, {
-  method: "DELETE",
-});
