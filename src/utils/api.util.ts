@@ -101,18 +101,3 @@ export const refreshUserSession = async (): Promise<any> => {
   const data = await makeApiRequest("/auth/verify");
   return data?.data || null;
 };
-
-export const getAIProposalHistory = async ({
-  page,
-  limit,
-  query,
-}: {
-  page: number;
-  limit: number;
-  query: string;
-}): Promise<any> => {
-  const data = await apiGet(
-    `/ai/proposal-history?page=${page}&limit=${limit}&query=${query}`
-  );
-  return data;
-};
