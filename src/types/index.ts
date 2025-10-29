@@ -37,6 +37,7 @@ export interface TouchedFields {
   description: boolean;
   tone: boolean;
   profileLink?: boolean;
+  jobTitle? : boolean;
 }
 
 export interface ImprovementOption {
