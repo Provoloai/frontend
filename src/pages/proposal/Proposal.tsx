@@ -24,15 +24,17 @@ import {
 } from "@/constants/animations";
 import type { ProposalData, TouchedFields, ImprovementOption } from "@/types";
 import type { ProposalTone } from "@/types/proposal";
+import { useQueryClient } from "@tanstack/react-query";
 
 const PortfolioOptimizer: React.FC = () => {
   const [clientName, setClientName] = useState<string>("");
+  const [jobTitle, setJobTitle] = useState<string>("");
   const [proposalTone, setProposalTone] = useState<ProposalTone | null>(null);
   const [jobSummary, setJobSummary] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [copyState, setCopyState] = useState<"idle" | "copied">("idle");
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
+  const queryClient = useQueryClient();
   // State variables for output from the AI
   const [generatedProposal, setGeneratedProposal] =
     useState<ProposalData | null>(null);
@@ -79,12 +81,19 @@ const PortfolioOptimizer: React.FC = () => {
     title: false,
     description: false,
     tone: false,
+    jobTitle: false,
   });
 
   // Function to call the AI model
   const generateProposal = useCallback(async (): Promise<void> => {
     if (!clientName.trim() || !proposalTone || !jobSummary.trim()) {
-      setTouched({ name: true, title: false, description: true, tone: true });
+      setTouched({
+        name: true,
+        title: false,
+        description: true,
+        tone: true,
+        jobTitle: true,
+      });
       setError("Please fill in all required fields");
       return;
     }
@@ -98,8 +107,12 @@ const PortfolioOptimizer: React.FC = () => {
         client_name: clientName.trim(),
         proposal_tone: proposalTone!,
         job_summary: jobSummary.trim(),
+        job_title: jobTitle.trim(),
       });
       setGeneratedProposal(data.data);
+      await queryClient.invalidateQueries({
+        queryKey: ["proposal-history"],
+      });
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error
@@ -167,7 +180,7 @@ const PortfolioOptimizer: React.FC = () => {
         >
           {/* Form Inputs Section */}
           <motion.section
-            className="p-5 bg-white rounded-lg border border-gray-200"
+            className="p-5 bg-white rounded-lg border border-gray-200 space-y-4"
             variants={proposalCardVariants}
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -176,8 +189,8 @@ const PortfolioOptimizer: React.FC = () => {
                 label="Client's Name (Personal Touch)"
                 placeholder="John Doe"
                 value={clientName}
-                onChange={(e) => setClientName(e.target.value)}
-                onBlur={() => setTouched((prev) => ({ ...prev, name: true }))}
+                onChange={e => setClientName(e.target.value)}
+                onBlur={() => setTouched(prev => ({ ...prev, name: true }))}
                 touched={touched.name || !!error}
                 required
               />
@@ -190,7 +203,7 @@ const PortfolioOptimizer: React.FC = () => {
                 </label>
                 <MenuButton
                   id="proposal-tone-selector"
-                  onClick={() => setTouched((prev) => ({ ...prev, tone: true }))}
+                  onClick={() => setTouched(prev => ({ ...prev, tone: true }))}
                   className={`capitalize inline-flex w-full gap-x-1.5 rounded-md px-3 py-4 text-sm text-gray-900 shadow-xs ring-1 duration-200 transition-all ${
                     (error && !proposalTone) || (touched.tone && !proposalTone)
                       ? "ring-red-600/10 ring-inset bg-red-50 hover:bg-red-100"
@@ -204,7 +217,8 @@ const PortfolioOptimizer: React.FC = () => {
                     className="ml-auto size-5 text-gray-400"
                   />
                 </MenuButton>
-                {((error && !proposalTone) || (touched.tone && !proposalTone)) && (
+                {((error && !proposalTone) ||
+                  (touched.tone && !proposalTone)) && (
                   <p className="text-xs text-red-700 mt-1">Required</p>
                 )}
                 <MenuItems
@@ -212,7 +226,7 @@ const PortfolioOptimizer: React.FC = () => {
                   className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-none data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
                 >
                   <div className="py-1">
-                    {proposalToneOptions.map((tone) => (
+                    {proposalToneOptions.map(tone => (
                       <MenuItem key={tone.value}>
                         <button
                           onClick={() => setProposalTone(tone.value)}
@@ -227,6 +241,19 @@ const PortfolioOptimizer: React.FC = () => {
               </Menu>
             </div>
 
+            <div>
+              <TextInputField
+                id="jobTitle"
+                label="Job Title"
+                placeholder="Job Title"
+                value={jobTitle}
+                onChange={e => setJobTitle(e.target.value)}
+                onBlur={() => setTouched(prev => ({ ...prev, jobTitle: true }))}
+                touched={touched.jobTitle || !!error}
+                required
+              />
+            </div>
+
             <div className="mb-4">
               <label htmlFor="jobSummary" className="block text-sm mb-2">
                 Job Summary
@@ -235,17 +262,18 @@ const PortfolioOptimizer: React.FC = () => {
               <textarea
                 required
                 id="jobSummary"
-                className={`w-full p-3 border rounded-md transition duration-150 ease-in-out bg-gray-50 placeholder:text-sm ${error || (touched.description && !jobSummary.trim())
+                className={`w-full p-3 border rounded-md transition duration-150 ease-in-out bg-gray-50 placeholder:text-sm ${
+                  error || (touched.description && !jobSummary.trim())
                     ? "ring-1 ring-red-600/10 ring-inset focus:ring-red-500 bg-red-50 placeholder-red-700"
                     : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                  }`}
+                }`}
                 rows={8}
                 style={{ maxHeight: "28em", resize: "vertical" }}
                 placeholder="Paste Job Summary here..."
                 value={jobSummary}
-                onChange={(e) => setJobSummary(e.target.value)}
+                onChange={e => setJobSummary(e.target.value)}
                 onBlur={() =>
-                  setTouched((prev) => ({ ...prev, description: true }))
+                  setTouched(prev => ({ ...prev, description: true }))
                 }
               />
               {(error || (touched.description && !jobSummary.trim())) && (
@@ -409,9 +437,13 @@ const PortfolioOptimizer: React.FC = () => {
                     <CustomButton
                       onClick={copyToClipboard}
                       className="btn-secondary p-0 w-fit h-fit border border-gray-300 hover:border-gray-400 flex items-center"
-                      aria-label={copyState === 'copied' ? 'Copied to clipboard' : 'Copy proposal to clipboard'}
+                      aria-label={
+                        copyState === "copied"
+                          ? "Copied to clipboard"
+                          : "Copy proposal to clipboard"
+                      }
                     >
-                      {copyState === 'copied' ? (
+                      {copyState === "copied" ? (
                         <Check size={18} className="text-black" />
                       ) : (
                         <Copy size={18} className="text-black" />
@@ -496,7 +528,7 @@ const PortfolioOptimizer: React.FC = () => {
                   className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-none data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
                 >
                   <div className="py-1">
-                    {proposalToneOptions.map((tone) => (
+                    {proposalToneOptions.map(tone => (
                       <MenuItem key={tone.value}>
                         <button
                           onClick={() => setProposalTone(tone.value)}

@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, JSX } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import Logo from "./Logo";
 import { Link, useRouterState } from "@tanstack/react-router";
@@ -13,24 +13,48 @@ import {
   MessageSquareMore,
 } from "lucide-react";
 import UserProfile from "../pages/user/User";
+import { proposalHistory } from "@/data";
+import { useGetProposalList } from "@/api";
+
+interface Badge {
+  text: string;
+  color: "green" | "blue";
+}
+
+interface NavItem {
+  to: string;
+  icon: JSX.Element;
+  label: string;
+  badge?: Badge;
+  external?: boolean;
+}
+
+
 
 const Sidebar = () => {
   const location = useRouterState({ select: (s) => s.location });
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState<boolean>(true);
+  const [proposalDropdownOpen, setProposalDropdownOpen] = useState<boolean>(false);
 
-  const isActive = useCallback((path) => location.pathname === path, [location.pathname]);
+  
+
+  const isActive = useCallback(
+    (path: string): boolean => location.pathname === path,
+    [location.pathname]
+  );
 
   const linkClass = useCallback(
-    (path) =>
-      `relative group flex items-center rounded-md transition-all duration-200 ${isActive(path)
-        ? "bg-gray-50 text-[#0c54f2]"
-        : "text-gray-500 hover:bg-gray-50 hover:text-gray-950"
+    (path: string): string =>
+      `relative group flex items-center rounded-md transition-all duration-200 ${
+        isActive(path)
+          ? "bg-gray-50 text-[#0c54f2]"
+          : "text-gray-500 hover:bg-gray-50 hover:text-gray-950"
       } ${isOpen ? "p-3 gap-3" : "p-3 justify-center"}`,
     [isActive, isOpen]
   );
 
   // Memoize navigation items
-  const navItems = useMemo(
+  const navItems = useMemo<NavItem[]>(
     () => [
       {
         to: "/optimizer",
@@ -52,7 +76,7 @@ const Sidebar = () => {
     []
   );
 
-  const upskillItems = useMemo(
+  const upskillItems = useMemo<NavItem[]>(
     () => [
       {
         to: "/learn",
@@ -69,7 +93,7 @@ const Sidebar = () => {
     []
   );
 
-  const feedbackItems = useMemo(
+  const feedbackItems = useMemo<NavItem[]>(
     () => [
       {
         to: "https://forms.gle/vWUuG7tu1HU2ksuT8",
@@ -81,12 +105,21 @@ const Sidebar = () => {
     []
   );
 
-  const toggleSidebar = useCallback(() => setIsOpen((prev) => !prev), []);
+  const toggleSidebar = useCallback((): void => setIsOpen((prev) => !prev), []);
+
+  const handleProposalClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>): void => {
+    // Don't prevent default - allow navigation to /proposal
+    setProposalDropdownOpen((prev) => !prev);
+  }, []);
+
+  const handleOtherItemClick = useCallback((): void => {
+    setProposalDropdownOpen(false);
+  }, []);
 
   const renderBadge = useCallback(
-    (badge) => {
+    (badge?: Badge): JSX.Element | null => {
       if (!badge || !isOpen) return null;
-      const colors = {
+      const colors: Record<Badge["color"], string> = {
         green: "bg-green-50 text-green-700 ring-green-600/10",
         blue: "bg-blue-50 text-blue-700 ring-blue-600/10",
       };
@@ -106,7 +139,9 @@ const Sidebar = () => {
   );
 
   const renderLink = useCallback(
-    ({ to, icon, label, badge, external }) => {
+    ({ to, icon, label, badge, external }: NavItem): JSX.Element => {
+      const isProposalLink = to === "/proposal";
+
       const content = (
         <>
           <span className="shrink-0">{icon}</span>
@@ -137,26 +172,77 @@ const Sidebar = () => {
         to,
         className: `${linkClass(to)} ${isOpen ? "gap-3" : "justify-center"}`,
         ...(external && { target: "_blank", rel: "noopener noreferrer" }),
+        ...(isProposalLink && { onClick: handleProposalClick }),
+        ...(!isProposalLink && !external && { onClick: handleOtherItemClick }),
       };
+const {data:proposalHistory} = useGetProposalList()
+
+
 
       return (
-        <motion.div
-          key={label}
-          whileHover={{ x: 2 }}
-          whileTap={{ scale: 0.98 }}
-          transition={{ duration: 0.15 }}
-        >
-          <Link {...linkProps}>{content}</Link>
-        </motion.div>
+        <div key={label}>
+          <motion.div
+            whileHover={{ x: 2 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ duration: 0.15 }}
+          >
+            <Link {...linkProps}>{content}</Link>
+          </motion.div>
+
+          {/* Proposal History Dropdown */}
+          {isProposalLink && (
+            <AnimatePresence>
+              {proposalDropdownOpen && isOpen && (
+                <motion.div
+                  className="ml-6 mt-1 space-y-1 relative"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {/* Vertical timeline line */}
+                  <div className="absolute left-3 top-2 bottom-2 w-px bg-gray-200" />
+                  
+                  {proposalHistory?.data?.proposals?.map((item: any) => {
+                    const historyPath = `/proposalHistory/${item.id}`;
+                    const isHistoryActive = location.pathname === historyPath;
+                    
+                    return (
+                      <div key={item.id} className="relative flex items-start">
+                        {/* Timeline dot */}
+                        <div className={`absolute left-3 top-[0.85rem] w-1.5 h-1.5 rounded-full -translate-x-1/2 transition-colors duration-200 ${
+                          isHistoryActive ? 'bg-[#0c54f2]' : 'bg-gray-300'
+                        }`} />
+                        
+                        <Link
+                          to={historyPath}
+                          className={`block pl-6 pr-3 py-2 text-sm rounded-md transition-all duration-200 flex-1 truncate ${
+                            isHistoryActive
+                              ? 'bg-gray-50 text-[#0c54f2]'
+                              : 'text-gray-600 hover:text-gray-950 hover:bg-gray-50'
+                          }`}
+                          params={{ proposalId: item.id }}
+                        >
+                          {item.jobTitle}
+                        </Link>
+                      </div>
+                    );
+                  })}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          )}
+        </div>
       );
     },
-    [isOpen, linkClass, renderBadge]
+    [isOpen, linkClass, renderBadge, proposalDropdownOpen, handleProposalClick, handleOtherItemClick, proposalHistory]
   );
 
   return (
     <motion.div
-      className={`relative h-screen flex flex-col border-r border-gray-200 text-sm bg-white ${isOpen ? "w-72 p-6" : "w-20 p-3 py-6"
-        }`}
+      className={`relative h-screen flex flex-col border-r border-gray-200 text-sm bg-white ${
+        isOpen ? "w-72 p-6" : "w-20 p-3 py-6"
+      }`}
       animate={{ width: isOpen ? 288 : 80 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
     >

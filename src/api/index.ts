@@ -1,3 +1,6 @@
+import { apiGet } from "@/utils/api.util";
+import { useQuery } from "@tanstack/react-query";
+
 // API base configuration
 const API_BASE_URL = import.meta.env.VITE_SERVER_URL;
 
@@ -39,6 +42,7 @@ export const proposalApi = {
     client_name: string;
     proposal_tone: string;
     job_summary: string;
+    job_title: string;
   }) => {
     return apiRequest<{ data: any }>("/ai/generate-proposal", {
       method: "POST",
@@ -81,6 +85,21 @@ export const authApi = {
       body: JSON.stringify({ username }),
     });
   },
+};
+
+export const useGetProposalList = (page: number = 1, limit: number = 10) => {
+  return useQuery({
+    queryKey: ['proposal-history', page, limit],
+    queryFn: () => apiGet(`/ai/proposal-history?page=${page}&limit=${limit}`),
+  });
+};
+
+export const useGetProposal = (id: string) => {
+  return useQuery({
+    queryKey: ['proposal-history', id],
+    queryFn: () => apiGet(`/ai/proposal-history/${id}`),
+    enabled: !!id, // Only run query if id exists
+  });
 };
 
 // Export the generic API request function for custom use cases
