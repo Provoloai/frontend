@@ -26,6 +26,7 @@ import { Route as SidebarlayoutProtectedLearnRouteImport } from './routes/_sideb
 import { Route as SidebarlayoutProtectedExampleRouteImport } from './routes/_sidebarlayout._protected/example'
 import { Route as AuthProtectSignupRouteImport } from './routes/_auth/_protect.signup'
 import { Route as AuthProtectLoginRouteImport } from './routes/_auth/_protect.login'
+import { Route as SidebarlayoutProtectedProposalHistoryProposalIdRouteImport } from './routes/_sidebarlayout._protected/proposalHistory/$proposalId'
 
 const WelcomeRoute = WelcomeRouteImport.update({
   id: '/welcome',
@@ -116,6 +117,12 @@ const AuthProtectLoginRoute = AuthProtectLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AuthProtectRoute,
 } as any)
+const SidebarlayoutProtectedProposalHistoryProposalIdRoute =
+  SidebarlayoutProtectedProposalHistoryProposalIdRouteImport.update({
+    id: '/_protected/proposalHistory/$proposalId',
+    path: '/proposalHistory/$proposalId',
+    getParentRoute: () => SidebarlayoutRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/error': typeof ErrorRoute
@@ -132,6 +139,7 @@ export interface FileRoutesByFullPath {
   '/proposal': typeof SidebarlayoutProtectedProposalRoute
   '/resume': typeof SidebarlayoutProtectedResumeRoute
   '/userprofile': typeof SidebarlayoutProtectedUserprofileRoute
+  '/proposalHistory/$proposalId': typeof SidebarlayoutProtectedProposalHistoryProposalIdRoute
 }
 export interface FileRoutesByTo {
   '/error': typeof ErrorRoute
@@ -148,6 +156,7 @@ export interface FileRoutesByTo {
   '/proposal': typeof SidebarlayoutProtectedProposalRoute
   '/resume': typeof SidebarlayoutProtectedResumeRoute
   '/userprofile': typeof SidebarlayoutProtectedUserprofileRoute
+  '/proposalHistory/$proposalId': typeof SidebarlayoutProtectedProposalHistoryProposalIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -168,6 +177,7 @@ export interface FileRoutesById {
   '/_sidebarlayout/_protected/proposal': typeof SidebarlayoutProtectedProposalRoute
   '/_sidebarlayout/_protected/resume': typeof SidebarlayoutProtectedResumeRoute
   '/_sidebarlayout/_protected/userprofile': typeof SidebarlayoutProtectedUserprofileRoute
+  '/_sidebarlayout/_protected/proposalHistory/$proposalId': typeof SidebarlayoutProtectedProposalHistoryProposalIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -186,6 +196,7 @@ export interface FileRouteTypes {
     | '/proposal'
     | '/resume'
     | '/userprofile'
+    | '/proposalHistory/$proposalId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/error'
@@ -202,6 +213,7 @@ export interface FileRouteTypes {
     | '/proposal'
     | '/resume'
     | '/userprofile'
+    | '/proposalHistory/$proposalId'
   id:
     | '__root__'
     | '/_layout'
@@ -221,6 +233,7 @@ export interface FileRouteTypes {
     | '/_sidebarlayout/_protected/proposal'
     | '/_sidebarlayout/_protected/resume'
     | '/_sidebarlayout/_protected/userprofile'
+    | '/_sidebarlayout/_protected/proposalHistory/$proposalId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -354,6 +367,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthProtectLoginRouteImport
       parentRoute: typeof AuthProtectRoute
     }
+    '/_sidebarlayout/_protected/proposalHistory/$proposalId': {
+      id: '/_sidebarlayout/_protected/proposalHistory/$proposalId'
+      path: '/proposalHistory/$proposalId'
+      fullPath: '/proposalHistory/$proposalId'
+      preLoaderRoute: typeof SidebarlayoutProtectedProposalHistoryProposalIdRouteImport
+      parentRoute: typeof SidebarlayoutRoute
+    }
   }
 }
 
@@ -376,6 +396,7 @@ interface SidebarlayoutRouteChildren {
   SidebarlayoutProtectedProposalRoute: typeof SidebarlayoutProtectedProposalRoute
   SidebarlayoutProtectedResumeRoute: typeof SidebarlayoutProtectedResumeRoute
   SidebarlayoutProtectedUserprofileRoute: typeof SidebarlayoutProtectedUserprofileRoute
+  SidebarlayoutProtectedProposalHistoryProposalIdRoute: typeof SidebarlayoutProtectedProposalHistoryProposalIdRoute
 }
 
 const SidebarlayoutRouteChildren: SidebarlayoutRouteChildren = {
@@ -387,6 +408,8 @@ const SidebarlayoutRouteChildren: SidebarlayoutRouteChildren = {
   SidebarlayoutProtectedResumeRoute: SidebarlayoutProtectedResumeRoute,
   SidebarlayoutProtectedUserprofileRoute:
     SidebarlayoutProtectedUserprofileRoute,
+  SidebarlayoutProtectedProposalHistoryProposalIdRoute:
+    SidebarlayoutProtectedProposalHistoryProposalIdRoute,
 }
 
 const SidebarlayoutRouteWithChildren = SidebarlayoutRoute._addFileChildren(
