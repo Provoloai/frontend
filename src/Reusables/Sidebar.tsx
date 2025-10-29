@@ -1,241 +1,47 @@
-import { useState, useCallback, useMemo, JSX } from "react";
-import { motion, AnimatePresence } from "motion/react";
-import Logo from "./Logo";
-import { Link, useRouterState } from "@tanstack/react-router";
-import {
-  Book,
-  Feather,
-  LibraryBig,
-  Recycle,
-  Sparkles,
-  PanelLeftClose,
-  PanelRightClose,
-  MessageSquareMore,
-} from "lucide-react";
-import UserProfile from "../pages/user/User";
-import { proposalHistory } from "@/data";
+import { motion } from "motion/react";
+import { useSidebar } from "@/hooks/useSidebar";
+import { useActiveLink } from "@/hooks/useActiveLink";
+import { useSidebarLinkClass } from "@/hooks/useSidebarLinkClass";
 import { useGetProposalList } from "@/api";
-
-interface Badge {
-  text: string;
-  color: "green" | "blue";
-}
-
-interface NavItem {
-  to: string;
-  icon: JSX.Element;
-  label: string;
-  badge?: Badge;
-  external?: boolean;
-}
-
-
+import { NAV_ITEMS, UPSKILL_ITEMS, FEEDBACK_ITEMS } from "@/constants/sidebar";
+import { ProposalHistoryItem } from "@/types/sidebar";
+import SidebarToggle from "@/components/sidebar/SidebarToggle";
+import SidebarLogo from "@/components/sidebar/SidebarLogo";
+import SidebarSection from "@/components/sidebar/SidebarSection";
+import SidebarSectionTitle from "@/components/sidebar/SidebarSectionTitle";
+import ProposalDropdown from "@/components/sidebar/ProposalDropdown";
+import UserProfile from "../pages/user/User";
 
 const Sidebar = () => {
-  const location = useRouterState({ select: (s) => s.location });
-  const [isOpen, setIsOpen] = useState<boolean>(true);
-  const [proposalDropdownOpen, setProposalDropdownOpen] = useState<boolean>(false);
+  const {
+    isOpen,
+    toggle,
+    proposalDropdownOpen,
+    toggleProposalDropdown,
+    closeProposalDropdown,
+  } = useSidebar(true);
+  const { isActive } = useActiveLink();
+  const { getLinkClass } = useSidebarLinkClass(isActive, isOpen);
 
-  
+  // Fetch proposal history
+  const { data: proposalHistory } = useGetProposalList();
+  const proposals: ProposalHistoryItem[] =
+    proposalHistory?.data?.proposals?.map(
+      (item: { id: string; jobTitle: string }) => ({
+        id: item.id,
+        jobTitle: item.jobTitle,
+      })
+    ) || [];
 
-  const isActive = useCallback(
-    (path: string): boolean => location.pathname === path,
-    [location.pathname]
-  );
+  const handleProposalClick = () => {
+    toggleProposalDropdown();
+  };
 
-  const linkClass = useCallback(
-    (path: string): string =>
-      `relative group flex items-center rounded-md transition-all duration-200 ${
-        isActive(path)
-          ? "bg-gray-50 text-[#0c54f2]"
-          : "text-gray-500 hover:bg-gray-50 hover:text-gray-950"
-      } ${isOpen ? "p-3 gap-3" : "p-3 justify-center"}`,
-    [isActive, isOpen]
-  );
-
-  // Memoize navigation items
-  const navItems = useMemo<NavItem[]>(
-    () => [
-      {
-        to: "/optimizer",
-        icon: <Sparkles size={20} />,
-        label: "Profile Optimizer",
-      },
-      {
-        to: "/proposal",
-        icon: <Feather size={20} />,
-        label: "Ai Proposals",
-        badge: { text: "New", color: "green" },
-      },
-      {
-        to: "/resume",
-        icon: <Recycle size={20} />,
-        label: "Resume Generator",
-      },
-    ],
-    []
-  );
-
-  const upskillItems = useMemo<NavItem[]>(
-    () => [
-      {
-        to: "/learn",
-        icon: <LibraryBig size={20} />,
-        label: "Provolo Learn",
-      },
-      {
-        to: "https://buildsbyesuoladaniel.hashnode.space/provolo/provoloai-project-documentation",
-        icon: <Book size={20} />,
-        label: "Docs",
-        external: true,
-      },
-    ],
-    []
-  );
-
-  const feedbackItems = useMemo<NavItem[]>(
-    () => [
-      {
-        to: "https://forms.gle/vWUuG7tu1HU2ksuT8",
-        icon: <MessageSquareMore size={20} />,
-        label: "FeedBack",
-        external: true,
-      },
-    ],
-    []
-  );
-
-  const toggleSidebar = useCallback((): void => setIsOpen((prev) => !prev), []);
-
-  const handleProposalClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>): void => {
-    // Don't prevent default - allow navigation to /proposal
-    setProposalDropdownOpen((prev) => !prev);
-  }, []);
-
-  const handleOtherItemClick = useCallback((): void => {
-    setProposalDropdownOpen(false);
-  }, []);
-
-  const renderBadge = useCallback(
-    (badge?: Badge): JSX.Element | null => {
-      if (!badge || !isOpen) return null;
-      const colors: Record<Badge["color"], string> = {
-        green: "bg-green-50 text-green-700 ring-green-600/10",
-        blue: "bg-blue-50 text-blue-700 ring-blue-600/10",
-      };
-      return (
-        <motion.span
-          className={`ml-auto inline-flex items-center rounded-md px-2 py-1 text-xs ring-1 ring-inset ${colors[badge.color]}`}
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.8 }}
-          transition={{ duration: 0.15 }}
-        >
-          {badge.text}
-        </motion.span>
-      );
-    },
-    [isOpen]
-  );
-
-  const renderLink = useCallback(
-    ({ to, icon, label, badge, external }: NavItem): JSX.Element => {
-      const isProposalLink = to === "/proposal";
-
-      const content = (
-        <>
-          <span className="shrink-0">{icon}</span>
-          <AnimatePresence mode="wait">
-            {isOpen && (
-              <motion.span
-                className="whitespace-nowrap"
-                initial={{ opacity: 0, width: 0 }}
-                animate={{ opacity: 1, width: "auto" }}
-                exit={{ opacity: 0, width: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                {label}
-              </motion.span>
-            )}
-          </AnimatePresence>
-          {renderBadge(badge)}
-          {/* Tooltip when collapsed */}
-          {!isOpen && (
-            <span className="absolute left-full ml-2 px-2 py-1 text-xs rounded bg-gray-900 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 pointer-events-none">
-              {label}
-            </span>
-          )}
-        </>
-      );
-
-      const linkProps = {
-        to,
-        className: `${linkClass(to)} ${isOpen ? "gap-3" : "justify-center"}`,
-        ...(external && { target: "_blank", rel: "noopener noreferrer" }),
-        ...(isProposalLink && { onClick: handleProposalClick }),
-        ...(!isProposalLink && !external && { onClick: handleOtherItemClick }),
-      };
-const {data:proposalHistory} = useGetProposalList()
-
-
-
-      return (
-        <div key={label}>
-          <motion.div
-            whileHover={{ x: 2 }}
-            whileTap={{ scale: 0.98 }}
-            transition={{ duration: 0.15 }}
-          >
-            <Link {...linkProps}>{content}</Link>
-          </motion.div>
-
-          {/* Proposal History Dropdown */}
-          {isProposalLink && (
-            <AnimatePresence>
-              {proposalDropdownOpen && isOpen && (
-                <motion.div
-                  className="ml-6 mt-1 space-y-1 relative"
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  {/* Vertical timeline line */}
-                  <div className="absolute left-3 top-2 bottom-2 w-px bg-gray-200" />
-                  
-                  {proposalHistory?.data?.proposals?.map((item: any) => {
-                    const historyPath = `/proposalHistory/${item.id}`;
-                    const isHistoryActive = location.pathname === historyPath;
-                    
-                    return (
-                      <div key={item.id} className="relative flex items-start">
-                        {/* Timeline dot */}
-                        <div className={`absolute left-3 top-[0.85rem] w-1.5 h-1.5 rounded-full -translate-x-1/2 transition-colors duration-200 ${
-                          isHistoryActive ? 'bg-[#0c54f2]' : 'bg-gray-300'
-                        }`} />
-                        
-                        <Link
-                          to={historyPath}
-                          className={`block pl-6 pr-3 py-2 text-sm rounded-md transition-all duration-200 flex-1 truncate ${
-                            isHistoryActive
-                              ? 'bg-gray-50 text-[#0c54f2]'
-                              : 'text-gray-600 hover:text-gray-950 hover:bg-gray-50'
-                          }`}
-                          params={{ proposalId: item.id }}
-                        >
-                          {item.jobTitle}
-                        </Link>
-                      </div>
-                    );
-                  })}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          )}
-        </div>
-      );
-    },
-    [isOpen, linkClass, renderBadge, proposalDropdownOpen, handleProposalClick, handleOtherItemClick, proposalHistory]
+  const proposalDropdown = (
+    <ProposalDropdown
+      isOpen={proposalDropdownOpen && isOpen}
+      proposals={proposals}
+    />
   );
 
   return (
@@ -247,49 +53,42 @@ const {data:proposalHistory} = useGetProposalList()
       transition={{ duration: 0.3, ease: "easeInOut" }}
     >
       {/* Toggle button */}
-      <motion.button
-        onClick={toggleSidebar}
-        className="absolute z-20 -right-10 top-8 bg-gray-50 rounded-md p-1 hover:bg-gray-100 transition-all duration-200 text-gray-400"
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        aria-label={isOpen ? "Collapse sidebar" : "Expand sidebar"}
-      >
-        {isOpen ? <PanelLeftClose size={20} /> : <PanelRightClose size={20} />}
-      </motion.button>
+      <SidebarToggle isOpen={isOpen} onToggle={toggle} />
 
       {/* Logo */}
-      <motion.div
-        className={`flex gap-3 mb-10 ${isOpen ? "px-3" : "px-0 mx-auto"} w-fit relative`}
-        layout
-        transition={{ duration: 0.3 }}
-      >
-        <Logo />
-      </motion.div>
+      <SidebarLogo isOpen={isOpen} />
 
       {/* Navigation */}
       <nav className="flex flex-col gap-2 h-full" aria-label="Main navigation">
-        {navItems.map(renderLink)}
+        {/* Main Navigation Items */}
+        <SidebarSection
+          items={NAV_ITEMS}
+          isOpen={isOpen}
+          getLinkClass={getLinkClass}
+          onProposalClick={handleProposalClick}
+          onOtherItemClick={closeProposalDropdown}
+          proposalDropdown={proposalDropdown}
+          isProposalSection={true}
+        />
 
         {/* Upskill Section */}
-        <AnimatePresence mode="wait">
-          {isOpen && (
-            <motion.p
-              className="text-xs mt-10 pl-4 text-gray-500"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
-            >
-              Provolo Upskill
-            </motion.p>
-          )}
-        </AnimatePresence>
-
+        <SidebarSectionTitle title="Provolo Upskill" isOpen={isOpen} />
         <span className="border border-gray-100" />
-        {upskillItems.map(renderLink)}
+        <SidebarSection
+          items={UPSKILL_ITEMS}
+          isOpen={isOpen}
+          getLinkClass={getLinkClass}
+          onOtherItemClick={closeProposalDropdown}
+        />
 
+        {/* Feedback Section */}
         <span className="border mt-auto border-gray-100" />
-        {feedbackItems.map(renderLink)}
+        <SidebarSection
+          items={FEEDBACK_ITEMS}
+          isOpen={isOpen}
+          getLinkClass={getLinkClass}
+          onOtherItemClick={closeProposalDropdown}
+        />
 
         <UserProfile open={isOpen} />
       </nav>
