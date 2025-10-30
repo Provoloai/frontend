@@ -245,7 +245,7 @@ const PortfolioOptimizer: React.FC = () => {
               <TextInputField
                 id="jobTitle"
                 label="Job Title"
-                placeholder="Job Title"
+                placeholder="UiUx Designer | WordPress Developer..."
                 value={jobTitle}
                 onChange={e => setJobTitle(e.target.value)}
                 onBlur={() => setTouched(prev => ({ ...prev, jobTitle: true }))}

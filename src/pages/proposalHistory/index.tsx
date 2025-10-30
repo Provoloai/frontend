@@ -257,10 +257,11 @@ const ProposalHistory: React.FC = () => {
           >
             <div className="p-6 h-full flex flex-col w-full">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold w-fit">Complete Proposal (MDX)</h3>
+                <h3 className="text-lg font-semibold w-full">Complete Proposal (MDX)</h3>
+
                 <CustomButton
                   onClick={copyToClipboard}
-                  className="btn-secondary p-2 w-fit h-fit border border-gray-300 hover:border-gray-400 flex items-center"
+                  className="btn-secondary p-2 w-0 h-fit border border-gray-300 hover:border-gray-400 flex items-center"
                   aria-label={
                     copyState === "copied"
                       ? "Copied to clipboard"
