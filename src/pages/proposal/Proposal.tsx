@@ -194,51 +194,55 @@ const PortfolioOptimizer: React.FC = () => {
                 touched={touched.name || !!error}
                 required
               />
-              <Menu as="div" className="relative inline-block">
-                <label
-                  className="block text-sm mb-2"
-                  htmlFor="proposal-tone-selector"
-                >
-                  Proposal Tone
-                </label>
-                <MenuButton
-                  id="proposal-tone-selector"
-                  onClick={() => setTouched(prev => ({ ...prev, tone: true }))}
-                  className={`capitalize inline-flex w-full gap-x-1.5 rounded-md px-3 py-4 text-sm text-gray-900 shadow-xs ring-1 duration-200 transition-all ${
-                    (error && !proposalTone) || (touched.tone && !proposalTone)
-                      ? "ring-red-600/10 ring-inset bg-red-50 hover:bg-red-100"
-                      : "ring-gray-300 ring-inset bg-gray-50 hover:bg-gray-100"
-                  }`}
-                  aria-label="Select proposal tone"
-                >
-                  {proposalTone ?? "Select Option"}
-                  <ChevronDownIcon
-                    aria-hidden="true"
-                    className="ml-auto size-5 text-gray-400"
-                  />
-                </MenuButton>
-                {((error && !proposalTone) ||
-                  (touched.tone && !proposalTone)) && (
-                  <p className="text-xs text-red-700 mt-1">Required</p>
-                )}
-                <MenuItems
-                  transition
-                  className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-none data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
-                >
-                  <div className="py-1">
-                    {proposalToneOptions.map(tone => (
-                      <MenuItem key={tone.value}>
-                        <button
-                          onClick={() => setProposalTone(tone.value)}
-                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-none"
-                        >
-                          {tone.label}
-                        </button>
-                      </MenuItem>
-                    ))}
-                  </div>
-                </MenuItems>
-              </Menu>
+              <div className="w-full" onBlur={() => setTouched(prev => ({ ...prev, tone: true }))}>
+                <Menu as="div" className="relative inline-block w-full">
+                  <label
+                    className="block text-sm mb-2"
+                    htmlFor="proposal-tone-selector"
+                  >
+                    Proposal Tone
+                  </label>
+                  <MenuButton
+                    id="proposal-tone-selector"
+                    className={`capitalize inline-flex w-full gap-x-1.5 rounded-md px-3 py-4 text-sm text-gray-900 shadow-xs ring-1 duration-200 transition-all ${
+                      (error && !proposalTone) || (touched.tone && !proposalTone)
+                        ? "ring-red-600/10 ring-inset bg-red-50 hover:bg-red-100"
+                        : "ring-gray-300 ring-inset bg-gray-50 hover:bg-gray-100"
+                    }`}
+                    aria-label="Select proposal tone"
+                  >
+                    {proposalTone ?? "Select Option"}
+                    <ChevronDownIcon
+                      aria-hidden="true"
+                      className="ml-auto size-5 text-gray-400"
+                    />
+                  </MenuButton>
+                  {((error && !proposalTone) ||
+                    (touched.tone && !proposalTone)) && (
+                    <p className="text-xs text-red-700 mt-1">Required</p>
+                  )}
+                  <MenuItems
+                    transition
+                    className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-none data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+                  >
+                    <div className="py-1">
+                      {proposalToneOptions.map(tone => (
+                        <MenuItem key={tone.value}>
+                          <button
+                            onClick={() => {
+                              setProposalTone(tone.value);
+                              setTouched(prev => ({ ...prev, tone: true }));
+                            }}
+                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-none"
+                          >
+                            {tone.label}
+                          </button>
+                        </MenuItem>
+                      ))}
+                    </div>
+                  </MenuItems>
+                </Menu>
+              </div>
             </div>
 
             <div>

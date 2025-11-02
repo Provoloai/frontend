@@ -17,7 +17,7 @@ const Sidebar = () => {
     isOpen,
     toggle,
     proposalDropdownOpen,
-    toggleProposalDropdown,
+    openProposalDropdown,
     closeProposalDropdown,
   } = useSidebar(true);
   const { isActive } = useActiveLink();
@@ -34,7 +34,9 @@ const Sidebar = () => {
     ) || [];
 
   const handleProposalClick = () => {
-    toggleProposalDropdown();
+    // Always open the dropdown when AI Proposal is clicked
+    // Don't toggle - just open it
+    openProposalDropdown();
   };
 
   const proposalDropdown = (

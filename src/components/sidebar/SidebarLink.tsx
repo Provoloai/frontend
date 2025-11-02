@@ -16,7 +16,7 @@ interface SidebarLinkProps {
 
 export default function SidebarLink({
   item,
-  isActive,
+  // isActive,
   isOpen,
   linkClass,
   onProposalClick,
