@@ -1,29 +1,24 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 
-export function useSidebar(initialState = true) {
-  const [isOpen, setIsOpen] = useState(initialState);
+export const useSidebar = (defaultOpen = true) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
   const [proposalDropdownOpen, setProposalDropdownOpen] = useState(false);
 
-  const toggle = useCallback(() => setIsOpen((prev) => !prev), []);
-  const open = useCallback(() => setIsOpen(true), []);
-  const close = useCallback(() => setIsOpen(false), []);
-  const toggleProposalDropdown = useCallback(
-    () => setProposalDropdownOpen((prev) => !prev),
-    []
-  );
-  const closeProposalDropdown = useCallback(
-    () => setProposalDropdownOpen(false),
-    []
-  );
+  const toggle = () => setIsOpen(!isOpen);
+
+  const openProposalDropdown = () => {
+    setProposalDropdownOpen(true);
+  };
+
+  const closeProposalDropdown = () => {
+    setProposalDropdownOpen(false);
+  };
 
   return {
     isOpen,
     toggle,
-    open,
-    close,
     proposalDropdownOpen,
-    toggleProposalDropdown,
+    openProposalDropdown,
     closeProposalDropdown,
   };
-}
-
+};
