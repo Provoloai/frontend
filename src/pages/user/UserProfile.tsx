@@ -13,15 +13,20 @@ export default function UserProfile() {
   const {
     displayName,
     touched,
-    profileLink,
+    portfolioLink,
+    professionalTitle,
+    updateLoading,
     portalLoading,
     snackbarOpen,
     snackbarMessage,
     openSubscriptionPortal,
     closeSnackbar,
-    handleProfileLinkChange,
-    handleProfileLinkBlur,
-  } = useUserProfile(user);
+    handlePortfolioLinkChange,
+    handlePortfolioLinkBlur,
+    handleProfessionalTitleChange,
+    handleProfessionalTitleBlur,
+    handleUpdateProfile,
+  } = useUserProfile();
 
   return (
     <motion.form
@@ -40,11 +45,15 @@ export default function UserProfile() {
         />
 
         <UserProfileInfo
-          user={user}
-          profileLink={profileLink}
+          portfolioLink={portfolioLink}
+          professionalTitle={professionalTitle}
           touched={touched}
-          onProfileLinkChange={handleProfileLinkChange}
-          onProfileLinkBlur={handleProfileLinkBlur}
+          updateLoading={updateLoading}
+          onPortfolioLinkChange={handlePortfolioLinkChange}
+          onPortfolioLinkBlur={handlePortfolioLinkBlur}
+          onProfessionalTitleChange={handleProfessionalTitleChange}
+          onProfessionalTitleBlur={handleProfessionalTitleBlur}
+          onUpdateProfile={handleUpdateProfile}
         />
 
         <UserProfileCard />

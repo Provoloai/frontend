@@ -16,6 +16,14 @@ export const USER_PROFILE_CONFIG = {
       label: "Profile Link",
       placeholder: "https://www.upwork.com/Profile-link",
     },
+    portfolioLink: {
+      label: "Portfolio Link",
+      placeholder: "https://www.yourportfolio.com",
+    },
+    professionalTitle: {
+      label: "Professional Title",
+      placeholder: "e.g., Senior Frontend Developer",
+    },
   },
   subscription: {
     buttonText: "Manage Subscription",
