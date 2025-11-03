@@ -85,6 +85,15 @@ export const authApi = {
       body: JSON.stringify({ username }),
     });
   },
+  updateProfile: async (data: {
+    portfolio_link?: string;
+    professional_title?: string;
+  }) => {
+    return apiRequest<{ success: boolean; message?: string; data?: any }>("/auth/update-profile", {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  },
 };
 
 export const useGetProposalList = (page: number = 1, limit: number = 10) => {
