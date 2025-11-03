@@ -10,7 +10,6 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* <Beta /> */}
       <Outlet />
       {/* <TanStackRouterDevtools /> */}
     </QueryClientProvider>
