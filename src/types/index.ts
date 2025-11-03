@@ -12,6 +12,8 @@ export interface User {
   tierId?: string;
   polarId?: string;
   profileLink?: string;
+  portfolioLink?: string;
+  professionalTitle?: string;
 }
 
 export interface ProposalData {

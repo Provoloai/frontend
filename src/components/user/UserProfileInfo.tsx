@@ -1,16 +1,22 @@
 import { motion } from "motion/react";
-import { Link, Mail, UserRound } from "lucide-react";
+import { Mail, UserRound, Briefcase, Globe } from "lucide-react";
 import TextInputField from "@/Reusables/TextInputField";
 import { USER_PROFILE_CONFIG, USER_PROFILE_ANIMATIONS } from "@/constants/userProfile";
 import type { UserProfileInfoProps } from "@/types/userProfile";
+import useSession from "@/hooks/useSession";
 
 const UserProfileInfo: React.FC<UserProfileInfoProps> = ({
-  user,
-  profileLink,
+  portfolioLink,
+  professionalTitle,
   touched,
-  onProfileLinkChange,
-  onProfileLinkBlur,
+  updateLoading,
+  onPortfolioLinkChange,
+  onPortfolioLinkBlur,
+  onProfessionalTitleChange,
+  onProfessionalTitleBlur,
+  onUpdateProfile,
 }) => {
+  const { user } = useSession();
   return (
     <motion.div
       className="border-b border-gray-900/10 pb-10"
@@ -27,26 +33,13 @@ const UserProfileInfo: React.FC<UserProfileInfoProps> = ({
         animate="visible"
         variants={USER_PROFILE_ANIMATIONS.container}
       >
-        <motion.div className="sm:col-span-3" variants={USER_PROFILE_ANIMATIONS.item}>
+        <motion.div className="sm:col-span-6" variants={USER_PROFILE_ANIMATIONS.item}>
           <TextInputField
             id="fullname"
             label={USER_PROFILE_CONFIG.fields.fullname.label}
             placeholder={USER_PROFILE_CONFIG.fields.fullname.placeholder}
             iconStart={<UserRound size={20} />}
-            value={user?.displayName}
-            onChange={() => {}}
-            disabled
-          />
-        </motion.div>
-
-        <motion.div className="sm:col-span-3" variants={USER_PROFILE_ANIMATIONS.item}>
-          <TextInputField
-            id="email"
-            type="email"
-            label={USER_PROFILE_CONFIG.fields.email.label}
-            placeholder={USER_PROFILE_CONFIG.fields.email.placeholder}
-            iconStart={<Mail size={20} />}
-            value={user?.email}
+            value={user?.displayName || ""}
             onChange={() => {}}
             disabled
           />
@@ -54,16 +47,59 @@ const UserProfileInfo: React.FC<UserProfileInfoProps> = ({
 
         <motion.div className="sm:col-span-6" variants={USER_PROFILE_ANIMATIONS.item}>
           <TextInputField
-            id="profileLink"
-            label={USER_PROFILE_CONFIG.fields.profileLink.label}
-            placeholder={USER_PROFILE_CONFIG.fields.profileLink.placeholder}
-            iconStart={<Link size={20} />}
-            value={profileLink}
-            onChange={(e) => onProfileLinkChange(e.target.value)}
-            onBlur={onProfileLinkBlur}
-            touched={touched.profileLink}
+            id="email"
+            type="email"
+            label={USER_PROFILE_CONFIG.fields.email.label}
+            placeholder={USER_PROFILE_CONFIG.fields.email.placeholder}
+            iconStart={<Mail size={20} />}
+            value={user?.email || ""}
+            onChange={() => {}}
             disabled
           />
+        </motion.div>
+
+        <motion.div className="sm:col-span-6" variants={USER_PROFILE_ANIMATIONS.item}>
+          <TextInputField
+            id="professionalTitle"
+            label={USER_PROFILE_CONFIG.fields.professionalTitle.label}
+            placeholder={USER_PROFILE_CONFIG.fields.professionalTitle.placeholder}
+            iconStart={<Briefcase size={20} />}
+            value={professionalTitle}
+            onChange={(e) => onProfessionalTitleChange(e.target.value)}
+            onBlur={onProfessionalTitleBlur}
+            touched={touched.professionalTitle}
+          />
+        </motion.div>
+
+        <motion.div className="sm:col-span-6" variants={USER_PROFILE_ANIMATIONS.item}>
+          <TextInputField
+            id="portfolioLink"
+            label={USER_PROFILE_CONFIG.fields.portfolioLink.label}
+            placeholder={USER_PROFILE_CONFIG.fields.portfolioLink.placeholder}
+            iconStart={<Globe size={20} />}
+            value={portfolioLink}
+            onChange={(e) => onPortfolioLinkChange(e.target.value)}
+            onBlur={onPortfolioLinkBlur}
+            touched={touched.portfolioLink}
+          />
+        </motion.div>
+
+        <motion.div className="sm:col-span-6" variants={USER_PROFILE_ANIMATIONS.item}>
+          <button
+            type="button"
+            onClick={onUpdateProfile}
+            disabled={updateLoading}
+            className="w-full px-6 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150 ease-in-out"
+          >
+            {updateLoading ? (
+              <span className="flex items-center justify-center gap-2">
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                Updating...
+              </span>
+            ) : (
+              "Update Profile"
+            )}
+          </button>
         </motion.div>
       </motion.div>
     </motion.div>
