@@ -261,7 +261,7 @@ const ProposalHistory: React.FC = () => {
 
                 <CustomButton
                   onClick={copyToClipboard}
-                  className="btn-secondary p-2 w-0 h-fit border border-gray-300 hover:border-gray-400 flex items-center"
+                  className="btn-secondary p-2 max-w-0 h-fit border border-gray-300 hover:border-gray-400 flex items-center"
                   aria-label={
                     copyState === "copied"
                       ? "Copied to clipboard"
