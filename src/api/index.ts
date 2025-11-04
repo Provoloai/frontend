@@ -10,7 +10,7 @@ const apiRequest = async <T>(
   options: RequestInit = {}
 ): Promise<T> => {
   const url = `${API_BASE_URL}${endpoint}`;
-  
+
   const defaultOptions: RequestInit = {
     headers: {
       "Content-Type": "application/json",
@@ -51,6 +51,20 @@ export const proposalApi = {
   },
 };
 
+// Proposal API functions
+export const refineProposalApi = {
+  refineProposal: async (data: {
+    proposalId: string;
+    refinementType: string;
+    newTone: string;
+  }) => {
+    return apiRequest<{ data: any }>("/ai/refine-proposal", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+};
+
 // Optimizer API functions
 export const optimizerApi = {
   optimizePortfolio: async (data: {
@@ -80,10 +94,13 @@ export const authApi = {
     });
   },
   updateUsername: async (username: string) => {
-    return apiRequest<{ success: boolean; message?: string }>("/auth/update-username", {
-      method: "POST",
-      body: JSON.stringify({ username }),
-    });
+    return apiRequest<{ success: boolean; message?: string }>(
+      "/auth/update-username",
+      {
+        method: "POST",
+        body: JSON.stringify({ username }),
+      }
+    );
   },
   updateProfile: async (data: {
     portfolio_link?: string;
@@ -98,14 +115,14 @@ export const authApi = {
 
 export const useGetProposalList = (page: number = 1, limit: number = 10) => {
   return useQuery({
-    queryKey: ['proposal-history', page, limit],
+    queryKey: ["proposal-history", page, limit],
     queryFn: () => apiGet(`/ai/proposal-history?page=${page}&limit=${limit}`),
   });
 };
 
 export const useGetProposal = (id: string) => {
   return useQuery({
-    queryKey: ['proposal-history', id],
+    queryKey: ["proposal-history", id],
     queryFn: () => apiGet(`/ai/proposal-history/${id}`),
     enabled: !!id, // Only run query if id exists
   });
