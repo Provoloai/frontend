@@ -1,9 +1,14 @@
 import React, { useState, useRef } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import Logo from "@/Reusables/Logo";
 import CustomButton from "@/Reusables/CustomButton";
+import Vector2 from "@/assets/img/Vector2.png";
+import Vector from "@/assets/img/Vector.png";
+import { authApi } from "@/api";
+import useSession from "@/hooks/useSession";
 
 const VerificationPage: React.FC = () => {
+  const { user } = useSession();
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
   const [touched, setTouched] = useState<boolean[]>([
     false,
@@ -73,13 +78,17 @@ const VerificationPage: React.FC = () => {
       inputRefs.current[5]?.focus();
     }
   };
-
-  const handleVerify = (): void => {
+  const navigate = useNavigate();
+  const handleVerify = async () => {
     setTouched([true, true, true, true, true, true]);
     const otpCode = otp.join("");
-    if (otpCode.length === 6) {
-      console.log("Verifying OTP:", otpCode);
-      // Add your verification logic here
+    try {
+      await authApi.verify(otpCode);
+      if (user?.emailVerified) {
+        navigate({ to: "/optimizer", replace: true });
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -95,7 +104,17 @@ const VerificationPage: React.FC = () => {
   const hasError = touched.some(t => t) && !isComplete;
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 relative">
+      <img
+        alt="Provolo"
+        src={Vector}
+        className="absolute top-0 left-0 lg:w-1/5 w-1/2 opacity-40"
+      />
+      <img
+        alt="Provolo"
+        src={Vector2}
+        className="absolute bottom-0 right-0 w-1/3 opacity-40"
+      />
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="flex justify-center mb-8">
@@ -152,11 +171,16 @@ const VerificationPage: React.FC = () => {
           </div>
 
           {/* Verify Button */}
-          <CustomButton type="submit" onClick={handleVerify} disabled={!isComplete} className={`w-full py-3 rounded-md font-medium transition duration-150 ${
+          <CustomButton
+            type="submit"
+            onClick={handleVerify}
+            disabled={!isComplete}
+            className={`w-full py-3 rounded-md font-medium transition duration-150 ${
               isComplete
                 ? "bg-black text-white hover:bg-gray-800 cursor-pointer"
                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
-            }`}>
+            }`}
+          >
             Verify
           </CustomButton>
           {/* <button

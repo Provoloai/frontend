@@ -93,6 +93,25 @@ export const authApi = {
       body: JSON.stringify({ idToken }),
     });
   },
+  sendVerificationCode: async () => {
+    return apiRequest<{ success: boolean; message?: string }>(
+      "/auth/resend-verification-otp",
+      {
+        method: "POST",
+      }
+    );
+  },
+
+    verify: async (otp: string) => {
+    return apiRequest<{ success: boolean; message?: string }>(
+      "/auth/verify-email",
+      {
+        method: "POST",
+         body: JSON.stringify({ otp }),
+      }
+    );
+  },
+
   updateUsername: async (username: string) => {
     return apiRequest<{ success: boolean; message?: string }>(
       "/auth/update-username",
@@ -106,10 +125,13 @@ export const authApi = {
     portfolio_link?: string;
     professional_title?: string;
   }) => {
-    return apiRequest<{ success: boolean; message?: string; data?: any }>("/auth/update-profile", {
-      method: "PUT",
-      body: JSON.stringify(data),
-    });
+    return apiRequest<{ success: boolean; message?: string; data?: any }>(
+      "/auth/update-profile",
+      {
+        method: "PUT",
+        body: JSON.stringify(data),
+      }
+    );
   },
 };
 
