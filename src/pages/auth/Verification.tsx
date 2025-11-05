@@ -1,14 +1,11 @@
 import React, { useState, useRef } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
-import Logo from "@/Reusables/Logo";
+import { useNavigate } from "@tanstack/react-router";
 import CustomButton from "@/Reusables/CustomButton";
-import Vector2 from "@/assets/img/Vector2.png";
-import Vector from "@/assets/img/Vector.png";
 import { authApi } from "@/api";
-import useSession from "@/hooks/useSession";
+import AuthLayout from "@/components/auth/AuthLayout";
+import CustomSnackbar from "@/Reusables/CustomSnackbar";
 
 const VerificationPage: React.FC = () => {
-  const { user } = useSession();
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
   const [touched, setTouched] = useState<boolean[]>([
     false,
@@ -83,48 +80,52 @@ const VerificationPage: React.FC = () => {
     setTouched([true, true, true, true, true, true]);
     const otpCode = otp.join("");
     try {
-      await authApi.verify(otpCode);
-      if (user?.emailVerified) {
+      const res = await authApi.verify(otpCode);
+      if (res?.success) {
         navigate({ to: "/optimizer", replace: true });
+        <CustomSnackbar
+          open={res.success}
+          snackbarColor="success"
+          snackbarMessage={res?.message || ""}
+        />;
+      } else {
+        <CustomSnackbar
+          open={!res.success}
+          snackbarColor="danger"
+          snackbarMessage={res?.message || ""}
+        />;
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  const handleResend = (): void => {
-    console.log("Resending OTP...");
-    setOtp(["", "", "", "", "", ""]);
-    setTouched([false, false, false, false, false, false]);
-    inputRefs.current[0]?.focus();
-    // Add your resend logic here
+  const handleResend = async () => {
+    const res = await authApi.sendVerificationCode();
+
+    if (res?.success) {
+      <CustomSnackbar
+        open={res.success}
+        snackbarColor="success"
+        snackbarMessage={res?.message || ""}
+      />;
+    } else {
+      <CustomSnackbar
+        open={!res.success}
+        snackbarColor="danger"
+        snackbarMessage={res?.message || ""}
+      />;
+    }
   };
 
   const isComplete = otp.every(digit => digit !== "");
-  const hasError = touched.some(t => t) && !isComplete;
+  const hasError = touched.some((t, idx) => t && !otp[idx]);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 relative">
-      <img
-        alt="Provolo"
-        src={Vector}
-        className="absolute top-0 left-0 lg:w-1/5 w-1/2 opacity-40"
-      />
-      <img
-        alt="Provolo"
-        src={Vector2}
-        className="absolute bottom-0 right-0 w-1/3 opacity-40"
-      />
-      <div className="w-full max-w-md">
-        {/* Logo */}
-        <div className="flex justify-center mb-8">
-          <Link to="/" className="w-fit mx-auto z-10">
-            <Logo />
-          </Link>
-        </div>
-
+    <AuthLayout>
+      <div className="sm:mx-auto sm:w-full sm:max-w-lg bg-white lg:p-10 md:p-8 p-5 mt-10 rounded-md border z-30">
         {/* Card */}
-        <div className="bg-white rounded-lg shadow-sm p-8">
+        <div className="p-8">
           <h1 className="text-2xl font-medium text-center mb-2">
             Verify Your Email
           </h1>
@@ -135,7 +136,7 @@ const VerificationPage: React.FC = () => {
           </p>
 
           {/* OTP Input */}
-          <div className="mb-6">
+          <div className="mb-3 md:mb-6">
             <label className="block text-sm mb-2">
               Enter Verification Code
             </label>
@@ -154,7 +155,7 @@ const VerificationPage: React.FC = () => {
                     onKeyDown={e => handleKeyDown(index, e)}
                     onBlur={() => handleBlur(index)}
                     onPaste={handlePaste}
-                    className={`w-full h-14 text-center text-md font-semibold p-3 border rounded-md transition duration-150 ease-in-out bg-gray-50 ${
+                    className={`w-full h-10 md:h-14 text-center text-md font-semibold p-3 border rounded-md transition duration-150 ease-in-out bg-gray-50 ${
                       touched[index] && !digit
                         ? "ring-1 ring-red-600/10 ring-inset bg-red-50 border-red-300"
                         : "border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
@@ -164,7 +165,7 @@ const VerificationPage: React.FC = () => {
               ))}
             </div>
             {hasError && (
-              <p className="text-xs text-red-700 mt-1">
+              <p className="text-xs text-red-700 mt-1 text-center">
                 Please enter all 6 digits
               </p>
             )}
@@ -183,33 +184,22 @@ const VerificationPage: React.FC = () => {
           >
             Verify
           </CustomButton>
-          {/* <button
-            onClick={handleVerify}
-            disabled={!isComplete}
-            className={`w-full py-3 rounded-md font-medium transition duration-150 ${
-              isComplete
-                ? "bg-black text-white hover:bg-gray-800 cursor-pointer"
-                : "bg-gray-300 text-gray-500 cursor-not-allowed"
-            }`}
-          >
-            Verify
-          </button> */}
 
           {/* Resend Link */}
-          <div className="text-center mt-6">
+          <div className="text-center mt-6 flex gap-1 justify-center">
             <span className="text-sm text-gray-600">
               Didn't receive the code?{" "}
             </span>
-            <button
+            <p
               onClick={handleResend}
-              className="text-sm text-gray-900 underline hover:text-gray-700"
+              className="text-sm text-gray-900 underline hover:text-gray-700 cursor-pointer"
             >
               Resend Code
-            </button>
+            </p>
           </div>
         </div>
       </div>
-    </div>
+    </AuthLayout>
   );
 };
 

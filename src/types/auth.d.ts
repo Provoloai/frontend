@@ -70,7 +70,7 @@ export interface LoginFormProps {
   onErrorClose: () => void;
 }
 
-export interface LoginLayoutProps {
+export interface AuthLayoutProps {
   children: React.ReactNode;
 }
 

@@ -24,12 +24,13 @@ export const useAuth = () => {
         const user = userCredential.user;
         const idToken = await getIdToken(user, true);
 
-        await authApi.login(idToken);
-        if (!user?.emailVerified) {
-          await authApi.sendVerificationCode()
-          navigate({ to: "/verification", replace: true });
-        } else {
+        const res = await authApi.login(idToken);
+
+        if (res?.data?.emailVerified) {
           navigate({ to: "/optimizer", replace: true });
+        } else {
+          await authApi.sendVerificationCode();
+          navigate({ to: "/verification", replace: true });
         }
       } catch (err: unknown) {
         const error = err as Error;

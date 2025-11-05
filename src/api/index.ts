@@ -82,7 +82,7 @@ export const optimizerApi = {
 // Auth API functions
 export const authApi = {
   login: async (idToken: string) => {
-    return apiRequest<{ success: boolean; message?: string }>("/auth/login", {
+    return apiRequest<{data: any}>("/auth/login", {
       method: "POST",
       body: JSON.stringify({ idToken }),
     });
