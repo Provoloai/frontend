@@ -10,29 +10,42 @@ export const useSignup = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [validationErrors, setValidationErrors] = useState<SignupValidationErrors>({
-    email: "",
-    password: "",
-  });
+  const [validationErrors, setValidationErrors] =
+    useState<SignupValidationErrors>({
+      email: "",
+      password: "",
+    });
 
-  const signUpWithEmail = useCallback(async (formData: SignupFormData) => {
-    try {
-      setIsLoading(true);
-      setError("");
-      
-      const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
-      const user = userCredential.user;
-      const idToken = await getIdToken(user, true);
-      
-      await authApi.signup(idToken);
-      navigate({ to: "/optimizer", replace: true });
-    } catch (err: unknown) {
-      const error = err as Error;
-      setError(getCleanErrorMessage(error));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [navigate]);
+  const signUpWithEmail = useCallback(
+    async (formData: SignupFormData) => {
+      try {
+        setIsLoading(true);
+        setError("");
+
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          formData.email,
+          formData.password
+        );
+        const user = userCredential.user;
+        const idToken = await getIdToken(user, true);
+
+        const res = await authApi.signup(idToken);
+        if (res?.data?.emailVerified) {
+          navigate({ to: "/optimizer", replace: true });
+        } else {
+          await authApi.sendVerificationCode();
+          navigate({ to: "/verification", replace: true });
+        }
+      } catch (err: unknown) {
+        const error = err as Error;
+        setError(getCleanErrorMessage(error));
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [navigate]
+  );
 
   const clearError = useCallback(() => {
     setError("");
@@ -42,9 +55,12 @@ export const useSignup = () => {
     setValidationErrors({ email: "", password: "" });
   }, []);
 
-  const setValidationError = useCallback((field: keyof SignupValidationErrors, message: string) => {
-    setValidationErrors(prev => ({ ...prev, [field]: message }));
-  }, []);
+  const setValidationError = useCallback(
+    (field: keyof SignupValidationErrors, message: string) => {
+      setValidationErrors(prev => ({ ...prev, [field]: message }));
+    },
+    []
+  );
 
   return {
     signUpWithEmail,
