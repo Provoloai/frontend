@@ -2,12 +2,12 @@ import { Link } from "@tanstack/react-router";
 import Logo from "@/Reusables/Logo";
 import Vector from "@/assets/img/Vector.png";
 import Vector2 from "@/assets/img/Vector2.png";
-import type { ForgotPasswordLayoutProps } from "@/types/auth";
+import { AuthLayoutProps } from "@/types/auth";
 
-const ForgotPasswordLayout: React.FC<ForgotPasswordLayoutProps> = ({ children }) => {
+const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
   return (
-    <div className="flex min-h-screen flex-1 flex-col justify-center px-6 py-12 lg:px-8 bg-gray-50">
-      <Link to="/" className="w-fit mx-auto z-50">
+    <div className="flex min-h-screen flex-1 flex-col justify-center px-6 py-12 lg:px-8 bg-gray-50 relative">
+      <Link to="/" className="w-fit mx-auto z-20">
         <Logo />
       </Link>
       
@@ -27,4 +27,4 @@ const ForgotPasswordLayout: React.FC<ForgotPasswordLayoutProps> = ({ children })
   );
 };
 
-export default ForgotPasswordLayout;
+export default AuthLayout;

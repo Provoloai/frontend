@@ -10,24 +10,37 @@ export const useAuth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const signInWithEmail = useCallback(async (email: string, password: string) => {
-    try {
-      setIsLoading(true);
-      setError("");
-      
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      const idToken = await getIdToken(user, true);
-      
-      await authApi.login(idToken);
-      navigate({ to: "/optimizer", replace: true });
-    } catch (err: unknown) {
-      const error = err as Error;
-      setError(getCleanErrorMessage(error));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [navigate]);
+  const signInWithEmail = useCallback(
+    async (email: string, password: string) => {
+      try {
+        setIsLoading(true);
+        setError("");
+
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+        const user = userCredential.user;
+        const idToken = await getIdToken(user, true);
+
+        const res = await authApi.login(idToken);
+
+        if (res?.data?.emailVerified) {
+          navigate({ to: "/optimizer", replace: true });
+        } else {
+          await authApi.sendVerificationCode();
+          navigate({ to: "/verification", replace: true });
+        }
+      } catch (err: unknown) {
+        const error = err as Error;
+        setError(getCleanErrorMessage(error));
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [navigate]
+  );
 
   const clearError = useCallback(() => {
     setError("");

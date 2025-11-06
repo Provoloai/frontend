@@ -17,7 +17,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
   onErrorClose,
 }) => {
   return (
-    <div className="sm:mx-auto sm:w-full sm:max-w-lg bg-white lg:p-10 md:p-8 p-5 mt-10 rounded-md border z-50">
+    <div className="sm:mx-auto sm:w-full sm:max-w-lg bg-white lg:p-10 md:p-8 p-5 mt-10 rounded-md border z-30">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <h2 className="text-center text-2xl/9 font-medium tracking-tight text-gray-900">
           {LOGIN_CONFIG.title}
