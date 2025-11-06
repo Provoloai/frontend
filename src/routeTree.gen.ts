@@ -14,6 +14,7 @@ import { Route as ErrorRouteImport } from './routes/error'
 import { Route as SidebarlayoutRouteImport } from './routes/_sidebarlayout'
 import { Route as LayoutRouteImport } from './routes/_layout'
 import { Route as LayoutIndexRouteImport } from './routes/_layout.index'
+import { Route as AuthVerificationRouteImport } from './routes/_auth/verification'
 import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-password'
 import { Route as AuthForgotPasswordRouteImport } from './routes/_auth/forgot-password'
 import { Route as AuthProtectRouteImport } from './routes/_auth/_protect'
@@ -50,6 +51,11 @@ const LayoutIndexRoute = LayoutIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => LayoutRoute,
+} as any)
+const AuthVerificationRoute = AuthVerificationRouteImport.update({
+  id: '/_auth/verification',
+  path: '/verification',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
   id: '/_auth/reset-password',
@@ -129,6 +135,7 @@ export interface FileRoutesByFullPath {
   '/welcome': typeof WelcomeRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/reset-password': typeof AuthResetPasswordRoute
+  '/verification': typeof AuthVerificationRoute
   '/': typeof LayoutIndexRoute
   '/login': typeof AuthProtectLoginRoute
   '/signup': typeof AuthProtectSignupRoute
@@ -146,6 +153,7 @@ export interface FileRoutesByTo {
   '/welcome': typeof WelcomeRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/reset-password': typeof AuthResetPasswordRoute
+  '/verification': typeof AuthVerificationRoute
   '/': typeof LayoutIndexRoute
   '/login': typeof AuthProtectLoginRoute
   '/signup': typeof AuthProtectSignupRoute
@@ -167,6 +175,7 @@ export interface FileRoutesById {
   '/_auth/_protect': typeof AuthProtectRouteWithChildren
   '/_auth/forgot-password': typeof AuthForgotPasswordRoute
   '/_auth/reset-password': typeof AuthResetPasswordRoute
+  '/_auth/verification': typeof AuthVerificationRoute
   '/_layout/': typeof LayoutIndexRoute
   '/_auth/_protect/login': typeof AuthProtectLoginRoute
   '/_auth/_protect/signup': typeof AuthProtectSignupRoute
@@ -186,6 +195,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/forgot-password'
     | '/reset-password'
+    | '/verification'
     | '/'
     | '/login'
     | '/signup'
@@ -203,6 +213,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/forgot-password'
     | '/reset-password'
+    | '/verification'
     | '/'
     | '/login'
     | '/signup'
@@ -223,6 +234,7 @@ export interface FileRouteTypes {
     | '/_auth/_protect'
     | '/_auth/forgot-password'
     | '/_auth/reset-password'
+    | '/_auth/verification'
     | '/_layout/'
     | '/_auth/_protect/login'
     | '/_auth/_protect/signup'
@@ -244,6 +256,7 @@ export interface RootRouteChildren {
   AuthProtectRoute: typeof AuthProtectRouteWithChildren
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthResetPasswordRoute: typeof AuthResetPasswordRoute
+  AuthVerificationRoute: typeof AuthVerificationRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -282,6 +295,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof LayoutIndexRouteImport
       parentRoute: typeof LayoutRoute
+    }
+    '/_auth/verification': {
+      id: '/_auth/verification'
+      path: '/verification'
+      fullPath: '/verification'
+      preLoaderRoute: typeof AuthVerificationRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_auth/reset-password': {
       id: '/_auth/reset-password'
@@ -438,6 +458,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthProtectRoute: AuthProtectRouteWithChildren,
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthResetPasswordRoute: AuthResetPasswordRoute,
+  AuthVerificationRoute: AuthVerificationRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

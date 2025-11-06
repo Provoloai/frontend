@@ -14,6 +14,7 @@ export interface User {
   profileLink?: string;
   portfolioLink?: string;
   professionalTitle?: string;
+  emailVerified?: boolean;
 }
 
 export interface ProposalData {

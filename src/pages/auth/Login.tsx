@@ -2,7 +2,9 @@ import { useState, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import type { LoginFormData, LoginTouchedFields } from "@/types/auth";
 import LoginForm from "@/components/auth/LoginForm";
-import LoginLayout from "@/components/auth/LoginLayout";
+import AuthLayout from "@/components/auth/AuthLayout";
+import { LOGIN_CONFIG } from "@/constants/auth";
+import { Link } from "@tanstack/react-router";
 
 const Login = () => {
   // Form state
@@ -20,24 +22,30 @@ const Login = () => {
   const { signInWithEmail, isLoading, error, clearError } = useAuth();
 
   // Event handlers
-  const handleInputChange = useCallback((field: keyof LoginFormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  }, []);
+  const handleInputChange = useCallback(
+    (field: keyof LoginFormData, value: string) => {
+      setFormData(prev => ({ ...prev, [field]: value }));
+    },
+    []
+  );
 
   const handleBlur = useCallback((field: keyof LoginTouchedFields) => {
     setTouched(prev => ({ ...prev, [field]: true }));
   }, []);
 
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.email || !formData.password) {
-      return;
-    }
-    await signInWithEmail(formData.email, formData.password);
-  }, [formData, signInWithEmail]);
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!formData.email || !formData.password) {
+        return;
+      }
+      await signInWithEmail(formData.email, formData.password);
+    },
+    [formData, signInWithEmail]
+  );
 
   return (
-    <LoginLayout>
+    <AuthLayout>
       <LoginForm
         formData={formData}
         touched={touched}
@@ -48,7 +56,13 @@ const Login = () => {
         onSubmit={handleSubmit}
         onErrorClose={clearError}
       />
-    </LoginLayout>
+      <Link
+        to="/"
+        className="underline text-center mt-10 text-xs text-gray-500"
+      >
+        {LOGIN_CONFIG.backHome}
+      </Link>
+    </AuthLayout>
   );
 };
 

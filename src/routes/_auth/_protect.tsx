@@ -10,7 +10,7 @@ export const Route = createFileRoute("/_auth/_protect")({
 function ProtectComponent() {
   const { user, loading } = useSession();
   React.useEffect(() => {
-    if (!loading && user?.userId) {
+  if (!loading && user?.userId) {
       window.location.replace("/optimizer");
     }
   }, [loading, user]);
