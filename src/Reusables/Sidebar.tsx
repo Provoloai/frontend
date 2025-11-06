@@ -72,7 +72,7 @@ const Sidebar = () => {
       <SidebarLogo isOpen={isOpen} />
 
       {/* Navigation */}
-      <nav className="flex flex-col gap-2 h-full" aria-label="Main navigation">
+      <nav className="flex flex-col gap-2 h-full " aria-label="Main navigation">
         {/* Main Navigation Items */}
         <SidebarSection
           items={NAV_ITEMS}
@@ -86,7 +86,9 @@ const Sidebar = () => {
 
         {/* Upskill Section */}
         <SidebarSectionTitle title="Provolo Upskill" isOpen={isOpen} />
+
         <span className="border border-gray-100" />
+
         <SidebarSection
           items={UPSKILL_ITEMS}
           isOpen={isOpen}
@@ -104,6 +106,7 @@ const Sidebar = () => {
         />
 
         <UserProfile open={isOpen} />
+        
       </nav>
     </motion.div>
   );
