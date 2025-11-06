@@ -25,6 +25,7 @@ import {
 import type { ProposalData, TouchedFields, ImprovementOption } from "@/types";
 import type { ProposalTone } from "@/types/proposal";
 import { useQueryClient } from "@tanstack/react-query";
+import Banner from "@/components/dashboard/Banner";
 
 const PortfolioOptimizer: React.FC = () => {
   const [clientName, setClientName] = useState<string>("");
@@ -165,6 +166,10 @@ const PortfolioOptimizer: React.FC = () => {
           className="text-start pt-10"
           variants={proposalItemVariants}
         >
+          <div className="mb-10">
+            <Banner />
+          </div>
+
           <h2 className="text-3xl font-medium mb-3 text-center flex items-center gap-3">
             Proposals <Sparkles />
           </h2>
@@ -194,58 +199,61 @@ const PortfolioOptimizer: React.FC = () => {
                 touched={touched.name || !!error}
                 required
               />
-              <Menu as="div" className="relative inline-block">
-                <label
-                  className="block text-sm mb-2"
-                  htmlFor="proposal-tone-selector"
-                >
-                  Proposal Tone
-                </label>
-                <MenuButton
-                  id="proposal-tone-selector"
-                  onClick={() => setTouched(prev => ({ ...prev, tone: true }))}
-                  className={`capitalize inline-flex w-full gap-x-1.5 rounded-md px-3 py-4 text-sm text-gray-900 shadow-xs ring-1 duration-200 transition-all ${
-                    (error && !proposalTone) || (touched.tone && !proposalTone)
+              <div className="w-full" onBlur={() => setTouched(prev => ({ ...prev, tone: true }))}>
+                <Menu as="div" className="relative inline-block w-full">
+                  <label
+                    className="block text-sm mb-2"
+                    htmlFor="proposal-tone-selector"
+                  >
+                    Proposal Tone
+                  </label>
+                  <MenuButton
+                    id="proposal-tone-selector"
+                    className={`capitalize inline-flex w-full gap-x-1.5 rounded-md px-3 py-4 text-sm text-gray-900 shadow-xs ring-1 duration-200 transition-all ${(error && !proposalTone) || (touched.tone && !proposalTone)
                       ? "ring-red-600/10 ring-inset bg-red-50 hover:bg-red-100"
                       : "ring-gray-300 ring-inset bg-gray-50 hover:bg-gray-100"
-                  }`}
-                  aria-label="Select proposal tone"
-                >
-                  {proposalTone ?? "Select Option"}
-                  <ChevronDownIcon
-                    aria-hidden="true"
-                    className="ml-auto size-5 text-gray-400"
-                  />
-                </MenuButton>
-                {((error && !proposalTone) ||
-                  (touched.tone && !proposalTone)) && (
-                  <p className="text-xs text-red-700 mt-1">Required</p>
-                )}
-                <MenuItems
-                  transition
-                  className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-none data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
-                >
-                  <div className="py-1">
-                    {proposalToneOptions.map(tone => (
-                      <MenuItem key={tone.value}>
-                        <button
-                          onClick={() => setProposalTone(tone.value)}
-                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-none"
-                        >
-                          {tone.label}
-                        </button>
-                      </MenuItem>
-                    ))}
-                  </div>
-                </MenuItems>
-              </Menu>
+                      }`}
+                    aria-label="Select proposal tone"
+                  >
+                    {proposalTone ?? "Select Option"}
+                    <ChevronDownIcon
+                      aria-hidden="true"
+                      className="ml-auto size-5 text-gray-400"
+                    />
+                  </MenuButton>
+                  {((error && !proposalTone) ||
+                    (touched.tone && !proposalTone)) && (
+                      <p className="text-xs text-red-700 mt-1">Required</p>
+                    )}
+                  <MenuItems
+                    transition
+                    className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-none data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+                  >
+                    <div className="py-1">
+                      {proposalToneOptions.map(tone => (
+                        <MenuItem key={tone.value}>
+                          <button
+                            onClick={() => {
+                              setProposalTone(tone.value);
+                              setTouched(prev => ({ ...prev, tone: true }));
+                            }}
+                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-none"
+                          >
+                            {tone.label}
+                          </button>
+                        </MenuItem>
+                      ))}
+                    </div>
+                  </MenuItems>
+                </Menu>
+              </div>
             </div>
 
             <div>
               <TextInputField
                 id="jobTitle"
                 label="Job Title"
-                placeholder="Job Title"
+                placeholder="UiUx Designer | WordPress Developer..."
                 value={jobTitle}
                 onChange={e => setJobTitle(e.target.value)}
                 onBlur={() => setTouched(prev => ({ ...prev, jobTitle: true }))}
@@ -262,11 +270,10 @@ const PortfolioOptimizer: React.FC = () => {
               <textarea
                 required
                 id="jobSummary"
-                className={`w-full p-3 border rounded-md transition duration-150 ease-in-out bg-gray-50 placeholder:text-sm ${
-                  error || (touched.description && !jobSummary.trim())
-                    ? "ring-1 ring-red-600/10 ring-inset focus:ring-red-500 bg-red-50 placeholder-red-700"
-                    : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                }`}
+                className={`w-full p-3 border rounded-md transition duration-150 ease-in-out bg-gray-50 placeholder:text-sm ${error || (touched.description && !jobSummary.trim())
+                  ? "ring-1 ring-red-600/10 ring-inset focus:ring-red-500 bg-red-50 placeholder-red-700"
+                  : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                  }`}
                 rows={8}
                 style={{ maxHeight: "28em", resize: "vertical" }}
                 placeholder="Paste Job Summary here..."

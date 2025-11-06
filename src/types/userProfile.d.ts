@@ -2,11 +2,11 @@ export interface UserProfileTouchedFields {
   name: boolean;
   title: boolean;
   description: boolean;
-  profileLink: boolean;
+  portfolioLink: boolean;
+  professionalTitle: boolean;
 }
 
 export interface UserProfileState {
-  profileLink: string;
   portalLoading: boolean;
   snackbarOpen: boolean;
   snackbarMessage: string;
@@ -21,16 +21,19 @@ export interface UserProfileHeaderProps {
 }
 
 export interface UserProfileInfoProps {
-  user: any;
-  profileLink: string;
+  portfolioLink: string;
+  professionalTitle: string;
   touched: UserProfileTouchedFields;
-  onProfileLinkChange: (value: string) => void;
-  onProfileLinkBlur: () => void;
+  updateLoading: boolean;
+  onPortfolioLinkChange: (value: string) => void;
+  onPortfolioLinkBlur: () => void;
+  onProfessionalTitleChange: (value: string) => void;
+  onProfessionalTitleBlur: () => void;
+  onUpdateProfile: () => void;
 }
 
-export interface UserProfileCardProps {
-  // No props needed as it's static content
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface UserProfileCardProps {}
 
 export interface UserProfileSnackbarProps {
   snackbarMessage: string;

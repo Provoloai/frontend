@@ -4,6 +4,7 @@ import ForgotPasswordForm from "@/components/auth/ForgotPasswordForm";
 import { useForgotPassword } from "@/hooks/useForgotPassword";
 import { validateForgotPasswordField, validateForgotPasswordForm } from "@/utils/forgotPasswordValidation.util";
 import type { ForgotPasswordFormData, ForgotPasswordTouchedFields } from "@/types/auth";
+import AuthLayout from "@/components/auth/AuthLayout";
 
 const ForgotPassword = () => {
   const [formData, setFormData] = useState<ForgotPasswordFormData>({
@@ -49,7 +50,7 @@ const ForgotPassword = () => {
   }, [formData, sendResetEmail]);
 
   return (
-    <ForgotPasswordLayout>
+    <AuthLayout>
       <ForgotPasswordForm
         formData={formData}
         touched={touched}
@@ -62,7 +63,7 @@ const ForgotPassword = () => {
         onBlur={handleBlur}
         onSubmit={handleSubmit}
       />
-    </ForgotPasswordLayout>
+    </AuthLayout>
   );
 };
 

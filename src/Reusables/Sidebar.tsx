@@ -1,8 +1,10 @@
+import { useEffect } from "react";
 import { motion } from "motion/react";
 import { useSidebar } from "@/hooks/useSidebar";
 import { useActiveLink } from "@/hooks/useActiveLink";
 import { useSidebarLinkClass } from "@/hooks/useSidebarLinkClass";
 import { useGetProposalList } from "@/api";
+import { useRouterState } from "@tanstack/react-router";
 import { NAV_ITEMS, UPSKILL_ITEMS, FEEDBACK_ITEMS } from "@/constants/sidebar";
 import { ProposalHistoryItem } from "@/types/sidebar";
 import SidebarToggle from "@/components/sidebar/SidebarToggle";
@@ -13,13 +15,17 @@ import ProposalDropdown from "@/components/sidebar/ProposalDropdown";
 import UserProfile from "../pages/user/User";
 
 const Sidebar = () => {
+  const location = useRouterState({ select: (s) => s.location });
+  const isOnProposalHistoryPage = location.pathname.startsWith('/proposalHistory/');
+  
   const {
     isOpen,
     toggle,
     proposalDropdownOpen,
-    toggleProposalDropdown,
+    openProposalDropdown,
     closeProposalDropdown,
   } = useSidebar(true);
+  
   const { isActive } = useActiveLink();
   const { getLinkClass } = useSidebarLinkClass(isActive, isOpen);
 
@@ -33,8 +39,15 @@ const Sidebar = () => {
       })
     ) || [];
 
-  const handleProposalClick = () => {
-    toggleProposalDropdown();
+  // Auto-open dropdown if on a proposal history page
+  useEffect(() => {
+    if (isOnProposalHistoryPage) {
+      openProposalDropdown();
+    }
+  }, [isOnProposalHistoryPage, openProposalDropdown]);
+
+  const handleProposalClick = (): void => {
+    openProposalDropdown();
   };
 
   const proposalDropdown = (

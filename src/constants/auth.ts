@@ -8,6 +8,7 @@ export const LOGIN_CONFIG = {
   forgotPasswordText: "Forgot Password?",
   signUpText: "Don't have an account?",
   signUpLinkText: "Sign Up",
+  backHome: "Go Back Home"
 } as const;
 
 export const SIGNUP_CONFIG = {

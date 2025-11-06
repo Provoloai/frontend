@@ -11,7 +11,8 @@ import type {
   PasswordRequirements,
 } from "@/types/auth";
 import SignupForm from "@/components/auth/SignupForm";
-import SignupLayout from "@/components/auth/SignupLayout";
+import { SIGNUP_CONFIG } from "@/constants/auth";
+import AuthLayout from "@/components/auth/AuthLayout";
 
 export default function Signup() {
   // Form state
@@ -44,7 +45,7 @@ export default function Signup() {
   // Event handlers
   const handleInputChange = useCallback(
     (field: keyof SignupFormData, value: string) => {
-      setFormData((prev) => ({ ...prev, [field]: value }));
+      setFormData(prev => ({ ...prev, [field]: value }));
 
       // Validate field on change
       validateField(field, value, setValidationError);
@@ -53,7 +54,7 @@ export default function Signup() {
   );
 
   const handleBlur = useCallback((field: keyof SignupTouchedFields) => {
-    setTouched((prev) => ({ ...prev, [field]: true }));
+    setTouched(prev => ({ ...prev, [field]: true }));
   }, []);
 
   const handleSubmit = useCallback(
@@ -85,7 +86,7 @@ export default function Signup() {
   );
 
   return (
-    <SignupLayout>
+    <AuthLayout>
       <SignupForm
         formData={formData}
         touched={touched}
@@ -98,6 +99,9 @@ export default function Signup() {
         onSubmit={handleSubmit}
         onErrorClose={clearError}
       />
-    </SignupLayout>
+      <p className="mt-10 text-center text-xs text-gray-500">
+        {SIGNUP_CONFIG.consentText}
+      </p>
+    </AuthLayout>
   );
 }
