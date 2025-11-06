@@ -59,8 +59,8 @@ const Sidebar = () => {
 
   return (
     <motion.div
-      className={`relative h-screen flex flex-col border-r border-gray-200 text-sm bg-white ${
-        isOpen ? "w-72 p-6" : "w-20 p-3 py-6"
+      className={`relative h-screen flex flex-col border-r border-gray-200 text-sm bg-white px-3 py-6 ${
+        isOpen ? "w-72" : "w-20"
       }`}
       animate={{ width: isOpen ? 288 : 80 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
@@ -72,7 +72,8 @@ const Sidebar = () => {
       <SidebarLogo isOpen={isOpen} />
 
       {/* Navigation */}
-      <nav className="flex flex-col gap-2 h-full " aria-label="Main navigation">
+      <nav className="flex flex-col gap-2 h-full" aria-label="Main navigation">
+
         {/* Main Navigation Items */}
         <SidebarSection
           items={NAV_ITEMS}

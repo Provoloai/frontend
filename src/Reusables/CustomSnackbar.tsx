@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
-import Button from '@mui/joy/Button';
 import Snackbar from '@mui/joy/Snackbar';
-import PlaylistAddCheckCircleRoundedIcon from '@mui/icons-material/PlaylistAddCheckCircleRounded';
-import { Info } from 'lucide-react';
+import { BellRing } from 'lucide-react';
 
 interface CustomSnackbarProps {
   snackbarMessage: string;
@@ -36,22 +34,15 @@ export default function CustomSnackbar({
 
   return (
     <Snackbar
-      variant="plain"
+      variant="solid"
       color={snackbarColor}
       open={isOpen}
       onClose={handleClose}
-      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      startDecorator={<Info  size={15}/>}
-
-      // endDecorator={
-      //   <Button onClick={handleClose} size="sm" variant="soft" color={snackbarColor}>
-      //     <p className='text-xs'>
-      //       Dismiss
-      //     </p>
-      //   </Button>
-      // }
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      startDecorator={<BellRing  size={20}/>}
+      className="max-w-md"
     >
-      <p className='text-sm'>{snackbarMessage} </p>
+      <p className='text-sm ml-3'>{snackbarMessage} </p>
     </Snackbar>
   );
 }

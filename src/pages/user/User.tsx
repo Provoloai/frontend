@@ -78,11 +78,12 @@ export default function User({ open }: any) {
         <MenuButton className="relative flex pl-3 w-full items-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-opacity duration-200 hover:opacity-80">
           <span className="absolute" aria-hidden="true" />
 
-          {loadingUserData ? (
-            <div className="size-8 rounded-full bg-gray-300 animate-pulse" />
-          ) : (
-            <GenerateAvatar name={userData?.displayName} size={32} />
-          )}
+          {
+            loadingUserData ?
+              (<div className="size-8 rounded-full bg-gray-300 animate-pulse" />)
+              :
+              (<GenerateAvatar name={userData?.displayName} size={32} />)
+          }
 
           {open && (
             <motion.span

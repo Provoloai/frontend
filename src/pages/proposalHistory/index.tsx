@@ -168,7 +168,7 @@ const ProposalHistory: React.FC = () => {
         </motion.div>
 
         <motion.div
-          className="grid grid-cols-2 gap-x-5"
+          className="grid lg:grid-cols-2 md:grid-cols-1 sm:grid-cols-1 gap-x-5 gap-y-5"
           variants={proposalContainerVariants}
         >
           {/* Train of Thoughts Section */}

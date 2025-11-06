@@ -173,14 +173,14 @@ const PortfolioOptimizer: React.FC = () => {
           <h2 className="text-3xl font-medium mb-3 text-center flex items-center gap-3">
             Proposals <Sparkles />
           </h2>
-          <p className="mb-6 w-1/3 text-gray-400">
+          <p className="mb-6 lg:w-1/3 text-gray-400">
             Create winning proposals in minutes with AI-powered personalization
             and professional templates
           </p>
         </motion.div>
 
         <motion.div
-          className="grid grid-cols-2 gap-x-5"
+          className="grid lg:grid-cols-2 md:grid-cols-1 sm:grid-cols-1 gap-x-5 gap-y-5"
           variants={proposalContainerVariants}
         >
           {/* Form Inputs Section */}
