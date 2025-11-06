@@ -6,6 +6,7 @@ import AuthLayout from "@/components/auth/AuthLayout";
 import CustomSnackbar from "@/Reusables/CustomSnackbar";
 
 const VerificationPage: React.FC = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
   const [touched, setTouched] = useState<boolean[]>([
     false,
@@ -16,6 +17,11 @@ const VerificationPage: React.FC = () => {
     false,
   ]);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+   const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    color: "success" as "primary" | "neutral" | "danger" | "success" | "warning"
+  });
 
   const handleChange = (
     index: number,
@@ -76,45 +82,70 @@ const VerificationPage: React.FC = () => {
     }
   };
   const navigate = useNavigate();
-  const handleVerify = async () => {
+ 
+
+   const handleVerify = async () => {
     setTouched([true, true, true, true, true, true]);
     const otpCode = otp.join("");
+    setIsLoading(true);
+    
     try {
       const res = await authApi.verify(otpCode);
-      if (res?.success) {
-        navigate({ to: "/optimizer", replace: true });
-        <CustomSnackbar
-          open={res.success}
-          snackbarColor="success"
-          snackbarMessage={res?.message || ""}
-        />;
+      
+      if (!res?.success) {
+        setSnackbar({
+          open: true,
+          message: res?.message || "Email verified successfully!",
+          color: "success"
+        });
+        
+        // Navigate after a short delay to let user see success message
+        setTimeout(() => {
+          navigate({ to: "/optimizer", replace: true });
+        }, 1000);
       } else {
-        <CustomSnackbar
-          open={!res.success}
-          snackbarColor="danger"
-          snackbarMessage={res?.message || ""}
-        />;
+        setSnackbar({
+          open: true,
+          message: res?.message || "Verification failed. Please try again.",
+          color: "danger"
+        });
       }
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      setSnackbar({
+        open: true,
+        message: error?.message || "An error occurred. Please try again.",
+        color: "danger"
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleResend = async () => {
-    const res = await authApi.sendVerificationCode();
-
-    if (res?.success) {
-      <CustomSnackbar
-        open={res.success}
-        snackbarColor="success"
-        snackbarMessage={res?.message || ""}
-      />;
-    } else {
-      <CustomSnackbar
-        open={!res.success}
-        snackbarColor="danger"
-        snackbarMessage={res?.message || ""}
-      />;
+    try {
+      const res = await authApi.sendVerificationCode();
+      console.log(res);
+      
+      
+      if (!res?.success) {
+        setSnackbar({
+          open: true,
+          message: res?.message || "Verification code sent!",
+          color: "success"
+        });
+      } else {
+        setSnackbar({
+          open: true,
+          message: res?.message || "Failed to send code. Please try again.",
+          color: "danger"
+        });
+      }
+    } catch (error: any) {
+      setSnackbar({
+        open: true,
+        message: error?.message || "An error occurred. Please try again.",
+        color: "danger"
+      });
     }
   };
 
@@ -182,7 +213,7 @@ const VerificationPage: React.FC = () => {
                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
             }`}
           >
-            Verify
+            {isLoading ? "Verifying..." : "Verify"}
           </CustomButton>
 
           {/* Resend Link */}
@@ -199,6 +230,14 @@ const VerificationPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Snackbar */}
+      <CustomSnackbar
+        open={snackbar.open}
+        snackbarMessage={snackbar.message}
+        snackbarColor={snackbar.color}
+        close={() => setSnackbar({ ...snackbar, open: false })}
+      />
     </AuthLayout>
   );
 };

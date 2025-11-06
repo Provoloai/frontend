@@ -88,7 +88,7 @@ export const authApi = {
     });
   },
   signup: async (idToken: string) => {
-    return apiRequest<{ success: boolean; message?: string }>("/auth/signup", {
+    return apiRequest<{ data: any }>("/auth/signup", {
       method: "POST",
       body: JSON.stringify({ idToken }),
     });
