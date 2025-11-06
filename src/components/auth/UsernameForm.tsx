@@ -1,4 +1,4 @@
-import { AtSign, Sparkles } from "lucide-react";
+import { AtSign, Sparkles, UserRound } from "lucide-react";
 import TextInputField from "@/Reusables/TextInputField";
 import CustomButton from "@/Reusables/CustomButton";
 import { USERNAME_CONFIG } from "@/constants/auth";
@@ -15,7 +15,7 @@ const UsernameForm: React.FC<UsernameFormProps> = ({
   onSubmit,
 }) => {
   return (
-    <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+    <div className="bg-white p-8">
       <div className="text-center">
         <div className="w-full flex items-center flex-col">
           <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-blue-50 sm:mx-0 sm:size-10 text-primary">
@@ -34,13 +34,13 @@ const UsernameForm: React.FC<UsernameFormProps> = ({
             </div>
           )}
 
-          <div className="my-5">
+          <div className="my-6">
             <TextInputField
               id="username"
               name="username"
               required
               value={formData.username}
-              iconStart={<AtSign size={20} />}
+              iconStart={<UserRound size={20} />}
               onChange={(e) => onInputChange("username", e.target.value)}
               onBlur={() => onBlur("username")}
               type="text"
