@@ -46,7 +46,7 @@ const OptimizerForm: React.FC<OptimizerFormProps> = ({
           <TextInputField
             id="freelancerName"
             label="Full Name"
-            placeholder="John Doe"
+            placeholder="Nina Nonymous"
             value={formData.freelancerName}
             onChange={(e) => onInputChange("freelancerName", e.target.value)}
             onBlur={() => onBlur("name")}
@@ -59,7 +59,7 @@ const OptimizerForm: React.FC<OptimizerFormProps> = ({
           <TextInputField
             id="profileTitle"
             label="Professional Title"
-            placeholder="Senior Full-Stack Developer | React & Node.js Expert"
+            placeholder="UiUx Designer | WordPress Developer..."
             value={formData.profileTitle}
             onChange={(e) => onInputChange("profileTitle", e.target.value)}
             onBlur={() => onBlur("title")}

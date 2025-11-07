@@ -50,7 +50,7 @@ export default function SidebarLink({
 
       {/* Tooltip when collapsed */}
       {!isOpen && (
-        <span className="absolute left-full ml-2 px-2 py-1 text-xs rounded bg-gray-900 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 pointer-events-none">
+        <span className="absolute left-full ml-5 px-2 py-1 text-xs rounded bg-gray-900 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 pointer-events-none">
           {label}
         </span>
       )}

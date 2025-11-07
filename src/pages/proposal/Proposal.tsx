@@ -192,7 +192,7 @@ const PortfolioOptimizer: React.FC = () => {
               <TextInputField
                 id="clientName"
                 label="Client's Name (Personal Touch)"
-                placeholder="John Doe"
+                placeholder="Nina Nonymous"
                 value={clientName}
                 onChange={e => setClientName(e.target.value)}
                 onBlur={() => setTouched(prev => ({ ...prev, name: true }))}
