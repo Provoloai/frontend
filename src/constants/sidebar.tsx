@@ -17,7 +17,7 @@ export const NAV_ITEMS: NavigationItem[] = [
   {
     to: "/proposal",
     icon: <Feather size={20} />,
-    label: "Ai Proposals",
+    label: "Proposals",
     badge: { text: "New", color: "green" },
   },
   {

@@ -31,12 +31,12 @@ export default function UserProfile() {
 
   return (
     <motion.form
-      className="flex-1 flex flex-col overflow-y-auto relative h-screen px-6 sm:px-10 lg:p-20 "
+      className="flex-1 flex flex-col overflow-y-auto relative h-screen p-6 sm:p-10 "
       initial="hidden"
       animate="visible"
       variants={USER_PROFILE_ANIMATIONS.container}
     >
-      <div className="space-y-10 m-auto max-w-3xl w-full px-10">
+      <div className="space-y-10 m-auto max-w-3xl w-full lg:p-10 pt-10">
         <Banner />
 
         <UserProfileHeader
