@@ -40,6 +40,7 @@ const PortfolioOptimizer: React.FC = () => {
   const [generatedProposal, setGeneratedProposal] =
     useState<ProposalData | null>(null);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
+  const [refineType, setRefineType] = useState("")
 
   // Memoized improvement options to prevent re-renders
   const improvementOptions: ImprovementOption[] = useMemo(
@@ -50,6 +51,7 @@ const PortfolioOptimizer: React.FC = () => {
         description: "Add more details or examples.",
         bgColor: "bg-blue-50",
         hoverColor: "hover:bg-blue-100",
+        value: 'expand_text'
       },
       {
         icon: Workflow,
@@ -57,6 +59,7 @@ const PortfolioOptimizer: React.FC = () => {
         description: "Reorganize ideas for clarity.",
         bgColor: "bg-purple-50",
         hoverColor: "hover:bg-purple-100",
+        value: 'improve_flow'
       },
       {
         icon: Scissors,
@@ -64,6 +67,7 @@ const PortfolioOptimizer: React.FC = () => {
         description: "Remove unnecessary words.",
         bgColor: "bg-yellow-50",
         hoverColor: "hover:bg-yellow-100",
+        value: 'trim_text'
       },
       {
         icon: PenLine,
@@ -71,6 +75,7 @@ const PortfolioOptimizer: React.FC = () => {
         description: "Break down complex sentences.",
         bgColor: "bg-red-50",
         hoverColor: "hover:bg-red-100",
+        value: ''
       },
     ],
     []
@@ -124,6 +129,39 @@ const PortfolioOptimizer: React.FC = () => {
       setIsGenerating(false);
     }
   }, [clientName, proposalTone, jobSummary]);
+
+  const refineProposal = async () => {
+// const data = {
+//   proposalId: generatedProposal?.proposalId,
+//         newTone: proposalTone!,
+//         refinementType: refineType,
+// }
+// console.log(data);
+
+    setIsGenerating(true);
+    setError("");
+    setGeneratedProposal(null);
+
+    try {
+      const data = await proposalApi.refineGenerateProposal({
+        proposalId: generatedProposal?.proposalId,
+        newTone: proposalTone!,
+        refinementType: refineType,
+      });
+      setGeneratedProposal(data.data);
+      await queryClient.invalidateQueries({
+        queryKey: ["proposal-history"],
+      });
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to generate proposal. Please try again.";
+      setError(errorMessage);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   // Optimized: Copy proposal to clipboard with locked feedback state and cleanup
   const copyToClipboard = useCallback(async (): Promise<void> => {
@@ -498,8 +536,7 @@ const PortfolioOptimizer: React.FC = () => {
                   <motion.div key={index} variants={proposalItemVariants}>
                     <button
                       onClick={() => {
-                        // TODO: Implement improvement action
-                        console.log(`Improve proposal: ${option.title}`);
+                        setRefineType(option.value);
                       }}
                       className={`p-5 rounded-2xl transition-all duration-200 ${option.bgColor} ${option.hoverColor} py-[24px] px-5 block w-full text-left`}
                     >
@@ -551,7 +588,7 @@ const PortfolioOptimizer: React.FC = () => {
 
               {/* Regenerate button */}
               <CustomButton
-                onClick={generateProposal}
+                onClick={refineProposal}
                 isLoading={isGenerating}
                 className="btn-primary mt-auto"
               >
