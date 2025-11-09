@@ -118,11 +118,10 @@ const OptimizerForm: React.FC<OptimizerFormProps> = ({
             <textarea
               id="profileDescription"
               name={field.name}
-              className={`w-full p-3 border rounded-md transition duration-150 ease-in-out bg-gray-50 placeholder:text-sm ${
-                errors.profileDescription
+              className={`w-full p-3 border rounded-md transition duration-150 ease-in-out bg-gray-50 placeholder:text-sm ${errors.profileDescription
                   ? "ring-1 ring-red-600/10 ring-inset focus:ring-red-500 bg-red-50 placeholder-red-700"
                   : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-              }`}
+                }`}
               rows={8}
               style={{ maxHeight: "28em", resize: "vertical" }}
               placeholder="Paste your profile overview & summary of your services here..."
@@ -144,13 +143,12 @@ const OptimizerForm: React.FC<OptimizerFormProps> = ({
           <div className="text-xs text-gray-500">
             {wordCount} {wordCount === 1 ? "word" : "words"} • {characterCount} {characterCount === 1 ? "character" : "characters"}
           </div>
-          <div className={`text-xs ${
-            characterCount < minChars 
-              ? "text-black" 
-              : characterCount > maxChars 
-              ? "text-red-600" 
-              : "text-gray-500"
-          }`}>
+          <div className={`text-xs ${characterCount < minChars
+              ? "text-black"
+              : characterCount > maxChars
+                ? "text-red-600"
+                : "text-gray-500"
+            }`}>
             {characterCount} / {maxChars} characters
             {characterCount < minChars && ` (min: ${minChars})`}
           </div>
@@ -169,7 +167,7 @@ const OptimizerForm: React.FC<OptimizerFormProps> = ({
 
       {/* Quota Display */}
       {quotaData && (
-        <motion.div 
+        <motion.div
           className="mt-4 text-center"
           variants={optimizerItemVariants}
         >
@@ -178,8 +176,8 @@ const OptimizerForm: React.FC<OptimizerFormProps> = ({
             <span>/</span>
             {quotaData.limit === -1 || quotaData.limit === "unlimited" ? (
               <>
-                <InfinityIcon size={14} className="text-gray-500" />
-                <span>optimizations</span>
+                <InfinityIcon size={15} className="text-gray-500" />
+                <span>Optimizations</span>
               </>
             ) : (
               <span>{quotaData.limit} optimizations</span>
