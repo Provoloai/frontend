@@ -77,12 +77,11 @@ const OptimizerForm: React.FC<OptimizerFormProps> = ({
         <textarea
           required
           id="profileDescription"
-          className={`w-full p-3 border rounded-md transition duration-150 ease-in-out bg-gray-50 placeholder:text-sm ${
-            error ||
+          className={`w-full p-3 border rounded-md transition duration-150 ease-in-out bg-gray-50 placeholder:text-sm ${error ||
             (touched.description && !formData?.profileDescription?.trim())
-              ? "ring-1 ring-red-600/10 ring-inset focus:ring-red-500 bg-red-50 placeholder-red-700"
-              : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-          }`}
+            ? "ring-1 ring-red-600/10 ring-inset focus:ring-red-500 bg-red-50 placeholder-red-700"
+            : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+            }`}
           rows={8}
           style={{ maxHeight: "28em", resize: "vertical" }}
           placeholder="Paste your profile overview & summary of your services here..."
@@ -93,8 +92,8 @@ const OptimizerForm: React.FC<OptimizerFormProps> = ({
 
         {(error ||
           (touched.description && !formData.profileDescription.trim())) && (
-          <p className="text-xs text-red-700">Required</p>
-        )}
+            <p className="text-xs text-red-700">Required</p>
+          )}
       </motion.div>
 
       <motion.div variants={optimizerItemVariants}>
