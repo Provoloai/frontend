@@ -112,13 +112,13 @@ const PortfolioOptimizer = () => {
             error={error}
             onSubmit={handleSubmit}
             onErrorClose={handleErrorClose}
-            quotaData={quotaData?.data || null}
           />
 
           {/* Output Section */}
           <OptimizerResultsComponent
             sections={accordionSections}
             hasResults={!!results}
+            quotaData={quotaData?.data || null}
           />
         </div>
       </motion.div>
