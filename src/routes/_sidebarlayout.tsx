@@ -12,7 +12,7 @@ export const Route = createFileRoute("/_sidebarlayout")({
 });
 
 function RouteComponent() {
-  const [operatingSystem, setOperatingSystem] = useState(null);
+  const [operatingSystem, setOperatingSystem] = useState<"android" | "ios" | "tablet" | "unknown" | null>(null);
   const { user, loading, isFetching } = useSession();
 
   useEffect(() => {
