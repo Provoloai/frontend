@@ -1,7 +1,8 @@
 import { useState, useMemo } from "react";
 import { motion } from "motion/react";
+import { useQueryClient } from "@tanstack/react-query";
 import useSession from "../hooks/useSession";
-import { optimizerApi } from "@/api";
+import { optimizerApi, useGetQuota } from "@/api";
 import { optimizerContainerVariants, optimizerItemVariants } from "@/constants/animations";
 import type { OptimizerResults, AccordionSection } from "@/types/optimizer";
 import type { PortfolioFormData } from "@/schemas/portfolioSchema";
@@ -11,6 +12,10 @@ import OptimizerResultsComponent from "@/components/optimizer/OptimizerResults";
 const PortfolioOptimizer = () => {
   // Get user from backend session
   const { user } = useSession();
+  const queryClient = useQueryClient();
+
+  // Fetch quota information
+  const { data: quotaData } = useGetQuota("upwork_profile_optimizer");
 
   // Results state
   const [results, setResults] = useState<OptimizerResults | null>(null);
@@ -63,6 +68,11 @@ const PortfolioOptimizer = () => {
         recommendedVisuals: result.data.recommendedVisuals || "N/A",
         beforeAfterComparison: result.data.beforeAfterComparison || "N/A",
       });
+
+      // Invalidate quota to refresh the count
+      await queryClient.invalidateQueries({
+        queryKey: ["quota", "upwork_profile_optimizer"],
+      });
     } catch (err: unknown) {
       const error = err as Error;
       if (error.name === "TypeError" && error.message.includes("fetch")) {
@@ -102,6 +112,7 @@ const PortfolioOptimizer = () => {
             error={error}
             onSubmit={handleSubmit}
             onErrorClose={handleErrorClose}
+            quotaData={quotaData?.data || null}
           />
 
           {/* Output Section */}
