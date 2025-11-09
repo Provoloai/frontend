@@ -54,7 +54,7 @@ const ProposalHistory: React.FC = () => {
           copyTimeoutRef.current = null;
         }, 2000);
       }
-    } catch (error) {
+    } catch {
       setCopyState("idle");
     }
   }, [copyState, generatedProposal?.mdx]);
@@ -208,9 +208,9 @@ const ProposalHistory: React.FC = () => {
                 </div>
               )}
 
-            {generatedProposal?.portfolioLink && (
-              <div className="mb-4">
-                <h4 className="font-medium text-gray-900 mb-2">Portfolio</h4>
+            <div className="mb-4">
+              <h4 className="font-medium text-gray-900 mb-2">Portfolio</h4>
+              {generatedProposal?.portfolioLink ? (
                 <a
                   href={generatedProposal.portfolioLink}
                   target="_blank"
@@ -219,8 +219,15 @@ const ProposalHistory: React.FC = () => {
                 >
                   {generatedProposal.portfolioLink}
                 </a>
-              </div>
-            )}
+              ) : (
+                <Link
+                  to="/userprofile"
+                  className="text-blue-600 hover:text-blue-800 text-sm"
+                >
+                  Click here to set profile link
+                </Link>
+              )}
+            </div>
 
             {generatedProposal?.availability && (
               <div className="mb-4">

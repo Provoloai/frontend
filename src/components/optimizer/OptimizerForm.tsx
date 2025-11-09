@@ -1,4 +1,6 @@
 import { motion } from "motion/react";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import TextInputField from "../../Reusables/TextInputField";
 import CustomButton from "../../Reusables/CustomButton";
 import CustomSnackbar from "../../Reusables/CustomSnackbar";
@@ -7,34 +9,45 @@ import {
   optimizerItemVariants,
   optimizerCardVariants,
 } from "@/constants/animations";
-import type {
-  OptimizerFormData,
-  OptimizerTouchedFields,
-} from "@/types/optimizer";
+import { portfolioInputSchema, type PortfolioFormData } from "@/schemas/portfolioSchema";
 
 interface OptimizerFormProps {
-  formData: OptimizerFormData;
-  touched: OptimizerTouchedFields;
   isLoading: boolean;
   error: string;
-  onInputChange: (field: keyof OptimizerFormData, value: string) => void;
-  onBlur: (field: keyof OptimizerTouchedFields) => void;
-  onSubmit: () => void;
+  onSubmit: (data: PortfolioFormData) => void;
   onErrorClose: () => void;
 }
 
 const OptimizerForm: React.FC<OptimizerFormProps> = ({
-  formData,
-  touched,
   isLoading,
   error,
-  onInputChange,
-  onBlur,
   onSubmit,
   onErrorClose,
 }) => {
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm<PortfolioFormData>({
+    resolver: zodResolver(portfolioInputSchema),
+    mode: "onBlur", // Validate on blur for better UX
+    defaultValues: {
+      freelancerName: "",
+      profileTitle: "",
+      profileDescription: "",
+    },
+  });
+
+  // Watch the description field for word/character counter
+  const descriptionValue = watch("profileDescription") || "";
+  const characterCount = descriptionValue.length;
+  const wordCount = descriptionValue.trim() ? descriptionValue.trim().split(/\s+/).length : 0;
+  const minChars = 50;
+  const maxChars = 5000;
   return (
-    <motion.div
+    <motion.form
+      onSubmit={handleSubmit(onSubmit)}
       className="mb-8 p-5 bg-white rounded-lg border border-gray-200"
       variants={optimizerCardVariants}
     >
@@ -43,28 +56,44 @@ const OptimizerForm: React.FC<OptimizerFormProps> = ({
         variants={optimizerContainerVariants}
       >
         <motion.div variants={optimizerItemVariants}>
-          <TextInputField
-            id="freelancerName"
-            label="Full Name"
-            placeholder="Nina Nonymous"
-            value={formData.freelancerName}
-            onChange={(e) => onInputChange("freelancerName", e.target.value)}
-            onBlur={() => onBlur("name")}
-            touched={touched.name || !!error}
-            required
+          <Controller
+            name="freelancerName"
+            control={control}
+            render={({ field }) => (
+              <TextInputField
+                id="freelancerName"
+                label="Full Name"
+                placeholder="Nina Nonymous"
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                name={field.name}
+                touched={!!errors.freelancerName}
+                error={errors.freelancerName?.message}
+                required
+              />
+            )}
           />
         </motion.div>
 
         <motion.div variants={optimizerItemVariants}>
-          <TextInputField
-            id="profileTitle"
-            label="Professional Title"
-            placeholder="UiUx Designer | WordPress Developer..."
-            value={formData.profileTitle}
-            onChange={(e) => onInputChange("profileTitle", e.target.value)}
-            onBlur={() => onBlur("title")}
-            touched={touched.title || !!error}
-            required
+          <Controller
+            name="profileTitle"
+            control={control}
+            render={({ field }) => (
+              <TextInputField
+                id="profileTitle"
+                label="Professional Title"
+                placeholder="UiUx Designer | WordPress Developer..."
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                name={field.name}
+                touched={!!errors.profileTitle}
+                error={errors.profileTitle?.message}
+                required
+              />
+            )}
           />
         </motion.div>
       </motion.div>
@@ -74,33 +103,56 @@ const OptimizerForm: React.FC<OptimizerFormProps> = ({
           About You (Profile Overview)
         </label>
 
-        <textarea
-          required
-          id="profileDescription"
-          className={`w-full p-3 border rounded-md transition duration-150 ease-in-out bg-gray-50 placeholder:text-sm ${
-            error ||
-            (touched.description && !formData?.profileDescription?.trim())
-              ? "ring-1 ring-red-600/10 ring-inset focus:ring-red-500 bg-red-50 placeholder-red-700"
-              : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-          }`}
-          rows={8}
-          style={{ maxHeight: "28em", resize: "vertical" }}
-          placeholder="Paste your profile overview & summary of your services here..."
-          value={formData.profileDescription}
-          onChange={(e) => onInputChange("profileDescription", e.target.value)}
-          onBlur={() => onBlur("description")}
+        <Controller
+          name="profileDescription"
+          control={control}
+          render={({ field }) => (
+            <textarea
+              id="profileDescription"
+              name={field.name}
+              className={`w-full p-3 border rounded-md transition duration-150 ease-in-out bg-gray-50 placeholder:text-sm ${
+                errors.profileDescription
+                  ? "ring-1 ring-red-600/10 ring-inset focus:ring-red-500 bg-red-50 placeholder-red-700"
+                  : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+              }`}
+              rows={8}
+              style={{ maxHeight: "28em", resize: "vertical" }}
+              placeholder="Paste your profile overview & summary of your services here..."
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+            />
+          )}
         />
 
-        {(error ||
-          (touched.description && !formData.profileDescription.trim())) && (
-          <p className="text-xs text-red-700">Required</p>
+        {errors.profileDescription && (
+          <p className="text-xs text-red-700 mt-1">
+            {errors.profileDescription.message}
+          </p>
         )}
+
+        {/* Word/Character Counter */}
+        <div className="flex justify-between items-center mt-2">
+          <div className="text-xs text-gray-500">
+            {wordCount} {wordCount === 1 ? "word" : "words"} • {characterCount} {characterCount === 1 ? "character" : "characters"}
+          </div>
+          <div className={`text-xs ${
+            characterCount < minChars 
+              ? "text-black" 
+              : characterCount > maxChars 
+              ? "text-red-600" 
+              : "text-gray-500"
+          }`}>
+            {characterCount} / {maxChars} characters
+            {characterCount < minChars && ` (min: ${minChars})`}
+          </div>
+        </div>
       </motion.div>
 
       <motion.div variants={optimizerItemVariants}>
         <CustomButton
-          onClick={onSubmit}
-          isLoading={isLoading}
+          type="submit"
+          isLoading={isLoading || isSubmitting}
           className="btn-primary"
         >
           Run Optimization
@@ -115,7 +167,7 @@ const OptimizerForm: React.FC<OptimizerFormProps> = ({
           snackbarMessage={error}
         />
       )}
-    </motion.div>
+    </motion.form>
   );
 };
 

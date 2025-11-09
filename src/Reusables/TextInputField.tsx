@@ -6,8 +6,8 @@ interface TextInputFieldProps {
     name?: string;
     label: string;
     placeholder?: string;
-    value: string;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    value?: string;
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
     touched?: boolean;
     type?: "text" | "password" | "email" | "number";
@@ -15,9 +15,11 @@ interface TextInputFieldProps {
     required?: boolean;
     error?: string;
     disabled?: boolean;
+    // React Hook Form compatibility
+    ref?: React.Ref<HTMLInputElement>;
 }
 
-const TextInputField: React.FC<TextInputFieldProps> = ({
+const TextInputField = React.forwardRef<HTMLInputElement, TextInputFieldProps>(({
     id,
     name,
     label,
@@ -31,9 +33,10 @@ const TextInputField: React.FC<TextInputFieldProps> = ({
     required = false,
     error,
     disabled = false,
-}) => {
+}, ref) => {
     const [showPassword, setShowPassword] = useState(false);
-    const isInvalid = (touched && required && !value.trim()) || (error && error.length > 0);
+    const inputValue = value ?? "";
+    const isInvalid = (touched && required && !inputValue.trim()) || (error && error.length > 0);
 
     const isPassword = type === "password";
     const currentType = isPassword && showPassword ? "text" : type;
@@ -58,6 +61,7 @@ const TextInputField: React.FC<TextInputFieldProps> = ({
                 )}
 
                 <input
+                    ref={ref}
                     required={required}
                     type={currentType ?? "text"}
                     id={id}
@@ -74,7 +78,7 @@ const TextInputField: React.FC<TextInputFieldProps> = ({
                             : "bg-gray-50"
                         }`}
                     placeholder={placeholder}
-                    value={value}
+                    value={inputValue}
                     onChange={onChange}
                     onBlur={onBlur}
                     disabled={disabled}
@@ -101,6 +105,8 @@ const TextInputField: React.FC<TextInputFieldProps> = ({
             )}
         </div>
     );
-};
+});
+
+TextInputField.displayName = "TextInputField";
 
 export default TextInputField;
