@@ -161,5 +161,31 @@ export const useGetProposal = (id: string) => {
   });
 };
 
+// Quota API functions
+export const quotaApi = {
+  getQuota: async (quotaSlug: string) => {
+    return apiRequest<{ 
+      success: boolean;
+      message: string;
+      data: {
+        quota: string;
+        count: number;
+        limit: string | number;
+        remaining: string | number;
+      }
+    }>(`/ai/quota?quota=${quotaSlug}`, {
+      method: "GET",
+    });
+  },
+};
+
+export const useGetQuota = (quotaSlug: string) => {
+  return useQuery({
+    queryKey: ["quota", quotaSlug],
+    queryFn: () => quotaApi.getQuota(quotaSlug),
+    enabled: !!quotaSlug,
+  });
+};
+
 // Export the generic API request function for custom use cases
 export { apiRequest };
