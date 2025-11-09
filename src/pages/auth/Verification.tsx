@@ -17,7 +17,7 @@ const VerificationPage: React.FC = () => {
     false,
   ]);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-   const [snackbar, setSnackbar] = useState({
+  const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
     color: "success" as "primary" | "neutral" | "danger" | "success" | "warning"
@@ -82,23 +82,23 @@ const VerificationPage: React.FC = () => {
     }
   };
   const navigate = useNavigate();
- 
 
-   const handleVerify = async () => {
+
+  const handleVerify = async () => {
     setTouched([true, true, true, true, true, true]);
     const otpCode = otp.join("");
     setIsLoading(true);
-    
+
     try {
       const res = await authApi.verify(otpCode);
-      
+
       if (!res?.success) {
         setSnackbar({
           open: true,
           message: res?.message || "Email verified successfully!",
           color: "success"
         });
-        
+
         // Navigate after a short delay to let user see success message
         setTimeout(() => {
           navigate({ to: "/optimizer", replace: true });
@@ -125,8 +125,8 @@ const VerificationPage: React.FC = () => {
     try {
       const res = await authApi.sendVerificationCode();
       console.log(res);
-      
-      
+
+
       if (!res?.success) {
         setSnackbar({
           open: true,
@@ -156,7 +156,7 @@ const VerificationPage: React.FC = () => {
     <AuthLayout>
       <div className="sm:mx-auto sm:w-full sm:max-w-lg bg-white lg:p-10 md:p-8 p-5 mt-10 rounded-md border z-30">
         {/* Card */}
-        <div className="p-8">
+        <div className="p">
           <h1 className="text-2xl font-medium text-center mb-2">
             Verify Your Email
           </h1>
@@ -186,17 +186,16 @@ const VerificationPage: React.FC = () => {
                     onKeyDown={e => handleKeyDown(index, e)}
                     onBlur={() => handleBlur(index)}
                     onPaste={handlePaste}
-                    className={`w-full h-10 md:h-14 text-center text-md font-semibold p-3 border rounded-md transition duration-150 ease-in-out bg-gray-50 ${
-                      touched[index] && !digit
-                        ? "ring-1 ring-red-600/10 ring-inset bg-red-50 border-red-300"
-                        : "border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                    } focus:outline-none`}
+                    className={`w-full h-10 md:h-14 text-center text-md font-semibold p-3 border rounded-md transition duration-150 ease-in-out bg-gray-50 ${touched[index] && !digit
+                      ? "ring-1 ring-red-600/10 ring-inset bg-red-50 border-red-300"
+                      : "border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      } focus:outline-none`}
                   />
                 </div>
               ))}
             </div>
             {hasError && (
-              <p className="text-xs text-red-700 mt-1 text-center">
+              <p className="text-xs text-red-700 mt-1">
                 Please enter all 6 digits
               </p>
             )}
@@ -207,23 +206,19 @@ const VerificationPage: React.FC = () => {
             type="submit"
             onClick={handleVerify}
             disabled={!isComplete}
-            className={`w-full py-3 rounded-md font-medium transition duration-150 ${
-              isComplete
-                ? "bg-black text-white hover:bg-gray-800 cursor-pointer"
-                : "bg-gray-300 text-gray-500 cursor-not-allowed"
-            }`}
+            className="btn-primary "
           >
             {isLoading ? "Verifying..." : "Verify"}
           </CustomButton>
 
           {/* Resend Link */}
           <div className="text-center mt-6 flex gap-1 justify-center">
-            <span className="text-sm text-gray-600">
+            <span className="text-xs text-gray-500">
               Didn't receive the code?{" "}
             </span>
             <p
               onClick={handleResend}
-              className="text-sm text-gray-900 underline hover:text-gray-700 cursor-pointer"
+              className="text-xs text-gray-600 underline hover:text-gray-500 cursor-pointer"
             >
               Resend Code
             </p>

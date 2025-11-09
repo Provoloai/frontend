@@ -6,11 +6,11 @@ export function useSidebarLinkClass(
 ) {
   const getLinkClass = useCallback(
     (path: string): string =>
-      `relative group flex items-center rounded-md transition-all duration-200 ${
+      `relative group flex items-center rounded-md transition-all duration-300 p-3 ${
         isActive(path)
           ? "bg-gray-50 text-[#0c54f2]"
           : "text-gray-500 hover:bg-gray-50 hover:text-gray-950"
-      } ${isOpen ? "p-3 gap-3" : "p-3 justify-center"}`,
+      } ${isOpen ? "gap-3" : "justify-start"}`,
     [isActive, isOpen]
   );
 

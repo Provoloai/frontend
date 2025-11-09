@@ -173,14 +173,14 @@ const PortfolioOptimizer: React.FC = () => {
           <h2 className="text-3xl font-medium mb-3 text-center flex items-center gap-3">
             Proposals <Sparkles />
           </h2>
-          <p className="mb-6 w-1/3 text-gray-400">
+          <p className="mb-6 lg:w-1/3 text-gray-400">
             Create winning proposals in minutes with AI-powered personalization
             and professional templates
           </p>
         </motion.div>
 
         <motion.div
-          className="grid grid-cols-2 gap-x-5"
+          className="grid lg:grid-cols-2 md:grid-cols-1 sm:grid-cols-1 gap-x-5 gap-y-5"
           variants={proposalContainerVariants}
         >
           {/* Form Inputs Section */}
@@ -192,7 +192,7 @@ const PortfolioOptimizer: React.FC = () => {
               <TextInputField
                 id="clientName"
                 label="Client's Name (Personal Touch)"
-                placeholder="John Doe"
+                placeholder="Nina Nonymous"
                 value={clientName}
                 onChange={e => setClientName(e.target.value)}
                 onBlur={() => setTouched(prev => ({ ...prev, name: true }))}
@@ -440,23 +440,6 @@ const PortfolioOptimizer: React.FC = () => {
                   <h3 className="text-lg font-semibold w-full">
                     Complete Proposal (MDX)
                   </h3>
-                  <div>
-                    <CustomButton
-                      onClick={copyToClipboard}
-                      className="btn-secondary p-0 w-fit h-fit border border-gray-300 hover:border-gray-400 flex items-center"
-                      aria-label={
-                        copyState === "copied"
-                          ? "Copied to clipboard"
-                          : "Copy proposal to clipboard"
-                      }
-                    >
-                      {copyState === "copied" ? (
-                        <Check size={18} className="text-black" />
-                      ) : (
-                        <Copy size={18} className="text-black" />
-                      )}
-                    </CustomButton>
-                  </div>
                 </div>
 
                 <div className="flex-1 overflow-y-auto">
@@ -470,8 +453,32 @@ const PortfolioOptimizer: React.FC = () => {
                       >
                         {generatedProposal.mdx}
                       </pre>
+
                     </div>
                   )}
+                  <div className=" mt-5">
+                    <CustomButton
+                      onClick={copyToClipboard}
+                      className="btn-secondary p-0 max-w-fit h-fit hover:border-gray-400 items-center bg-gray-50 hover:bg-gray-100 transition-all duration-300"
+                      aria-label={
+                        copyState === "copied"
+                          ? "Copied to clipboard"
+                          : "Copy proposal to clipboard"
+                      }
+                    >
+                      {copyState === "copied" ? (
+                        <span className="text-black text-sm flex gap-x-3">
+                          <Check size={18} className="text-black" />
+                          Copied
+                        </span>
+                      ) : (
+                        <span className="text-black text-sm flex gap-x-3">
+                          <Copy size={18} className="text-black" />
+                          Copy text
+                        </span>
+                      )}
+                    </CustomButton>
+                  </div>
                 </div>
               </div>
             )}

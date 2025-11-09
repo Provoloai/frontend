@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import Button from '@mui/joy/Button';
 import Snackbar from '@mui/joy/Snackbar';
-import PlaylistAddCheckCircleRoundedIcon from '@mui/icons-material/PlaylistAddCheckCircleRounded';
+import { BellRing } from 'lucide-react';
 
 interface CustomSnackbarProps {
   snackbarMessage: string;
@@ -10,11 +9,11 @@ interface CustomSnackbarProps {
   close?: () => void;
 }
 
-export default function CustomSnackbar({ 
-  snackbarMessage, 
-  snackbarColor, 
-  open, 
-  close 
+export default function CustomSnackbar({
+  snackbarMessage,
+  snackbarColor,
+  open,
+  close
 }: CustomSnackbarProps) {
   const [internalOpen, setInternalOpen] = useState(false);
   const isControlled = typeof close === 'function';
@@ -26,7 +25,7 @@ export default function CustomSnackbar({
 
   useEffect(() => {
     if (!isControlled) setInternalOpen(!!open);
-    
+
     if (open) {
       const timer = setTimeout(handleClose, 5000);
       return () => clearTimeout(timer);
@@ -35,19 +34,15 @@ export default function CustomSnackbar({
 
   return (
     <Snackbar
-      variant="soft"
+      variant="solid"
       color={snackbarColor}
       open={isOpen}
       onClose={handleClose}
-      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      startDecorator={<PlaylistAddCheckCircleRoundedIcon />}
-      endDecorator={
-        <Button onClick={handleClose} size="sm" variant="soft" color={snackbarColor}>
-          Dismiss
-        </Button>
-      }
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      startDecorator={<BellRing  size={20}/>}
+      className="max-w-md"
     >
-      {snackbarMessage}
+      <p className='text-sm ml-3'>{snackbarMessage} </p>
     </Snackbar>
   );
 }
