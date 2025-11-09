@@ -182,7 +182,10 @@ const PortfolioOptimizer: React.FC = () => {
         </motion.div>
 
         <motion.div
-          className="grid lg:grid-cols-2 md:grid-cols-1 sm:grid-cols-1 gap-x-5 gap-y-5"
+          // className="grid lg:grid-cols-2 md:grid-cols-1 sm:grid-cols-1 gap-x-5 gap-y-5"
+          // className="grid 2xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-1 sm:grid-cols-1 gap-x-5 gap-y-5"
+          className={`grid lg:grid-cols-2 md:grid-cols-1 sm:grid-cols-1 gap-x-5 gap-y-5 ${generatedProposal ? 'min-[1920px]:grid-cols-3' : ''
+            }`}
           variants={proposalContainerVariants}
         >
           {/* Form Inputs Section */}
@@ -210,7 +213,7 @@ const PortfolioOptimizer: React.FC = () => {
                   />
                 )}
               />
-              
+
               <Controller
                 name="proposalTone"
                 control={control}
@@ -225,11 +228,10 @@ const PortfolioOptimizer: React.FC = () => {
                       </label>
                       <MenuButton
                         id="proposal-tone-selector"
-                        className={`capitalize inline-flex w-full gap-x-1.5 rounded-md px-3 py-4 text-sm text-gray-900 shadow-xs ring-1 duration-200 transition-all ${
-                          errors.proposalTone
-                            ? "ring-red-600/10 ring-inset bg-red-50 hover:bg-red-100"
-                            : "ring-gray-300 ring-inset bg-gray-50 hover:bg-gray-100"
-                        }`}
+                        className={`capitalize inline-flex w-full gap-x-1.5 rounded-md px-3 py-4 text-sm text-gray-900 shadow-xs ring-1 duration-200 transition-all ${errors.proposalTone
+                          ? "ring-red-600/10 ring-inset bg-red-50 hover:bg-red-100"
+                          : "ring-gray-300 ring-inset bg-gray-50 hover:bg-gray-100"
+                          }`}
                         aria-label="Select proposal tone"
                       >
                         {field.value ? proposalToneOptions.find(t => t.value === field.value)?.label : "Select Option"}
@@ -297,11 +299,10 @@ const PortfolioOptimizer: React.FC = () => {
                     <textarea
                       id="jobSummary"
                       name={field.name}
-                      className={`w-full p-3 border rounded-md transition duration-150 ease-in-out bg-gray-50 placeholder:text-sm ${
-                        errors.jobSummary
-                          ? "ring-1 ring-red-600/10 ring-inset focus:ring-red-500 bg-red-50 placeholder-red-700"
-                          : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                      }`}
+                      className={`w-full p-3 border rounded-md transition duration-150 ease-in-out bg-gray-50 placeholder:text-sm ${errors.jobSummary
+                        ? "ring-1 ring-red-600/10 ring-inset focus:ring-red-500 bg-red-50 placeholder-red-700"
+                        : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                        }`}
                       rows={8}
                       style={{ maxHeight: "28em", resize: "vertical" }}
                       placeholder="Paste Job Summary here..."
@@ -319,13 +320,12 @@ const PortfolioOptimizer: React.FC = () => {
                       <div className="text-xs text-gray-500">
                         {wordCount} {wordCount === 1 ? "word" : "words"} • {characterCount} {characterCount === 1 ? "character" : "characters"}
                       </div>
-                      <div className={`text-xs ${
-                        characterCount < minChars 
-                          ? "text-black" 
-                          : characterCount > maxChars 
-                          ? "text-red-600" 
+                      <div className={`text-xs ${characterCount < minChars
+                        ? "text-black"
+                        : characterCount > maxChars
+                          ? "text-red-600"
                           : "text-gray-500"
-                      }`}>
+                        }`}>
                         {characterCount} / {maxChars} characters
                         {characterCount < minChars && ` (min: ${minChars})`}
                       </div>
@@ -454,7 +454,7 @@ const PortfolioOptimizer: React.FC = () => {
 
           {/* Empty State Section */}
           <motion.section
-            className="bg-white rounded-lg border border-gray-200 flex"
+            className="bg-white rounded-lg border border-gray-200 flex min-[1920px]:col-span-1"
             variants={proposalCardVariants}
           >
             {!generatedProposal && !isGenerating ? (
@@ -537,97 +537,102 @@ const PortfolioOptimizer: React.FC = () => {
               </div>
             )}
           </motion.section>
+
+          {/* Improvement Options Section - Only show after proposal is generated */}
+          {generatedProposal && (
+            <motion.section
+              // className="p-5 bg-white rounded-lg border border-gray-200 grid grid-cols-3 gap-24 "
+              className="p-5 bg-white rounded-lg border border-gray-200 grid grid-cols-3 gap-24 lg:col-span-2 min-[1920px]:col-span-1 min-[1920px]:grid-cols-1 min-[1920px]:gap-0"
+
+              variants={proposalCardVariants}
+            >
+              {/* List of proposal improvement options */}
+              <div className="col-span-2 h-fit">
+                <p className="mb-6">
+                  How would you like to improve the proposal?
+                </p>
+
+                <motion.div
+                  className="grid grid-cols-2 grid-rows-2 gap-5 min-[1920px]:grid-cols-1"
+                  variants={proposalContainerVariants}
+                >
+                  {improvementOptions.map((option, index) => (
+                    <motion.div key={index} variants={proposalItemVariants}>
+                      <button
+                        onClick={() => {
+                          // TODO: Implement improvement action
+                          console.log(`Improve proposal: ${option.title}`);
+                        }}
+                        className={`p-5 rounded-2xl transition-all duration-200 ${option.bgColor} ${option.hoverColor} py-[24px] px-5 block w-full text-left`}
+                      >
+                        <span className="flex items-center align-middle gap-2 mb-3">
+                          <option.icon size={16} />
+                          <p className="font-medium">{option.title}</p>
+                        </span>
+                        <span>
+                          <p className="font-thin text-sm">
+                            {option.description}
+                          </p>
+                        </span>
+                      </button>
+                    </motion.div>
+                  ))}
+                </motion.div>
+                
+              </div>
+
+              <div className="col-span-1 flex flex-col h-full min-[1920px]:h-fit mt-auto">
+                {/* Tone selector */}
+                <Controller
+                  name="proposalTone"
+                  control={control}
+                  render={({ field }) => (
+                    <Menu as="div" className="relative inline-block w-full">
+                      <p className="block text-sm mb-2">Proposal Tone</p>
+                      <MenuButton className="capitalize inline-flex w-full gap-x-1.5 rounded-md px-3 py-4 text-sm text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset bg-gray-50 duration-200 transition-all hover:bg-gray-100">
+                        {field.value ? proposalToneOptions.find(t => t.value === field.value)?.label : "Select Option"}
+                        <ChevronDownIcon
+                          aria-hidden="true"
+                          className="ml-auto size-5 text-gray-400"
+                        />
+                      </MenuButton>
+
+                      <MenuItems
+                        transition
+                        className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-none data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+                      >
+                        <div className="py-1">
+                          {proposalToneOptions.map(tone => (
+                            <MenuItem key={tone.value}>
+                              <button
+                                type="button"
+                                onClick={() => field.onChange(tone.value)}
+                                className="block w-full text-left px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-none"
+                              >
+                                {tone.label}
+                              </button>
+                            </MenuItem>
+                          ))}
+                        </div>
+                      </MenuItems>
+                    </Menu>
+                  )}
+                />
+
+                {/* Regenerate button */}
+                <CustomButton
+                  onClick={handleSubmit(generateProposal)}
+                  isLoading={isGenerating || isSubmitting}
+                  className="btn-primary mt-auto  min-[1920px]:mt-10"
+                >
+                  Generate Proposal Again
+                </CustomButton>
+              </div>
+
+            </motion.section>
+          )}
         </motion.div>
 
-        {/* Improvement Options Section - Only show after proposal is generated */}
-        {generatedProposal && (
-          <motion.section
-            className="p-5 bg-white rounded-lg border border-gray-200 mt-5 grid grid-cols-3 gap-24"
-            variants={proposalCardVariants}
-          >
-            {/* List of proposal improvement options */}
-            <div className="col-span-2">
-              <p className="mb-6">
-                How would you like to improve the proposal?
-              </p>
-
-              <motion.div
-                className="grid grid-cols-2 grid-rows-2 gap-5"
-                variants={proposalContainerVariants}
-              >
-                {improvementOptions.map((option, index) => (
-                  <motion.div key={index} variants={proposalItemVariants}>
-                    <button
-                      onClick={() => {
-                        // TODO: Implement improvement action
-                        console.log(`Improve proposal: ${option.title}`);
-                      }}
-                      className={`p-5 rounded-2xl transition-all duration-200 ${option.bgColor} ${option.hoverColor} py-[24px] px-5 block w-full text-left`}
-                    >
-                      <span className="flex items-center align-middle gap-2 mb-3">
-                        <option.icon size={16} />
-                        <p className="font-medium">{option.title}</p>
-                      </span>
-                      <span>
-                        <p className="font-thin text-sm">
-                          {option.description}
-                        </p>
-                      </span>
-                    </button>
-                  </motion.div>
-                ))}
-              </motion.div>
-            </div>
-
-            <div className="col-span-1 flex flex-col">
-              {/* Tone selector */}
-              <Controller
-                name="proposalTone"
-                control={control}
-                render={({ field }) => (
-                  <Menu as="div" className="relative inline-block w-full">
-                    <p className="block text-sm mb-2">Proposal Tone</p>
-                    <MenuButton className="capitalize inline-flex w-full gap-x-1.5 rounded-md px-3 py-4 text-sm text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset bg-gray-50 duration-200 transition-all hover:bg-gray-100">
-                      {field.value ? proposalToneOptions.find(t => t.value === field.value)?.label : "Select Option"}
-                      <ChevronDownIcon
-                        aria-hidden="true"
-                        className="ml-auto size-5 text-gray-400"
-                      />
-                    </MenuButton>
-
-                    <MenuItems
-                      transition
-                      className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-none data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
-                    >
-                      <div className="py-1">
-                        {proposalToneOptions.map(tone => (
-                          <MenuItem key={tone.value}>
-                            <button
-                              type="button"
-                              onClick={() => field.onChange(tone.value)}
-                              className="block w-full text-left px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-none"
-                            >
-                              {tone.label}
-                            </button>
-                          </MenuItem>
-                        ))}
-                      </div>
-                    </MenuItems>
-                  </Menu>
-                )}
-              />
-
-              {/* Regenerate button */}
-              <CustomButton
-                onClick={handleSubmit(generateProposal)}
-                isLoading={isGenerating || isSubmitting}
-                className="btn-primary mt-auto"
-              >
-                Generate Proposal Again
-              </CustomButton>
-            </div>
-          </motion.section>
-        )}
       </motion.div>
     </div>
   );
