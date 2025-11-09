@@ -9,15 +9,18 @@ export const portfolioResponseSchema = z.object({
   beforeAfterComparison: z.string().min(1, "Before/after comparison is required"),
 });
 
-// Input validation schema
+// Input validation schema for React Hook Form
 export const portfolioInputSchema = z.object({
   freelancerName: z.string().min(1, "Name is required").max(100, "Name too long"),
   profileTitle: z.string().min(1, "Professional title is required").max(200, "Title too long"),
   profileDescription: z.string().min(50, "Description must be at least 50 characters").max(5000, "Description too long"),
 });
 
-// Validation helper functions
-export const validatePortfolioInput = (data) => {
+// Type inference for form data
+export type PortfolioFormData = z.infer<typeof portfolioInputSchema>;
+
+// Validation helper functions (kept for backward compatibility)
+export const validatePortfolioInput = (data: unknown) => {
   const result = portfolioInputSchema.safeParse(data);
   if (result.success) {
     return { success: true, data: result.data };
@@ -25,7 +28,7 @@ export const validatePortfolioInput = (data) => {
   return { success: false, errors: result.error.format() };
 };
 
-export function parseJsonBlock(text) {
+export function parseJsonBlock(text: string) {
   if (!text) return null;
   // Remove code block markers and trim
   const cleaned = text

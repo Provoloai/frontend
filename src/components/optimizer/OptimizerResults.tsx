@@ -1,4 +1,5 @@
 import { motion } from "motion/react";
+import { Infinity as InfinityIcon } from "lucide-react";
 import ResultsAccordion from "@/Reusables/ResultsAccordion";
 import CustomSnackbar from "@/Reusables/CustomSnackbar";
 import type { AccordionSection } from "@/types/optimizer";
@@ -6,22 +7,42 @@ import type { AccordionSection } from "@/types/optimizer";
 interface OptimizerResultsProps {
   sections: AccordionSection[];
   hasResults: boolean;
+  quotaData?: {
+    quota: string;
+    count: number;
+    limit: string | number;
+    remaining: string | number;
+  } | null;
 }
 
 const OptimizerResults: React.FC<OptimizerResultsProps> = ({
   sections,
   hasResults,
+  quotaData,
 }) => {
   if (!hasResults) {
     return (
-      <motion.p
-        className="text-center text-xs text-gray-300"
+      <motion.div
+        className="text-center space-y-2"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
       >
-        Provolo.org
-      </motion.p>
+        {quotaData && (
+          <div className="flex items-center justify-center gap-1.5 text-xs text-gray-500">
+            <span>{quotaData.count}</span>
+            <span>/</span>
+            {quotaData.limit === -1 || quotaData.limit === "unlimited" ? (
+              <>
+                <InfinityIcon size={14} className="text-gray-500" />
+                <span>optimizations</span>
+              </>
+            ) : (
+              <span>{quotaData.limit} optimizations</span>
+            )}
+          </div>
+        )}
+      </motion.div>
     );
   }
 
