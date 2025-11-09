@@ -11,6 +11,7 @@ import Banner from "@/components/dashboard/Banner";
 export default function UserProfile() {
   const { user, loading: loadingUserData } = useSession();
 
+
   const {
     displayName,
     touched,

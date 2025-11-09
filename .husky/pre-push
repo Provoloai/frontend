@@ -1,6 +1,22 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Load nvm if available
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+# Find pnpm dynamically for different collaboration setups
+PNPM_PATH=$(command -v pnpm 2>/dev/null)
+
+if [ -z "$PNPM_PATH" ]; then
+  echo "❌ pnpm not found in PATH"
+  echo "Please install pnpm: npm install -g pnpm"
+  exit 1
+fi
+
 echo "🚀 Running pre-push checks..."
 
-# Run build to ensure everything compiles
-pnpm run build
+# Run build to ensure everything compiles using the found pnpm
+"$PNPM_PATH" run build
 
 echo "✅ Pre-push checks passed!"

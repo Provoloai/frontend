@@ -26,6 +26,7 @@ import type { ProposalData, TouchedFields, ImprovementOption } from "@/types";
 import type { ProposalTone } from "@/types/proposal";
 import { useQueryClient } from "@tanstack/react-query";
 import Banner from "@/components/dashboard/Banner";
+import { Link } from "@tanstack/react-router";
 
 const PortfolioOptimizer: React.FC = () => {
   const [clientName, setClientName] = useState<string>("");
@@ -123,7 +124,7 @@ const PortfolioOptimizer: React.FC = () => {
     } finally {
       setIsGenerating(false);
     }
-  }, [clientName, proposalTone, jobSummary]);
+  }, [clientName, proposalTone, jobSummary, jobTitle, queryClient]);
 
   // Optimized: Copy proposal to clipboard with locked feedback state and cleanup
   const copyToClipboard = useCallback(async (): Promise<void> => {
@@ -350,11 +351,11 @@ const PortfolioOptimizer: React.FC = () => {
                     </div>
                   )}
 
-                {generatedProposal?.portfolioLink && (
-                  <div>
-                    <h4 className="font-medium text-gray-900 mb-2">
-                      Portfolio
-                    </h4>
+                <div>
+                  <h4 className="font-medium text-gray-900 mb-2">
+                    Portfolio
+                  </h4>
+                  {generatedProposal?.portfolioLink ? (
                     <a
                       href={generatedProposal.portfolioLink}
                       target="_blank"
@@ -363,8 +364,15 @@ const PortfolioOptimizer: React.FC = () => {
                     >
                       {generatedProposal.portfolioLink}
                     </a>
-                  </div>
-                )}
+                  ) : (
+                    <Link
+                      to="/userprofile"
+                      className="text-blue-600 hover:text-blue-800 text-sm"
+                    >
+                      Click here to set profile link
+                    </Link>
+                  )}
+                </div>
 
                 {generatedProposal?.availability && (
                   <div>
