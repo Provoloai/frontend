@@ -1,7 +1,6 @@
 import { motion } from "motion/react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Infinity as InfinityIcon } from "lucide-react";
 import TextInputField from "../../Reusables/TextInputField";
 import CustomButton from "../../Reusables/CustomButton";
 import CustomSnackbar from "../../Reusables/CustomSnackbar";
@@ -17,12 +16,6 @@ interface OptimizerFormProps {
   error: string;
   onSubmit: (data: PortfolioFormData) => void;
   onErrorClose: () => void;
-  quotaData?: {
-    quota: string;
-    count: number;
-    limit: string | number;
-    remaining: string | number;
-  } | null;
 }
 
 const OptimizerForm: React.FC<OptimizerFormProps> = ({
@@ -30,7 +23,6 @@ const OptimizerForm: React.FC<OptimizerFormProps> = ({
   error,
   onSubmit,
   onErrorClose,
-  quotaData,
 }) => {
   const {
     control,
@@ -166,27 +158,6 @@ const OptimizerForm: React.FC<OptimizerFormProps> = ({
           Run Optimization
         </CustomButton>
       </motion.div>
-
-      {/* Quota Display */}
-      {quotaData && (
-        <motion.div 
-          className="mt-4 text-center"
-          variants={optimizerItemVariants}
-        >
-          <div className="flex items-center justify-center gap-1.5 text-xs text-gray-500">
-            <span>{quotaData.count}</span>
-            <span>/</span>
-            {quotaData.limit === -1 || quotaData.limit === "unlimited" ? (
-              <>
-                <InfinityIcon size={14} className="text-gray-500" />
-                <span>optimizations</span>
-              </>
-            ) : (
-              <span>{quotaData.limit} optimizations</span>
-            )}
-          </div>
-        </motion.div>
-      )}
 
       {error && (
         <CustomSnackbar
