@@ -12,6 +12,8 @@ import {
   Workflow,
   Copy,
   Check,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import DocumentIllustration from "@/assets/svg/DocumentIllustration";
 import CustomButton from "@/Reusables/CustomButton";
@@ -36,11 +38,21 @@ const PortfolioOptimizer: React.FC = () => {
   const [copyState, setCopyState] = useState<"idle" | "copied">("idle");
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const queryClient = useQueryClient();
-  // State variables for output from the AI
-  const [generatedProposal, setGeneratedProposal] =
-    useState<ProposalData | null>(null);
+
+  // NEW: State variables for storing all proposal versions
+  const [proposalVersions, setProposalVersions] = useState<Array<ProposalData & { 
+    versionNumber: number;
+    versionType: string;
+    createdAt: string;
+  }>>([]);
+  const [currentVersionIndex, setCurrentVersionIndex] = useState<number>(0);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
-  const [refineType, setRefineType] = useState("")
+  const [refineType, setRefineType] = useState("");
+
+  // Get the current proposal based on the selected version
+  const generatedProposal = useMemo(() => {
+    return proposalVersions[currentVersionIndex] || null;
+  }, [proposalVersions, currentVersionIndex]);
 
   // Memoized improvement options to prevent re-renders
   const improvementOptions: ImprovementOption[] = useMemo(
@@ -75,7 +87,7 @@ const PortfolioOptimizer: React.FC = () => {
         description: "Break down complex sentences.",
         bgColor: "bg-red-50",
         hoverColor: "hover:bg-red-100",
-        value: ''
+        value: 'simplify_text'
       },
     ],
     []
@@ -106,7 +118,6 @@ const PortfolioOptimizer: React.FC = () => {
 
     setIsGenerating(true);
     setError("");
-    setGeneratedProposal(null);
 
     try {
       const data = await proposalApi.generateProposal({
@@ -115,7 +126,18 @@ const PortfolioOptimizer: React.FC = () => {
         job_summary: jobSummary.trim(),
         job_title: jobTitle.trim(),
       });
-      setGeneratedProposal(data.data);
+
+      // NEW: Add version metadata and store as first version
+      const versionedProposal = {
+        ...data.data,
+        versionNumber: 1,
+        versionType: "original",
+        createdAt: new Date().toISOString(),
+      };
+
+      setProposalVersions([versionedProposal]);
+      setCurrentVersionIndex(0);
+
       await queryClient.invalidateQueries({
         queryKey: ["proposal-history"],
       });
@@ -128,19 +150,16 @@ const PortfolioOptimizer: React.FC = () => {
     } finally {
       setIsGenerating(false);
     }
-  }, [clientName, proposalTone, jobSummary]);
+  }, [clientName, proposalTone, jobSummary, jobTitle, queryClient]);
 
   const refineProposal = async () => {
-// const data = {
-//   proposalId: generatedProposal?.proposalId,
-//         newTone: proposalTone!,
-//         refinementType: refineType,
-// }
-// console.log(data);
+    if (!refineType) {
+      setError("Please select a refinement option");
+      return;
+    }
 
     setIsGenerating(true);
     setError("");
-    setGeneratedProposal(null);
 
     try {
       const data = await proposalApi.refineGenerateProposal({
@@ -148,7 +167,19 @@ const PortfolioOptimizer: React.FC = () => {
         newTone: proposalTone!,
         refinementType: refineType,
       });
-      setGeneratedProposal(data.data);
+
+      // NEW: Add version metadata and append to versions array
+      const versionedProposal = {
+        ...data.data,
+        versionNumber: proposalVersions.length + 1,
+        versionType: refineType,
+        createdAt: new Date().toISOString(),
+      };
+
+      setProposalVersions(prev => [...prev, versionedProposal]);
+      setCurrentVersionIndex(proposalVersions.length); // Set to the new version
+      setRefineType(""); // Reset refinement type
+
       await queryClient.invalidateQueries({
         queryKey: ["proposal-history"],
       });
@@ -156,7 +187,7 @@ const PortfolioOptimizer: React.FC = () => {
       const errorMessage =
         error instanceof Error
           ? error.message
-          : "Failed to generate proposal. Please try again.";
+          : "Failed to refine proposal. Please try again.";
       setError(errorMessage);
     } finally {
       setIsGenerating(false);
@@ -181,6 +212,23 @@ const PortfolioOptimizer: React.FC = () => {
       setCopyState("idle");
     }
   }, [copyState, generatedProposal?.mdx]);
+
+  // NEW: Version navigation functions
+  const goToPreviousVersion = () => {
+    if (currentVersionIndex > 0) {
+      setCurrentVersionIndex(prev => prev - 1);
+    }
+  };
+
+  const goToNextVersion = () => {
+    if (currentVersionIndex < proposalVersions.length - 1) {
+      setCurrentVersionIndex(prev => prev + 1);
+    }
+  };
+
+  const goToVersion = (index: number) => {
+    setCurrentVersionIndex(index);
+  };
 
   useEffect(() => {
     return () => {
@@ -326,7 +374,7 @@ const PortfolioOptimizer: React.FC = () => {
               )}
             </div>
 
-            {!isGenerating && !generatedProposal && (
+            {!isGenerating && proposalVersions.length === 0 && (
               <div className="w-fit flex justify-end">
                 <CustomButton
                   onClick={generateProposal}
@@ -441,7 +489,7 @@ const PortfolioOptimizer: React.FC = () => {
             className="bg-white rounded-lg border border-gray-200 flex"
             variants={proposalCardVariants}
           >
-            {!generatedProposal && !isGenerating ? (
+            {proposalVersions.length === 0 && !isGenerating ? (
               <div className="text-center m-auto p-8">
                 <div className="w-full text-center flex justify-center">
                   <DocumentIllustration />
@@ -466,7 +514,7 @@ const PortfolioOptimizer: React.FC = () => {
                 </div>
 
                 <h3 className="text-base text-center mb-2">
-                  Cooking up your proposal...
+                  {proposalVersions.length === 0 ? "Cooking up your proposal..." : "Refining your proposal..."}
                 </h3>
                 <p className="text-base leading-tight text-center w-2/3 mx-auto text-gray-400">
                   Provolo is crafting a personalized proposal just for you
@@ -474,10 +522,18 @@ const PortfolioOptimizer: React.FC = () => {
               </div>
             ) : (
               <div className="p-6 h-full flex flex-col">
+                {/* NEW: Version indicator */}
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold w-full">
-                    Complete Proposal (MDX)
-                  </h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-lg font-semibold">
+                      Complete Proposal (MDX)
+                    </h3>
+                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                      v{generatedProposal?.versionNumber}
+                      {/* {generatedProposal?.versionType !== "original" && 
+                        ` - ${generatedProposal?.versionType.replace(/_/g, ' ')}`} */}
+                    </span>
+                  </div>
                   <div>
                     <CustomButton
                       onClick={copyToClipboard}
@@ -510,14 +566,41 @@ const PortfolioOptimizer: React.FC = () => {
                       </pre>
                     </div>
                   )}
+                  {/* NEW: Version pagination at the bottom */}
+                  {proposalVersions.length > 1 && (
+                    <div className="flex items-center justify-end pt-4">
+                      <button
+                        onClick={goToPreviousVersion}
+                        disabled={currentVersionIndex === 0}
+                        // className="p-2 rounded-md border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                        aria-label="Previous version"
+                      >
+                        <ChevronLeft size={24} />
+                      </button>
+                      
+                      <span className="text-base font-medium text-gray-700 min-w-[20px] text-center">
+                        {currentVersionIndex + 1}/{proposalVersions.length}
+                      </span>
+  
+                      <button
+                        onClick={goToNextVersion}
+                        disabled={currentVersionIndex === proposalVersions.length - 1}
+                        // className="p-2 rounded-md border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                        aria-label="Next version"
+                      >
+                        <ChevronRight size={24} />
+                      </button>
+                    </div>
+                  )}
                 </div>
+
               </div>
             )}
           </motion.section>
         </motion.div>
 
-        {/* Improvement Options Section - Only show after proposal is generated */}
-        {generatedProposal && (
+        {/* Improvement Options Section - Only show after proposal is generated AND on the latest version */}
+        {generatedProposal && !isGenerating && currentVersionIndex === 0 && (
           <motion.section
             className="p-5 bg-white rounded-lg border border-gray-200 mt-5 grid grid-cols-3 gap-24"
             variants={proposalCardVariants}
@@ -538,7 +621,9 @@ const PortfolioOptimizer: React.FC = () => {
                       onClick={() => {
                         setRefineType(option.value);
                       }}
-                      className={`p-5 rounded-2xl transition-all duration-200 ${option.bgColor} ${option.hoverColor} py-[24px] px-5 block w-full text-left`}
+                      className={`p-5 rounded-2xl transition-all duration-200 ${option.bgColor} ${option.hoverColor} ${
+                        refineType === option.value ? "ring-2 ring-blue-600" : ""
+                      } py-[24px] px-5 block w-full text-left`}
                     >
                       <span className="flex items-center align-middle gap-2 mb-3">
                         <option.icon size={16} />

@@ -11,6 +11,7 @@ import OptimizerResultsComponent from "@/components/optimizer/OptimizerResults";
 const PortfolioOptimizer = () => {
   // Get user from backend session
   const { user } = useSession();
+  console.log(user)
 
   // Form state
   const [formData, setFormData] = useState<OptimizerFormData>({
