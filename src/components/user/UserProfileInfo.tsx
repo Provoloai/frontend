@@ -33,19 +33,19 @@ const UserProfileInfo: React.FC<UserProfileInfoProps> = ({
         animate="visible"
         variants={USER_PROFILE_ANIMATIONS.container}
       >
-        <motion.div className="sm:col-span-6" variants={USER_PROFILE_ANIMATIONS.item}>
+        <motion.div className="sm:col-span-3" variants={USER_PROFILE_ANIMATIONS.item}>
           <TextInputField
             id="fullname"
             label={USER_PROFILE_CONFIG.fields.fullname.label}
             placeholder={USER_PROFILE_CONFIG.fields.fullname.placeholder}
             iconStart={<UserRound size={20} />}
             value={user?.displayName || ""}
-            onChange={() => {}}
+            onChange={() => { }}
             disabled
           />
         </motion.div>
 
-        <motion.div className="sm:col-span-6" variants={USER_PROFILE_ANIMATIONS.item}>
+        <motion.div className="sm:col-span-3" variants={USER_PROFILE_ANIMATIONS.item}>
           <TextInputField
             id="email"
             type="email"
@@ -53,7 +53,7 @@ const UserProfileInfo: React.FC<UserProfileInfoProps> = ({
             placeholder={USER_PROFILE_CONFIG.fields.email.placeholder}
             iconStart={<Mail size={20} />}
             value={user?.email || ""}
-            onChange={() => {}}
+            onChange={() => { }}
             disabled
           />
         </motion.div>

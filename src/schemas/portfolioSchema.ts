@@ -25,7 +25,7 @@ export const validatePortfolioInput = (data) => {
   return { success: false, errors: result.error.format() };
 };
 
-export function parseJsonBlock(text) {
+export function parseJsonBlock(text: string) {
   if (!text) return null;
   // Remove code block markers and trim
   const cleaned = text

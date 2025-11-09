@@ -50,13 +50,6 @@
   animation: spin 1s linear infinite;
 }
 
-.feedback {
-  background-image: url("@/assets/img/feedback.jpg");
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: top;
-}
-
 @keyframes spin {
   0% {
     transform: rotate(0deg);

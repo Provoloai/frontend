@@ -28,7 +28,7 @@ const LearnContent: React.FC<LearnContentProps> = ({ imageProps }) => {
           ref={elementRef}
           data-src={imageProps.src}
           alt={imageProps.alt}
-          className="absolute z-10 w-full h-full object-cover object-top"
+          className="absolute z-10 w-full h-full object-contain object-top"
           loading="lazy"
           style={{ willChange: "transform", ...imageProps.style }}
         />

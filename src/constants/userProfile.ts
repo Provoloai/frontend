@@ -5,8 +5,8 @@ export const USER_PROFILE_CONFIG = {
   },
   fields: {
     fullname: {
-      label: "UserName",
-      placeholder: "John Doe",
+      label: "Full Name",
+      placeholder: "Nina Nonymous",
     },
     email: {
       label: "Email Address",
@@ -22,7 +22,7 @@ export const USER_PROFILE_CONFIG = {
     },
     professionalTitle: {
       label: "Professional Title",
-      placeholder: "e.g., Senior Frontend Developer",
+      placeholder: "e.g., UiUx Designer | WordPress Developer...",
     },
   },
   subscription: {
