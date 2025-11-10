@@ -46,7 +46,6 @@ const PortfolioOptimizer: React.FC = () => {
   }>>([]);
   const [currentVersionIndex, setCurrentVersionIndex] = useState<number>(0);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
-  const [refineType, setRefineType] = useState("");
 
   // Get the current proposal based on the selected version
   const generatedProposal = useMemo(() => {
@@ -153,55 +152,6 @@ const PortfolioOptimizer: React.FC = () => {
       setIsGenerating(false);
     }
   }, [queryClient]);
-
-  const refineProposal = async () => {
-    if (!refineType) {
-      setError("Please select a refinement option");
-      return;
-    }
-
-    setIsGenerating(true);
-    setError("");
-
-    const currentTone = watch("proposalTone");
-    if (!currentTone) {
-      setError("Please select a proposal tone");
-      setIsGenerating(false);
-      return;
-    }
-
-    try {
-      const data = await proposalApi.refineGenerateProposal({
-        proposalId: generatedProposal?.proposalId,
-        newTone: currentTone,
-        refinementType: refineType,
-      });
-
-      // NEW: Add version metadata and append to versions array
-      const versionedProposal = {
-        ...data.data,
-        versionNumber: proposalVersions.length + 1,
-        versionType: refineType,
-        createdAt: new Date().toISOString(),
-      };
-
-      setProposalVersions(prev => [...prev, versionedProposal]);
-      setCurrentVersionIndex(proposalVersions.length); // Set to the new version
-      setRefineType(""); // Reset refinement type
-
-      await queryClient.invalidateQueries({
-        queryKey: ["proposal-history"],
-      });
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Failed to refine proposal. Please try again.";
-      setError(errorMessage);
-    } finally {
-      setIsGenerating(false);
-    }
-  };
 
   // Optimized: Copy proposal to clipboard with locked feedback state and cleanup
   const copyToClipboard = useCallback(async (): Promise<void> => {
@@ -657,31 +607,30 @@ const PortfolioOptimizer: React.FC = () => {
             )}
           </motion.section>
 
-        {/* Improvement Options Section - Only show after proposal is generated AND on the latest version */}
-        {generatedProposal && !isGenerating && currentVersionIndex === 0 && (
+        {/* Improvement Options Section - Only show after proposal is generated */}
+        {generatedProposal && (
           <motion.section
-            className="p-5 bg-white rounded-lg border border-gray-200 mt-5 grid grid-cols-3 gap-24"
+            className="p-5 bg-white rounded-lg border border-gray-200 grid grid-cols-3 gap-24 lg:col-span-2 min-[1920px]:col-span-1 min-[1920px]:grid-cols-1 min-[1920px]:gap-0"
             variants={proposalCardVariants}
           >
             {/* List of proposal improvement options */}
-            <div className="col-span-2">
+            <div className="col-span-2 h-fit">
               <p className="mb-6">
                 How would you like to improve the proposal?
               </p>
 
               <motion.div
-                className="grid grid-cols-2 grid-rows-2 gap-5"
+                className="grid grid-cols-2 grid-rows-2 gap-5 min-[1920px]:grid-cols-1"
                 variants={proposalContainerVariants}
               >
                 {improvementOptions.map((option, index) => (
                   <motion.div key={index} variants={proposalItemVariants}>
                     <button
                       onClick={() => {
-                        setRefineType(option.value);
+                        // TODO: Implement improvement action
+                        console.log(`Improve proposal: ${option.title}`);
                       }}
-                      className={`p-5 rounded-2xl transition-all duration-200 ${option.bgColor} ${option.hoverColor} ${
-                        refineType === option.value ? "ring-2 ring-blue-600" : ""
-                      } py-[24px] px-5 block w-full text-left`}
+                      className={`p-5 rounded-2xl transition-all duration-200 ${option.bgColor} ${option.hoverColor} py-[24px] px-5 block w-full text-left`}
                     >
                       <span className="flex items-center align-middle gap-2 mb-3">
                         <option.icon size={16} />
@@ -699,55 +648,54 @@ const PortfolioOptimizer: React.FC = () => {
             </div>
 
             <div className="col-span-1 flex flex-col h-full min-[1920px]:h-fit mt-auto">
-                {/* Tone selector */}
-                <Controller
-                  name="proposalTone"
-                  control={control}
-                  render={({ field }) => (
-                    <Menu as="div" className="relative inline-block w-full">
-                      <p className="block text-sm mb-2">Proposal Tone</p>
-                      <MenuButton className="capitalize inline-flex w-full gap-x-1.5 rounded-md px-3 py-4 text-sm text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset bg-gray-50 duration-200 transition-all hover:bg-gray-100">
-                        {field.value ? proposalToneOptions.find(t => t.value === field.value)?.label : "Select Option"}
-                        <ChevronDownIcon
-                          aria-hidden="true"
-                          className="ml-auto size-5 text-gray-400"
-                        />
-                      </MenuButton>
+              {/* Tone selector */}
+              <Controller
+                name="proposalTone"
+                control={control}
+                render={({ field }) => (
+                  <Menu as="div" className="relative inline-block w-full">
+                    <p className="block text-sm mb-2">Proposal Tone</p>
+                    <MenuButton className="capitalize inline-flex w-full gap-x-1.5 rounded-md px-3 py-4 text-sm text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset bg-gray-50 duration-200 transition-all hover:bg-gray-100">
+                      {field.value ? proposalToneOptions.find(t => t.value === field.value)?.label : "Select Option"}
+                      <ChevronDownIcon
+                        aria-hidden="true"
+                        className="ml-auto size-5 text-gray-400"
+                      />
+                    </MenuButton>
 
-                      <MenuItems
-                        transition
-                        className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-none data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
-                      >
-                        <div className="py-1">
-                          {proposalToneOptions.map(tone => (
-                            <MenuItem key={tone.value}>
-                              <button
-                                type="button"
-                                onClick={() => field.onChange(tone.value)}
-                                className="block w-full text-left px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-none"
-                              >
-                                {tone.label}
-                              </button>
-                            </MenuItem>
-                          ))}
-                        </div>
-                      </MenuItems>
-                    </Menu>
-                  )}
-                />
+                    <MenuItems
+                      transition
+                      className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-none data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+                    >
+                      <div className="py-1">
+                        {proposalToneOptions.map(tone => (
+                          <MenuItem key={tone.value}>
+                            <button
+                              type="button"
+                              onClick={() => field.onChange(tone.value)}
+                              className="block w-full text-left px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-none"
+                            >
+                              {tone.label}
+                            </button>
+                          </MenuItem>
+                        ))}
+                      </div>
+                    </MenuItems>
+                  </Menu>
+                )}
+              />
 
-                {/* Regenerate button */}
-                <CustomButton
-                  onClick={refineProposal}
-                  isLoading={isGenerating}
-                  className="btn-primary mt-auto  min-[1920px]:mt-10"
-                >
-                  Generate Proposal Again
-                </CustomButton>
-              </div>
-
-            </motion.section>
-          )}
+              {/* Regenerate button */}
+              <CustomButton
+                onClick={handleSubmit(generateProposal)}
+                isLoading={isGenerating || isSubmitting}
+                className="btn-primary mt-auto  min-[1920px]:mt-10"
+              >
+                Generate Proposal Again
+              </CustomButton>
+            </div>
+          </motion.section>
+        )}
         </motion.div>
       </motion.div>
     </div>
