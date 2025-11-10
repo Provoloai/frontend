@@ -131,7 +131,7 @@ const PortfolioOptimizer: React.FC = () => {
 
       // NEW: Add version metadata and store as first version
       const versionedProposal = {
-        ...data.data,
+        ...result.data,
         versionNumber: 1,
         versionType: "original",
         createdAt: new Date().toISOString(),
@@ -152,7 +152,7 @@ const PortfolioOptimizer: React.FC = () => {
     } finally {
       setIsGenerating(false);
     }
-  }, [clientName, proposalTone, jobSummary, jobTitle, queryClient]);
+  }, [queryClient]);
 
   const refineProposal = async () => {
     if (!refineType) {
@@ -163,10 +163,17 @@ const PortfolioOptimizer: React.FC = () => {
     setIsGenerating(true);
     setError("");
 
+    const currentTone = watch("proposalTone");
+    if (!currentTone) {
+      setError("Please select a proposal tone");
+      setIsGenerating(false);
+      return;
+    }
+
     try {
       const data = await proposalApi.refineGenerateProposal({
         proposalId: generatedProposal?.proposalId,
-        newTone: proposalTone!,
+        newTone: currentTone,
         refinementType: refineType,
       });
 
@@ -228,9 +235,6 @@ const PortfolioOptimizer: React.FC = () => {
     }
   };
 
-  const goToVersion = (index: number) => {
-    setCurrentVersionIndex(index);
-  };
 
   useEffect(() => {
     return () => {
