@@ -26,6 +26,7 @@ export interface ProposalData {
   support?: string;
   closing?: string;
   mdx?: string;
+  proposalId?: string;
 }
 
 export interface ProposalFormData {
@@ -49,6 +50,7 @@ export interface ImprovementOption {
   description: string;
   bgColor: string;
   hoverColor: string;
+  value: string;
 }
 
 export interface ApiResponse<T = any> {

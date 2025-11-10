@@ -12,7 +12,6 @@ import OptimizerResultsComponent from "@/components/optimizer/OptimizerResults";
 const PortfolioOptimizer = () => {
   // Get user from backend session
   const { user } = useSession();
-  const queryClient = useQueryClient();
 
   // Fetch quota information
   const { data: quotaData } = useGetQuota("upwork_profile_optimizer");
