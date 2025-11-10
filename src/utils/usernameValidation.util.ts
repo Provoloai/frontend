@@ -2,25 +2,26 @@ import { z } from "zod";
 import { RESERVED_USERNAMES } from "@/constants/auth";
 import type { UsernameValidationErrors } from "@/types/auth";
 
-// Zod schema for username validation
+// Zod schema for full name validation
 export const usernameSchema = z.object({
   username: z
     .string()
-    .min(3, "Username must be at least 3 characters")
-    .max(32, "Username must be no more than 32 characters")
-    .regex(/^[a-zA-Z0-9_\- ]+$/, "Username can only contain letters, numbers, underscores, hyphens, and spaces")
+    .min(3, "Full name must be at least 3 characters")
+    .max(32, "Full name must be no more than 32 characters")
+    .regex(/^[a-zA-Z0-9_\- ]+$/, "Full name can only contain letters, numbers, underscores, hyphens, and spaces")
     .refine((username) => !/^[_-]|[_-]$/.test(username), {
-      message: "Username cannot start or end with underscore or hyphen",
+      message: "Full name cannot start or end with underscore or hyphen",
     })
     .refine((username) => !/_{2,}|-{2,}/.test(username), {
-      message: "Username cannot contain consecutive underscores or hyphens",
+      message: "Full name cannot contain consecutive underscores or hyphens",
     })
     .refine((username) => !RESERVED_USERNAMES.includes(username.toLowerCase() as any), {
-      message: "This username is reserved and cannot be used",
+      message: "This name is reserved and cannot be used",
     }),
 });
 
 export const sanitizeUsername = (username: string): string => {
+  // Trim only leading/trailing spaces, preserve spaces in the middle
   return username.trim().replace(/[<>"'&]/g, "");
 };
 
@@ -35,7 +36,7 @@ export const validateUsername = (
     setValidationError("username", "");
   } catch (error) {
     if (error instanceof z.ZodError) {
-      let errorMessage = "Invalid username";
+      let errorMessage = "Invalid full name";
 
       if (error.issues && error.issues.length > 0 && error.issues[0].message) {
         errorMessage = error.issues[0].message;

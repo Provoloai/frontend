@@ -22,11 +22,10 @@ export default function UserName() {
   } = useUsername();
 
   const handleInputChange = useCallback((field: keyof UsernameFormData, value: string) => {
-    // Limit input length and sanitize in real-time
-    const sanitized = sanitizeUsername(value).substring(0, 32);
+    const limited = value.substring(0, 32);
     
-    setFormData(prev => ({ ...prev, [field]: sanitized }));
-    validateUsername(sanitized, setValidationError);
+    setFormData(prev => ({ ...prev, [field]: limited }));
+    validateUsername(limited, setValidationError);
   }, [setValidationError]);
 
   const handleBlur = useCallback((field: keyof UsernameTouchedFields) => {
@@ -38,7 +37,8 @@ export default function UserName() {
       setTouched({ username: true });
       return;
     }
-    updateUsername(formData);
+    const sanitized = sanitizeUsername(formData.username);
+    updateUsername({ username: sanitized });
   }, [formData, validationErrors.username, updateUsername]);
 
   return (
