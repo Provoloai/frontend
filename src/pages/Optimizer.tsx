@@ -1,24 +1,20 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { motion } from "motion/react";
-import { validatePortfolioInput } from "../schemas/portfolioSchema";
+import { useQueryClient } from "@tanstack/react-query";
 import useSession from "../hooks/useSession";
-import { optimizerApi } from "@/api";
+import { optimizerApi, useGetQuota } from "@/api";
 import { optimizerContainerVariants, optimizerItemVariants } from "@/constants/animations";
-import type { OptimizerFormData, OptimizerTouchedFields, OptimizerResults, AccordionSection } from "@/types/optimizer";
+import type { OptimizerResults, AccordionSection } from "@/types/optimizer";
+import type { PortfolioFormData } from "@/schemas/portfolioSchema";
 import OptimizerForm from "@/components/optimizer/OptimizerForm";
 import OptimizerResultsComponent from "@/components/optimizer/OptimizerResults";
 
 const PortfolioOptimizer = () => {
   // Get user from backend session
   const { user } = useSession();
-  console.log(user)
 
-  // Form state
-  const [formData, setFormData] = useState<OptimizerFormData>({
-    freelancerName: "",
-    profileTitle: "",
-    profileDescription: "",
-  });
+  // Fetch quota information
+  const { data: quotaData } = useGetQuota("upwork_profile_optimizer");
 
   // Results state
   const [results, setResults] = useState<OptimizerResults | null>(null);
@@ -26,11 +22,6 @@ const PortfolioOptimizer = () => {
   // UI state
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [touched, setTouched] = useState<OptimizerTouchedFields>({
-    name: false,
-    title: false,
-    description: false,
-  });
 
   // Memoize user display name to prevent recalculation
   const displayName = useMemo(
@@ -50,37 +41,18 @@ const PortfolioOptimizer = () => {
     [results]
   );
 
-  // Optimized function with useCallback to prevent recreation
-  const analyzePortfolio = useCallback(async () => {
+  // Handle form submission - React Hook Form handles validation
+  const handleSubmit = async (data: PortfolioFormData) => {
     setIsLoading(true);
     setError("");
     setResults(null);
 
     try {
-      // Validate input data with Zod
-      const inputValidation = validatePortfolioInput(formData);
-      if (!inputValidation.success) {
-        const errorMessages = inputValidation.errors 
-          ? Object.values(inputValidation.errors)
-              .flatMap((err) => (typeof err === 'object' && err !== null && '_errors' in err) ? err._errors : [])
-              .join(", ")
-          : "Please provide valid profile details";
-        setError(errorMessages);
-        setIsLoading(false);
-        return;
-      }
-
-      // Prepare request payload
-      if (!inputValidation.data) {
-        setError("Please provide valid profile details");
-        setIsLoading(false);
-        return;
-      }
-
+      // Prepare request payload - data is already validated by React Hook Form
       const requestPayload = {
-        full_name: inputValidation.data.freelancerName,
-        professional_title: inputValidation.data.profileTitle,
-        profile: inputValidation.data.profileDescription,
+        full_name: data.freelancerName,
+        professional_title: data.profileTitle,
+        profile: data.profileDescription,
       };
 
       // Call backend API endpoint using centralized API function
@@ -94,6 +66,11 @@ const PortfolioOptimizer = () => {
         suggestedProjectTitles: result.data.suggestedProjectTitles || "N/A",
         recommendedVisuals: result.data.recommendedVisuals || "N/A",
         beforeAfterComparison: result.data.beforeAfterComparison || "N/A",
+      });
+
+      // Invalidate quota to refresh the count
+      await queryClient.invalidateQueries({
+        queryKey: ["quota", "upwork_profile_optimizer"],
       });
     } catch (err: unknown) {
       const error = err as Error;
@@ -109,15 +86,6 @@ const PortfolioOptimizer = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [formData]);
-
-  // Event handlers
-  const handleInputChange = (field: keyof OptimizerFormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleBlur = (field: keyof OptimizerTouchedFields) => {
-    setTouched(prev => ({ ...prev, [field]: true }));
   };
 
   const handleErrorClose = () => {
@@ -139,13 +107,9 @@ const PortfolioOptimizer = () => {
 
           {/* Input Section */}
           <OptimizerForm
-            formData={formData}
-            touched={touched}
             isLoading={isLoading}
             error={error}
-            onInputChange={handleInputChange}
-            onBlur={handleBlur}
-            onSubmit={analyzePortfolio}
+            onSubmit={handleSubmit}
             onErrorClose={handleErrorClose}
           />
 
@@ -153,6 +117,7 @@ const PortfolioOptimizer = () => {
           <OptimizerResultsComponent
             sections={accordionSections}
             hasResults={!!results}
+            quotaData={quotaData?.data || null}
           />
         </div>
       </motion.div>

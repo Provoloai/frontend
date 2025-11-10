@@ -20,7 +20,7 @@ export const FOOTER_CONFIG: FooterConfig = {
       { href: "https://x.com/provoloai", icon: Twitter },
       { href: "https://www.linkedin.com/company/provoloai", icon: Linkedin },
       { href: "https://www.instagram.com/provoloai", icon: Instagram },
-      { href: "https://substack.com/@provoloai", icon: LibraryBig },
+      { href: "https://provoloai.substack.com", icon: LibraryBig },
     ],
   },
 };

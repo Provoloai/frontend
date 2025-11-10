@@ -3,8 +3,8 @@ import { useAuth } from "@/hooks/useAuth";
 import type { LoginFormData, LoginTouchedFields } from "@/types/auth";
 import LoginForm from "@/components/auth/LoginForm";
 import AuthLayout from "@/components/auth/AuthLayout";
-import { LOGIN_CONFIG } from "@/constants/auth";
-import { Link } from "@tanstack/react-router";
+// import { LOGIN_CONFIG } from "@/constants/auth";
+// import { Link } from "@tanstack/react-router";
 
 const Login = () => {
   // Form state
@@ -56,12 +56,12 @@ const Login = () => {
         onSubmit={handleSubmit}
         onErrorClose={clearError}
       />
-      <Link
+      {/* <Link
         to="/"
         className="underline text-center mt-10 text-xs text-gray-500"
       >
         {LOGIN_CONFIG.backHome}
-      </Link>
+      </Link> */}
     </AuthLayout>
   );
 };

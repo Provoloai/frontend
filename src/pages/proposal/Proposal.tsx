@@ -1,5 +1,7 @@
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { motion } from "motion/react";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import TextInputField from "../../Reusables/TextInputField";
 import CustomSnackbar from "../../Reusables/CustomSnackbar";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
@@ -24,16 +26,13 @@ import {
   proposalItemVariants,
   proposalCardVariants,
 } from "@/constants/animations";
-import type { ProposalData, TouchedFields, ImprovementOption } from "@/types";
-import type { ProposalTone } from "@/types/proposal";
+import type { ProposalData, ImprovementOption } from "@/types";
 import { useQueryClient } from "@tanstack/react-query";
 import Banner from "@/components/dashboard/Banner";
+import { Link } from "@tanstack/react-router";
+import { proposalFormSchema, type ProposalFormData } from "@/schemas/proposalSchema";
 
 const PortfolioOptimizer: React.FC = () => {
-  const [clientName, setClientName] = useState<string>("");
-  const [jobTitle, setJobTitle] = useState<string>("");
-  const [proposalTone, setProposalTone] = useState<ProposalTone | null>(null);
-  const [jobSummary, setJobSummary] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [copyState, setCopyState] = useState<"idle" | "copied">("idle");
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -53,6 +52,30 @@ const PortfolioOptimizer: React.FC = () => {
   const generatedProposal = useMemo(() => {
     return proposalVersions[currentVersionIndex] || null;
   }, [proposalVersions, currentVersionIndex]);
+
+  // React Hook Form setup
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm<ProposalFormData>({
+    resolver: zodResolver(proposalFormSchema),
+    mode: "onBlur",
+    defaultValues: {
+      clientName: "",
+      proposalTone: undefined,
+      jobTitle: "",
+      jobSummary: "",
+    },
+  });
+
+  // Watch jobSummary for word/character counter
+  const jobSummaryValue = watch("jobSummary") || "";
+  const characterCount = jobSummaryValue.length;
+  const wordCount = jobSummaryValue.trim() ? jobSummaryValue.trim().split(/\s+/).length : 0;
+  const minChars = 50;
+  const maxChars = 5000;
 
   // Memoized improvement options to prevent re-renders
   const improvementOptions: ImprovementOption[] = useMemo(
@@ -93,38 +116,17 @@ const PortfolioOptimizer: React.FC = () => {
     []
   );
 
-  // Input Field States for UI Styling
-  const [touched, setTouched] = useState<TouchedFields>({
-    name: false,
-    title: false,
-    description: false,
-    tone: false,
-    jobTitle: false,
-  });
-
-  // Function to call the AI model
-  const generateProposal = useCallback(async (): Promise<void> => {
-    if (!clientName.trim() || !proposalTone || !jobSummary.trim()) {
-      setTouched({
-        name: true,
-        title: false,
-        description: true,
-        tone: true,
-        jobTitle: true,
-      });
-      setError("Please fill in all required fields");
-      return;
-    }
-
+  // Handle form submission - React Hook Form handles validation
+  const generateProposal = useCallback(async (data: ProposalFormData): Promise<void> => {
     setIsGenerating(true);
     setError("");
 
     try {
-      const data = await proposalApi.generateProposal({
-        client_name: clientName.trim(),
-        proposal_tone: proposalTone!,
-        job_summary: jobSummary.trim(),
-        job_title: jobTitle.trim(),
+      const result = await proposalApi.generateProposal({
+        client_name: data.clientName.trim(),
+        proposal_tone: data.proposalTone,
+        job_summary: data.jobSummary.trim(),
+        job_title: data.jobTitle.trim(),
       });
 
       // NEW: Add version metadata and store as first version
@@ -141,10 +143,10 @@ const PortfolioOptimizer: React.FC = () => {
       await queryClient.invalidateQueries({
         queryKey: ["proposal-history"],
       });
-    } catch (error: unknown) {
+    } catch (err: unknown) {
       const errorMessage =
-        error instanceof Error
-          ? error.message
+        err instanceof Error
+          ? err.message
           : "Failed to generate proposal. Please try again.";
       setError(errorMessage);
     } finally {
@@ -259,126 +261,171 @@ const PortfolioOptimizer: React.FC = () => {
           <h2 className="text-3xl font-medium mb-3 text-center flex items-center gap-3">
             Proposals <Sparkles />
           </h2>
-          <p className="mb-6 w-1/3 text-gray-400">
+          <p className="mb-6 lg:w-1/3 text-gray-400">
             Create winning proposals in minutes with AI-powered personalization
             and professional templates
           </p>
         </motion.div>
 
         <motion.div
-          className="grid grid-cols-2 gap-x-5"
+          className="grid lg:grid-cols-2 md:grid-cols-1 sm:grid-cols-1 gap-x-5 gap-y-5"
           variants={proposalContainerVariants}
         >
           {/* Form Inputs Section */}
-          <motion.section
+          <motion.form
+            onSubmit={handleSubmit(generateProposal)}
             className="p-5 bg-white rounded-lg border border-gray-200 space-y-4"
             variants={proposalCardVariants}
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <TextInputField
-                id="clientName"
-                label="Client's Name (Personal Touch)"
-                placeholder="John Doe"
-                value={clientName}
-                onChange={e => setClientName(e.target.value)}
-                onBlur={() => setTouched(prev => ({ ...prev, name: true }))}
-                touched={touched.name || !!error}
-                required
+              <Controller
+                name="clientName"
+                control={control}
+                render={({ field }) => (
+                  <TextInputField
+                    id="clientName"
+                    label="Client's Name (Personal Touch)"
+                    placeholder="Nina Nonymous"
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    touched={!!errors.clientName}
+                    error={errors.clientName?.message}
+                    required
+                  />
+                )}
               />
-              <div className="w-full" onBlur={() => setTouched(prev => ({ ...prev, tone: true }))}>
-                <Menu as="div" className="relative inline-block w-full">
-                  <label
-                    className="block text-sm mb-2"
-                    htmlFor="proposal-tone-selector"
-                  >
-                    Proposal Tone
-                  </label>
-                  <MenuButton
-                    id="proposal-tone-selector"
-                    className={`capitalize inline-flex w-full gap-x-1.5 rounded-md px-3 py-4 text-sm text-gray-900 shadow-xs ring-1 duration-200 transition-all ${(error && !proposalTone) || (touched.tone && !proposalTone)
-                      ? "ring-red-600/10 ring-inset bg-red-50 hover:bg-red-100"
-                      : "ring-gray-300 ring-inset bg-gray-50 hover:bg-gray-100"
-                      }`}
-                    aria-label="Select proposal tone"
-                  >
-                    {proposalTone ?? "Select Option"}
-                    <ChevronDownIcon
-                      aria-hidden="true"
-                      className="ml-auto size-5 text-gray-400"
-                    />
-                  </MenuButton>
-                  {((error && !proposalTone) ||
-                    (touched.tone && !proposalTone)) && (
-                      <p className="text-xs text-red-700 mt-1">Required</p>
-                    )}
-                  <MenuItems
-                    transition
-                    className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-none data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
-                  >
-                    <div className="py-1">
-                      {proposalToneOptions.map(tone => (
-                        <MenuItem key={tone.value}>
-                          <button
-                            onClick={() => {
-                              setProposalTone(tone.value);
-                              setTouched(prev => ({ ...prev, tone: true }));
-                            }}
-                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-none"
-                          >
-                            {tone.label}
-                          </button>
-                        </MenuItem>
-                      ))}
-                    </div>
-                  </MenuItems>
-                </Menu>
-              </div>
+              
+              <Controller
+                name="proposalTone"
+                control={control}
+                render={({ field }) => (
+                  <div className="w-full">
+                    <Menu as="div" className="relative inline-block w-full">
+                      <label
+                        className="block text-sm mb-2"
+                        htmlFor="proposal-tone-selector"
+                      >
+                        Proposal Tone
+                      </label>
+                      <MenuButton
+                        id="proposal-tone-selector"
+                        className={`capitalize inline-flex w-full gap-x-1.5 rounded-md px-3 py-4 text-sm text-gray-900 shadow-xs ring-1 duration-200 transition-all ${
+                          errors.proposalTone
+                            ? "ring-red-600/10 ring-inset bg-red-50 hover:bg-red-100"
+                            : "ring-gray-300 ring-inset bg-gray-50 hover:bg-gray-100"
+                        }`}
+                        aria-label="Select proposal tone"
+                      >
+                        {field.value ? proposalToneOptions.find(t => t.value === field.value)?.label : "Select Option"}
+                        <ChevronDownIcon
+                          aria-hidden="true"
+                          className="ml-auto size-5 text-gray-400"
+                        />
+                      </MenuButton>
+                      {errors.proposalTone && (
+                        <p className="text-xs text-red-700 mt-1">{errors.proposalTone.message}</p>
+                      )}
+                      <MenuItems
+                        transition
+                        className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-none data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+                      >
+                        <div className="py-1">
+                          {proposalToneOptions.map(tone => (
+                            <MenuItem key={tone.value}>
+                              <button
+                                type="button"
+                                onClick={() => field.onChange(tone.value)}
+                                className="block w-full text-left px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-none"
+                              >
+                                {tone.label}
+                              </button>
+                            </MenuItem>
+                          ))}
+                        </div>
+                      </MenuItems>
+                    </Menu>
+                  </div>
+                )}
+              />
             </div>
 
-            <div>
-              <TextInputField
-                id="jobTitle"
-                label="Job Title"
-                placeholder="UiUx Designer | WordPress Developer..."
-                value={jobTitle}
-                onChange={e => setJobTitle(e.target.value)}
-                onBlur={() => setTouched(prev => ({ ...prev, jobTitle: true }))}
-                touched={touched.jobTitle || !!error}
-                required
-              />
-            </div>
+            <Controller
+              name="jobTitle"
+              control={control}
+              render={({ field }) => (
+                <TextInputField
+                  id="jobTitle"
+                  label="Job Title"
+                  placeholder="UiUx Designer | WordPress Developer..."
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  name={field.name}
+                  touched={!!errors.jobTitle}
+                  error={errors.jobTitle?.message}
+                  required
+                />
+              )}
+            />
 
             <div className="mb-4">
               <label htmlFor="jobSummary" className="block text-sm mb-2">
                 Job Summary
               </label>
 
-              <textarea
-                required
-                id="jobSummary"
-                className={`w-full p-3 border rounded-md transition duration-150 ease-in-out bg-gray-50 placeholder:text-sm ${error || (touched.description && !jobSummary.trim())
-                  ? "ring-1 ring-red-600/10 ring-inset focus:ring-red-500 bg-red-50 placeholder-red-700"
-                  : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                  }`}
-                rows={8}
-                style={{ maxHeight: "28em", resize: "vertical" }}
-                placeholder="Paste Job Summary here..."
-                value={jobSummary}
-                onChange={e => setJobSummary(e.target.value)}
-                onBlur={() =>
-                  setTouched(prev => ({ ...prev, description: true }))
-                }
+              <Controller
+                name="jobSummary"
+                control={control}
+                render={({ field }) => (
+                  <>
+                    <textarea
+                      id="jobSummary"
+                      name={field.name}
+                      className={`w-full p-3 border rounded-md transition duration-150 ease-in-out bg-gray-50 placeholder:text-sm ${
+                        errors.jobSummary
+                          ? "ring-1 ring-red-600/10 ring-inset focus:ring-red-500 bg-red-50 placeholder-red-700"
+                          : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      }`}
+                      rows={8}
+                      style={{ maxHeight: "28em", resize: "vertical" }}
+                      placeholder="Paste Job Summary here..."
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                    />
+                    {errors.jobSummary && (
+                      <p className="text-xs text-red-700 mt-1">
+                        {errors.jobSummary.message}
+                      </p>
+                    )}
+                    {/* Word/Character Counter */}
+                    <div className="flex justify-between items-center mt-2">
+                      <div className="text-xs text-gray-500">
+                        {wordCount} {wordCount === 1 ? "word" : "words"} • {characterCount} {characterCount === 1 ? "character" : "characters"}
+                      </div>
+                      <div className={`text-xs ${
+                        characterCount < minChars 
+                          ? "text-black" 
+                          : characterCount > maxChars 
+                          ? "text-red-600" 
+                          : "text-gray-500"
+                      }`}>
+                        {characterCount} / {maxChars} characters
+                        {characterCount < minChars && ` (min: ${minChars})`}
+                      </div>
+                    </div>
+                  </>
+                )}
               />
-              {(error || (touched.description && !jobSummary.trim())) && (
-                <p className="text-xs text-red-700">Required</p>
-              )}
             </div>
 
             {!isGenerating && proposalVersions.length === 0 && (
               <div className="w-fit flex justify-end">
                 <CustomButton
-                  onClick={generateProposal}
-                  isLoading={isGenerating}
+                  type="submit"
+                  isLoading={isGenerating || isSubmitting}
                   className="btn-primary"
                 >
                   Generate Proposal
@@ -436,11 +483,11 @@ const PortfolioOptimizer: React.FC = () => {
                     </div>
                   )}
 
-                {generatedProposal?.portfolioLink && (
-                  <div>
-                    <h4 className="font-medium text-gray-900 mb-2">
-                      Portfolio
-                    </h4>
+                <div>
+                  <h4 className="font-medium text-gray-900 mb-2">
+                    Portfolio
+                  </h4>
+                  {generatedProposal?.portfolioLink ? (
                     <a
                       href={generatedProposal.portfolioLink}
                       target="_blank"
@@ -449,8 +496,15 @@ const PortfolioOptimizer: React.FC = () => {
                     >
                       {generatedProposal.portfolioLink}
                     </a>
-                  </div>
-                )}
+                  ) : (
+                    <Link
+                      to="/userprofile"
+                      className="text-blue-600 hover:text-blue-800 text-sm"
+                    >
+                      Click here to set profile link
+                    </Link>
+                  )}
+                </div>
 
                 {generatedProposal?.availability && (
                   <div>
@@ -482,7 +536,7 @@ const PortfolioOptimizer: React.FC = () => {
                 )}
               </div>
             )}
-          </motion.section>
+          </motion.form>
 
           {/* Empty State Section */}
           <motion.section
@@ -564,6 +618,7 @@ const PortfolioOptimizer: React.FC = () => {
                       >
                         {generatedProposal.mdx}
                       </pre>
+
                     </div>
                   )}
                   {/* NEW: Version pagination at the bottom */}
@@ -642,34 +697,41 @@ const PortfolioOptimizer: React.FC = () => {
 
             <div className="col-span-1 flex flex-col">
               {/* Tone selector */}
-              <Menu as="div" className="relative inline-block w-full">
-                <p className="block text-sm mb-2">Proposal Tone</p>
-                <MenuButton className="capitalize inline-flex w-full gap-x-1.5 rounded-md px-3 py-4 text-sm text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset bg-gray-50 duration-200 transition-all hover:bg-gray-100">
-                  {proposalTone ?? "Select Option"}
-                  <ChevronDownIcon
-                    aria-hidden="true"
-                    className="ml-auto size-5 text-gray-400"
-                  />
-                </MenuButton>
+              <Controller
+                name="proposalTone"
+                control={control}
+                render={({ field }) => (
+                  <Menu as="div" className="relative inline-block w-full">
+                    <p className="block text-sm mb-2">Proposal Tone</p>
+                    <MenuButton className="capitalize inline-flex w-full gap-x-1.5 rounded-md px-3 py-4 text-sm text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset bg-gray-50 duration-200 transition-all hover:bg-gray-100">
+                      {field.value ? proposalToneOptions.find(t => t.value === field.value)?.label : "Select Option"}
+                      <ChevronDownIcon
+                        aria-hidden="true"
+                        className="ml-auto size-5 text-gray-400"
+                      />
+                    </MenuButton>
 
-                <MenuItems
-                  transition
-                  className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-none data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
-                >
-                  <div className="py-1">
-                    {proposalToneOptions.map(tone => (
-                      <MenuItem key={tone.value}>
-                        <button
-                          onClick={() => setProposalTone(tone.value)}
-                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-none"
-                        >
-                          {tone.label}
-                        </button>
-                      </MenuItem>
-                    ))}
-                  </div>
-                </MenuItems>
-              </Menu>
+                    <MenuItems
+                      transition
+                      className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-none data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+                    >
+                      <div className="py-1">
+                        {proposalToneOptions.map(tone => (
+                          <MenuItem key={tone.value}>
+                            <button
+                              type="button"
+                              onClick={() => field.onChange(tone.value)}
+                              className="block w-full text-left px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-none"
+                            >
+                              {tone.label}
+                            </button>
+                          </MenuItem>
+                        ))}
+                      </div>
+                    </MenuItems>
+                  </Menu>
+                )}
+              />
 
               {/* Regenerate button */}
               <CustomButton

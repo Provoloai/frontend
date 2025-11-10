@@ -20,7 +20,7 @@ const ProposalHistory: React.FC = () => {
   const { proposalId } = useParams({
     from: '/_sidebarlayout/_protected/proposalHistory/$proposalId',
   });
- 
+
   const [copyState, setCopyState] = useState<"idle" | "copied">("idle");
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -54,7 +54,7 @@ const ProposalHistory: React.FC = () => {
           copyTimeoutRef.current = null;
         }, 2000);
       }
-    } catch (error) {
+    } catch {
       setCopyState("idle");
     }
   }, [copyState, generatedProposal?.mdx]);
@@ -83,7 +83,7 @@ const ProposalHistory: React.FC = () => {
           {/* Train of Thoughts Skeleton */}
           <div className="p-5 bg-white rounded-lg border border-gray-200 animate-pulse">
             <div className="h-6 w-40 bg-gray-200 rounded mb-4"></div>
-            
+
             {[1, 2, 3, 4, 5].map((item) => (
               <div key={item} className="mb-4">
                 <div className="h-5 w-24 bg-gray-200 rounded mb-2"></div>
@@ -98,7 +98,6 @@ const ProposalHistory: React.FC = () => {
             <div className="p-6 h-full flex flex-col w-full animate-pulse">
               <div className="flex justify-between items-center mb-4">
                 <div className="h-6 w-48 bg-gray-200 rounded"></div>
-                <div className="h-9 w-9 bg-gray-200 rounded"></div>
               </div>
 
               <div className="flex-1">
@@ -111,6 +110,7 @@ const ProposalHistory: React.FC = () => {
                     ></div>
                   ))}
                 </div>
+                <div className="h-9 w-16 bg-gray-200 rounded mt-5"></div>
               </div>
             </div>
           </div>
@@ -168,7 +168,7 @@ const ProposalHistory: React.FC = () => {
         </motion.div>
 
         <motion.div
-          className="grid grid-cols-2 gap-x-5"
+          className="grid lg:grid-cols-2 md:grid-cols-1 sm:grid-cols-1 gap-x-5 gap-y-5"
           variants={proposalContainerVariants}
         >
           {/* Train of Thoughts Section */}
@@ -208,9 +208,9 @@ const ProposalHistory: React.FC = () => {
                 </div>
               )}
 
-            {generatedProposal?.portfolioLink && (
-              <div className="mb-4">
-                <h4 className="font-medium text-gray-900 mb-2">Portfolio</h4>
+            <div className="mb-4">
+              <h4 className="font-medium text-gray-900 mb-2">Portfolio</h4>
+              {generatedProposal?.portfolioLink ? (
                 <a
                   href={generatedProposal.portfolioLink}
                   target="_blank"
@@ -219,8 +219,15 @@ const ProposalHistory: React.FC = () => {
                 >
                   {generatedProposal.portfolioLink}
                 </a>
-              </div>
-            )}
+              ) : (
+                <Link
+                  to="/userprofile"
+                  className="text-blue-600 hover:text-blue-800 text-sm"
+                >
+                  Click here to set profile link
+                </Link>
+              )}
+            </div>
 
             {generatedProposal?.availability && (
               <div className="mb-4">
@@ -258,22 +265,6 @@ const ProposalHistory: React.FC = () => {
             <div className="p-6 h-full flex flex-col w-full">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold w-full">Complete Proposal (MDX)</h3>
-
-                <CustomButton
-                  onClick={copyToClipboard}
-                  className="btn-secondary p-2 max-w-0 h-fit border border-gray-300 hover:border-gray-400 flex items-center"
-                  aria-label={
-                    copyState === "copied"
-                      ? "Copied to clipboard"
-                      : "Copy proposal to clipboard"
-                  }
-                >
-                  {copyState === "copied" ? (
-                    <Check size={18} className="text-black" />
-                  ) : (
-                    <Copy size={18} className="text-black" />
-                  )}
-                </CustomButton>
               </div>
 
               <div className="flex-1 overflow-y-auto">
@@ -289,6 +280,31 @@ const ProposalHistory: React.FC = () => {
                     </pre>
                   </div>
                 )}
+
+                <div className=" mt-5">
+                  <CustomButton
+                    onClick={copyToClipboard}
+                    className="btn-secondary p-0 max-w-fit h-fit hover:border-gray-400 items-center bg-gray-50 hover:bg-gray-100 transition-all duration-300"
+                    aria-label={
+                      copyState === "copied"
+                        ? "Copied to clipboard"
+                        : "Copy proposal to clipboard"
+                    }
+                  >
+                    {copyState === "copied" ? (
+                      <span className="text-black text-sm flex gap-x-3">
+                        <Check size={18} className="text-black" />
+                        Copied
+                      </span>
+                    ) : (
+                      <span className="text-black text-sm flex gap-x-3">
+                        <Copy size={18} className="text-black" />
+                        Copy text
+                      </span>
+                    )}
+                  </CustomButton>
+
+                </div>
               </div>
             </div>
           </motion.section>

@@ -28,7 +28,10 @@ export default function SidebarLink({
 
   const content = (
     <>
-      <span className="shrink-0">{icon}</span>
+      <span className="shrink-0 pl-1.5">
+        {icon}
+      </span>
+
       <AnimatePresence mode="wait">
         {isOpen && (
           <motion.span
@@ -42,10 +45,12 @@ export default function SidebarLink({
           </motion.span>
         )}
       </AnimatePresence>
+
       <SidebarBadge badge={badge} show={isOpen} />
+
       {/* Tooltip when collapsed */}
       {!isOpen && (
-        <span className="absolute left-full ml-2 px-2 py-1 text-xs rounded bg-gray-900 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 pointer-events-none">
+        <span className="absolute left-full ml-5 px-2 py-1 text-xs rounded bg-gray-900 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 pointer-events-none">
           {label}
         </span>
       )}
@@ -54,7 +59,7 @@ export default function SidebarLink({
 
   const linkProps = {
     to,
-    className: `${linkClass} ${isOpen ? "gap-3" : "justify-center"}`,
+    className: `${linkClass} ${isOpen ? "gap-3" : ""}`,
     ...(external && { target: "_blank", rel: "noopener noreferrer" }),
     ...(isProposalLink && onProposalClick && { onClick: onProposalClick }),
     ...(!isProposalLink && !external && onOtherItemClick && { onClick: onOtherItemClick }),

@@ -27,8 +27,8 @@ export default function useSession(): UseSessionReturn {
   } = useQuery({
     queryKey: ["session"],
     queryFn: fetchSession,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
+    staleTime: 15 * 60 * 1000, // 15 minutes - standard session cache time
+    gcTime: 60 * 60 * 1000, // 1 hour - keep in cache for a reasonable time
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     retry: 1,
