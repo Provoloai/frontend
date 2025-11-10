@@ -5,6 +5,8 @@ import {
   Copy,
   Check,
   ArrowLeft,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import CustomButton from "@/Reusables/CustomButton";
 import {
@@ -14,19 +16,41 @@ import {
 } from "@/constants/animations";
 import { Link } from "@tanstack/react-router";
 import { useGetProposal } from "@/api";
-
+import SidebarBadge from "@/components/sidebar/SidebarBadge";
 
 const ProposalHistory: React.FC = () => {
   const { proposalId } = useParams({
-    from: '/_sidebarlayout/_protected/proposalHistory/$proposalId',
+    from: "/_sidebarlayout/_protected/proposalHistory/$proposalId",
   });
 
   const [copyState, setCopyState] = useState<"idle" | "copied">("idle");
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [currentVersionIndex, setCurrentVersionIndex] = useState<number>(0);
 
   // Fetch the proposal based on the ID from URL params
   const { data: proposal, isLoading } = useGetProposal(proposalId);
-  const generatedProposal = proposal?.data?.proposalResponse || null;
+
+  // Extract versions from the proposal response
+  // The API returns: { data: { versions: [{ proposal: {...} }], proposalResponse: {...} } }
+  const rawVersions = proposal?.data?.versions;
+  const hasMultipleVersions =
+    Array.isArray(rawVersions) && rawVersions.length > 1;
+
+  // Get the current proposal based on the selected version
+  let generatedProposal = null;
+
+  if (hasMultipleVersions && rawVersions.length > 0) {
+    // If we have multiple versions, get the selected one
+    // Each version has a `proposal` property containing the actual proposal data
+    const currentVersion = rawVersions[currentVersionIndex] || rawVersions[0];
+    generatedProposal = currentVersion?.proposal || null;
+  } else {
+    // If no versions array or only one version, use the single proposalResponse
+    generatedProposal = proposal?.data?.proposalResponse || null;
+  }
+
+  // For pagination, we need an array of versions
+  const proposalVersions = hasMultipleVersions ? rawVersions : [];
 
   // Format the creation date
   const formatDate = (dateString: string): string => {
@@ -59,6 +83,19 @@ const ProposalHistory: React.FC = () => {
     }
   }, [copyState, generatedProposal?.mdx]);
 
+  // Version navigation functions
+  const goToPreviousVersion = () => {
+    if (currentVersionIndex > 0) {
+      setCurrentVersionIndex(prev => prev - 1);
+    }
+  };
+
+  const goToNextVersion = () => {
+    if (currentVersionIndex < proposalVersions.length - 1) {
+      setCurrentVersionIndex(prev => prev + 1);
+    }
+  };
+
   useEffect(() => {
     return () => {
       if (copyTimeoutRef.current) {
@@ -67,6 +104,11 @@ const ProposalHistory: React.FC = () => {
       }
     };
   }, []);
+
+  // Reset version index when proposal changes
+  useEffect(() => {
+    setCurrentVersionIndex(0);
+  }, [proposalId]);
 
   // Skeleton Loader Component
   const SkeletonLoader = () => (
@@ -84,7 +126,7 @@ const ProposalHistory: React.FC = () => {
           <div className="p-5 bg-white rounded-lg border border-gray-200 animate-pulse">
             <div className="h-6 w-40 bg-gray-200 rounded mb-4"></div>
 
-            {[1, 2, 3, 4, 5].map((item) => (
+            {[1, 2, 3, 4, 5].map(item => (
               <div key={item} className="mb-4">
                 <div className="h-5 w-24 bg-gray-200 rounded mb-2"></div>
                 <div className="h-4 w-full bg-gray-100 rounded mb-1"></div>
@@ -151,7 +193,10 @@ const ProposalHistory: React.FC = () => {
         variants={proposalContainerVariants}
       >
         {/* Title Section */}
-        <motion.div className="text-start pt-10" variants={proposalItemVariants}>
+        <motion.div
+          className="text-start pt-10"
+          variants={proposalItemVariants}
+        >
           <Link
             to="/proposal"
             className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 mb-4 transition-colors"
@@ -181,7 +226,9 @@ const ProposalHistory: React.FC = () => {
             {generatedProposal?.hook && (
               <div className="mb-4">
                 <h4 className="font-medium text-gray-900 mb-2">Hook</h4>
-                <p className="text-gray-700 text-sm">{generatedProposal.hook}</p>
+                <p className="text-gray-700 text-sm">
+                  {generatedProposal.hook}
+                </p>
               </div>
             )}
 
@@ -199,11 +246,13 @@ const ProposalHistory: React.FC = () => {
                 <div className="mb-4">
                   <h4 className="font-medium text-gray-900 mb-2">Key Points</h4>
                   <ul className="space-y-1 list-disc list-inside">
-                    {generatedProposal.keyPoints.map((point: string, index: number) => (
-                      <li key={index} className="text-gray-700 text-sm">
-                        {point}
-                      </li>
-                    ))}
+                    {generatedProposal.keyPoints.map(
+                      (point: string, index: number) => (
+                        <li key={index} className="text-gray-700 text-sm">
+                          {point}
+                        </li>
+                      )
+                    )}
                   </ul>
                 </div>
               )}
@@ -264,7 +313,18 @@ const ProposalHistory: React.FC = () => {
           >
             <div className="p-6 h-full flex flex-col w-full">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold w-full">Complete Proposal (MDX)</h3>
+                <div className="flex items-center gap-3">
+                  <h3 className="text-lg font-semibold">Proposal</h3>
+                  {hasMultipleVersions && (
+                    <SidebarBadge
+                      badge={{
+                        text: `v${currentVersionIndex + 1}`,
+                        color: "blue",
+                      }}
+                      show={true}
+                    />
+                  )}
+                </div>
               </div>
 
               <div className="flex-1 overflow-y-auto">
@@ -281,7 +341,9 @@ const ProposalHistory: React.FC = () => {
                   </div>
                 )}
 
-                <div className=" mt-5">
+                {/* Version pagination and copy button at the bottom */}
+                <div className="flex items-center justify-between pt-4">
+                  {/* Copy button */}
                   <CustomButton
                     onClick={copyToClipboard}
                     className="btn-secondary p-0 max-w-fit h-fit hover:border-gray-400 items-center bg-gray-50 hover:bg-gray-100 transition-all duration-300"
@@ -303,7 +365,32 @@ const ProposalHistory: React.FC = () => {
                       </span>
                     )}
                   </CustomButton>
+                  {/* Version pagination */}
+                  {hasMultipleVersions && (
+                    <div className="flex items-center">
+                      <button
+                        onClick={goToPreviousVersion}
+                        disabled={currentVersionIndex === 0}
+                        aria-label="Previous version"
+                      >
+                        <ChevronLeft size={24} />
+                      </button>
 
+                      <span className="text-base font-medium text-gray-700 min-w-[20px] text-center">
+                        {currentVersionIndex + 1}/{proposalVersions.length}
+                      </span>
+
+                      <button
+                        onClick={goToNextVersion}
+                        disabled={
+                          currentVersionIndex === proposalVersions.length - 1
+                        }
+                        aria-label="Next version"
+                      >
+                        <ChevronRight size={24} />
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
