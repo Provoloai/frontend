@@ -14,6 +14,8 @@ import {
   Workflow,
   Copy,
   Check,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import DocumentIllustration from "@/assets/svg/DocumentIllustration";
 import CustomButton from "@/Reusables/CustomButton";
@@ -35,10 +37,21 @@ const PortfolioOptimizer: React.FC = () => {
   const [copyState, setCopyState] = useState<"idle" | "copied">("idle");
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const queryClient = useQueryClient();
-  // State variables for output from the AI
-  const [generatedProposal, setGeneratedProposal] =
-    useState<ProposalData | null>(null);
+
+  // NEW: State variables for storing all proposal versions
+  const [proposalVersions, setProposalVersions] = useState<Array<ProposalData & { 
+    versionNumber: number;
+    versionType: string;
+    createdAt: string;
+  }>>([]);
+  const [currentVersionIndex, setCurrentVersionIndex] = useState<number>(0);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
+  const [refineType, setRefineType] = useState("");
+
+  // Get the current proposal based on the selected version
+  const generatedProposal = useMemo(() => {
+    return proposalVersions[currentVersionIndex] || null;
+  }, [proposalVersions, currentVersionIndex]);
 
   // React Hook Form setup
   const {
@@ -73,6 +86,7 @@ const PortfolioOptimizer: React.FC = () => {
         description: "Add more details or examples.",
         bgColor: "bg-blue-50",
         hoverColor: "hover:bg-blue-100",
+        value: 'expand_text'
       },
       {
         icon: Workflow,
@@ -80,6 +94,7 @@ const PortfolioOptimizer: React.FC = () => {
         description: "Reorganize ideas for clarity.",
         bgColor: "bg-purple-50",
         hoverColor: "hover:bg-purple-100",
+        value: 'improve_flow'
       },
       {
         icon: Scissors,
@@ -87,6 +102,7 @@ const PortfolioOptimizer: React.FC = () => {
         description: "Remove unnecessary words.",
         bgColor: "bg-yellow-50",
         hoverColor: "hover:bg-yellow-100",
+        value: 'trim_text'
       },
       {
         icon: PenLine,
@@ -94,6 +110,7 @@ const PortfolioOptimizer: React.FC = () => {
         description: "Break down complex sentences.",
         bgColor: "bg-red-50",
         hoverColor: "hover:bg-red-100",
+        value: 'simplify_text'
       },
     ],
     []
@@ -103,7 +120,6 @@ const PortfolioOptimizer: React.FC = () => {
   const generateProposal = useCallback(async (data: ProposalFormData): Promise<void> => {
     setIsGenerating(true);
     setError("");
-    setGeneratedProposal(null);
 
     try {
       const result = await proposalApi.generateProposal({
@@ -112,7 +128,18 @@ const PortfolioOptimizer: React.FC = () => {
         job_summary: data.jobSummary.trim(),
         job_title: data.jobTitle.trim(),
       });
-      setGeneratedProposal(result.data);
+
+      // NEW: Add version metadata and store as first version
+      const versionedProposal = {
+        ...data.data,
+        versionNumber: 1,
+        versionType: "original",
+        createdAt: new Date().toISOString(),
+      };
+
+      setProposalVersions([versionedProposal]);
+      setCurrentVersionIndex(0);
+
       await queryClient.invalidateQueries({
         queryKey: ["proposal-history"],
       });
@@ -125,7 +152,49 @@ const PortfolioOptimizer: React.FC = () => {
     } finally {
       setIsGenerating(false);
     }
-  }, [queryClient]);
+  }, [clientName, proposalTone, jobSummary, jobTitle, queryClient]);
+
+  const refineProposal = async () => {
+    if (!refineType) {
+      setError("Please select a refinement option");
+      return;
+    }
+
+    setIsGenerating(true);
+    setError("");
+
+    try {
+      const data = await proposalApi.refineGenerateProposal({
+        proposalId: generatedProposal?.proposalId,
+        newTone: proposalTone!,
+        refinementType: refineType,
+      });
+
+      // NEW: Add version metadata and append to versions array
+      const versionedProposal = {
+        ...data.data,
+        versionNumber: proposalVersions.length + 1,
+        versionType: refineType,
+        createdAt: new Date().toISOString(),
+      };
+
+      setProposalVersions(prev => [...prev, versionedProposal]);
+      setCurrentVersionIndex(proposalVersions.length); // Set to the new version
+      setRefineType(""); // Reset refinement type
+
+      await queryClient.invalidateQueries({
+        queryKey: ["proposal-history"],
+      });
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to refine proposal. Please try again.";
+      setError(errorMessage);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   // Optimized: Copy proposal to clipboard with locked feedback state and cleanup
   const copyToClipboard = useCallback(async (): Promise<void> => {
@@ -145,6 +214,23 @@ const PortfolioOptimizer: React.FC = () => {
       setCopyState("idle");
     }
   }, [copyState, generatedProposal?.mdx]);
+
+  // NEW: Version navigation functions
+  const goToPreviousVersion = () => {
+    if (currentVersionIndex > 0) {
+      setCurrentVersionIndex(prev => prev - 1);
+    }
+  };
+
+  const goToNextVersion = () => {
+    if (currentVersionIndex < proposalVersions.length - 1) {
+      setCurrentVersionIndex(prev => prev + 1);
+    }
+  };
+
+  const goToVersion = (index: number) => {
+    setCurrentVersionIndex(index);
+  };
 
   useEffect(() => {
     return () => {
@@ -335,7 +421,7 @@ const PortfolioOptimizer: React.FC = () => {
               />
             </div>
 
-            {!isGenerating && !generatedProposal && (
+            {!isGenerating && proposalVersions.length === 0 && (
               <div className="w-fit flex justify-end">
                 <CustomButton
                   type="submit"
@@ -457,7 +543,7 @@ const PortfolioOptimizer: React.FC = () => {
             className="bg-white rounded-lg border border-gray-200 flex"
             variants={proposalCardVariants}
           >
-            {!generatedProposal && !isGenerating ? (
+            {proposalVersions.length === 0 && !isGenerating ? (
               <div className="text-center m-auto p-8">
                 <div className="w-full text-center flex justify-center">
                   <DocumentIllustration />
@@ -482,7 +568,7 @@ const PortfolioOptimizer: React.FC = () => {
                 </div>
 
                 <h3 className="text-base text-center mb-2">
-                  Cooking up your proposal...
+                  {proposalVersions.length === 0 ? "Cooking up your proposal..." : "Refining your proposal..."}
                 </h3>
                 <p className="text-base leading-tight text-center w-2/3 mx-auto text-gray-400">
                   Provolo is crafting a personalized proposal just for you
@@ -490,10 +576,35 @@ const PortfolioOptimizer: React.FC = () => {
               </div>
             ) : (
               <div className="p-6 h-full flex flex-col">
+                {/* NEW: Version indicator */}
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold w-full">
-                    Complete Proposal (MDX)
-                  </h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-lg font-semibold">
+                      Complete Proposal (MDX)
+                    </h3>
+                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                      v{generatedProposal?.versionNumber}
+                      {/* {generatedProposal?.versionType !== "original" && 
+                        ` - ${generatedProposal?.versionType.replace(/_/g, ' ')}`} */}
+                    </span>
+                  </div>
+                  <div>
+                    <CustomButton
+                      onClick={copyToClipboard}
+                      className="btn-secondary p-0 w-fit h-fit border border-gray-300 hover:border-gray-400 flex items-center"
+                      aria-label={
+                        copyState === "copied"
+                          ? "Copied to clipboard"
+                          : "Copy proposal to clipboard"
+                      }
+                    >
+                      {copyState === "copied" ? (
+                        <Check size={18} className="text-black" />
+                      ) : (
+                        <Copy size={18} className="text-black" />
+                      )}
+                    </CustomButton>
+                  </div>
                 </div>
 
                 <div className="flex-1 overflow-y-auto">
@@ -510,37 +621,41 @@ const PortfolioOptimizer: React.FC = () => {
 
                     </div>
                   )}
-                  <div className=" mt-5">
-                    <CustomButton
-                      onClick={copyToClipboard}
-                      className="btn-secondary p-0 max-w-fit h-fit hover:border-gray-400 items-center bg-gray-50 hover:bg-gray-100 transition-all duration-300"
-                      aria-label={
-                        copyState === "copied"
-                          ? "Copied to clipboard"
-                          : "Copy proposal to clipboard"
-                      }
-                    >
-                      {copyState === "copied" ? (
-                        <span className="text-black text-sm flex gap-x-3">
-                          <Check size={18} className="text-black" />
-                          Copied
-                        </span>
-                      ) : (
-                        <span className="text-black text-sm flex gap-x-3">
-                          <Copy size={18} className="text-black" />
-                          Copy text
-                        </span>
-                      )}
-                    </CustomButton>
-                  </div>
+                  {/* NEW: Version pagination at the bottom */}
+                  {proposalVersions.length > 1 && (
+                    <div className="flex items-center justify-end pt-4">
+                      <button
+                        onClick={goToPreviousVersion}
+                        disabled={currentVersionIndex === 0}
+                        // className="p-2 rounded-md border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                        aria-label="Previous version"
+                      >
+                        <ChevronLeft size={24} />
+                      </button>
+                      
+                      <span className="text-base font-medium text-gray-700 min-w-[20px] text-center">
+                        {currentVersionIndex + 1}/{proposalVersions.length}
+                      </span>
+  
+                      <button
+                        onClick={goToNextVersion}
+                        disabled={currentVersionIndex === proposalVersions.length - 1}
+                        // className="p-2 rounded-md border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                        aria-label="Next version"
+                      >
+                        <ChevronRight size={24} />
+                      </button>
+                    </div>
+                  )}
                 </div>
+
               </div>
             )}
           </motion.section>
         </motion.div>
 
-        {/* Improvement Options Section - Only show after proposal is generated */}
-        {generatedProposal && (
+        {/* Improvement Options Section - Only show after proposal is generated AND on the latest version */}
+        {generatedProposal && !isGenerating && currentVersionIndex === 0 && (
           <motion.section
             className="p-5 bg-white rounded-lg border border-gray-200 mt-5 grid grid-cols-3 gap-24"
             variants={proposalCardVariants}
@@ -559,10 +674,11 @@ const PortfolioOptimizer: React.FC = () => {
                   <motion.div key={index} variants={proposalItemVariants}>
                     <button
                       onClick={() => {
-                        // TODO: Implement improvement action
-                        console.log(`Improve proposal: ${option.title}`);
+                        setRefineType(option.value);
                       }}
-                      className={`p-5 rounded-2xl transition-all duration-200 ${option.bgColor} ${option.hoverColor} py-[24px] px-5 block w-full text-left`}
+                      className={`p-5 rounded-2xl transition-all duration-200 ${option.bgColor} ${option.hoverColor} ${
+                        refineType === option.value ? "ring-2 ring-blue-600" : ""
+                      } py-[24px] px-5 block w-full text-left`}
                     >
                       <span className="flex items-center align-middle gap-2 mb-3">
                         <option.icon size={16} />
@@ -619,8 +735,8 @@ const PortfolioOptimizer: React.FC = () => {
 
               {/* Regenerate button */}
               <CustomButton
-                onClick={handleSubmit(generateProposal)}
-                isLoading={isGenerating || isSubmitting}
+                onClick={refineProposal}
+                isLoading={isGenerating}
                 className="btn-primary mt-auto"
               >
                 Generate Proposal Again

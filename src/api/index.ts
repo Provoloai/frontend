@@ -49,6 +49,17 @@ export const proposalApi = {
       body: JSON.stringify(data),
     });
   },
+
+   refineGenerateProposal: async (data: {
+    proposalId: string | undefined;
+    newTone: string;
+    refinementType: string;
+  }) => {
+    return apiRequest<{ data: any }>("/ai/refine-proposal", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
 };
 
 // Proposal API functions

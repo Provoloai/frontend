@@ -29,7 +29,6 @@ export const useAuth = () => {
         if (res?.data?.emailVerified) {
           navigate({ to: "/optimizer", replace: true });
         } else {
-          await authApi.sendVerificationCode();
           navigate({ to: "/verification", replace: true });
         }
       } catch (err: unknown) {
