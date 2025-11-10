@@ -698,36 +698,7 @@ const PortfolioOptimizer: React.FC = () => {
               </motion.div>
             </div>
 
-                <motion.div
-                  className="grid grid-cols-2 grid-rows-2 gap-5 min-[1920px]:grid-cols-1"
-                  variants={proposalContainerVariants}
-                >
-                  {improvementOptions.map((option, index) => (
-                    <motion.div key={index} variants={proposalItemVariants}>
-                      <button
-                        onClick={() => {
-                          // TODO: Implement improvement action
-                          console.log(`Improve proposal: ${option.title}`);
-                        }}
-                        className={`p-5 rounded-2xl transition-all duration-200 ${option.bgColor} ${option.hoverColor} py-[24px] px-5 block w-full text-left`}
-                      >
-                        <span className="flex items-center align-middle gap-2 mb-3">
-                          <option.icon size={16} />
-                          <p className="font-medium">{option.title}</p>
-                        </span>
-                        <span>
-                          <p className="font-thin text-sm">
-                            {option.description}
-                          </p>
-                        </span>
-                      </button>
-                    </motion.div>
-                  ))}
-                </motion.div>
-                
-              </div>
-
-              <div className="col-span-1 flex flex-col h-full min-[1920px]:h-fit mt-auto">
+            <div className="col-span-1 flex flex-col h-full min-[1920px]:h-fit mt-auto">
                 {/* Tone selector */}
                 <Controller
                   name="proposalTone"
@@ -767,8 +738,8 @@ const PortfolioOptimizer: React.FC = () => {
 
                 {/* Regenerate button */}
                 <CustomButton
-                  onClick={handleSubmit(generateProposal)}
-                  isLoading={isGenerating || isSubmitting}
+                  onClick={refineProposal}
+                  isLoading={isGenerating}
                   className="btn-primary mt-auto  min-[1920px]:mt-10"
                 >
                   Generate Proposal Again
@@ -778,18 +749,6 @@ const PortfolioOptimizer: React.FC = () => {
             </motion.section>
           )}
         </motion.div>
-
-              {/* Regenerate button */}
-              <CustomButton
-                onClick={refineProposal}
-                isLoading={isGenerating}
-                className="btn-primary mt-auto"
-              >
-                Generate Proposal Again
-              </CustomButton>
-            </div>
-          </motion.section>
-        )}
       </motion.div>
     </div>
   );
