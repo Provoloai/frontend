@@ -4,6 +4,7 @@ import { MobilePageModal } from "../pages/MobilePageModal";
 import { detectSystem } from "../utils/detectSystem.util";
 import { useEffect, useState } from "react";
 import UserName from "../pages/auth/UserName";
+import EmailVerification from "../pages/auth/EmailVerification";
 import VerifyingAuth from "../Reusables/VerifyingAuth";
 import useSession from "../hooks/useSession";
 
@@ -30,8 +31,11 @@ function RouteComponent() {
 
   const isMobile = operatingSystem === "android" || operatingSystem === "ios";
   const hasDisplayName = user.displayName && user.displayName.trim() !== "";
+  const isEmailVerified = user.emailVerified === true;
 
   if (isMobile) return <MobilePageModal operatingSystem={operatingSystem} />;
+
+  if (!isEmailVerified) return <EmailVerification />;
 
   if (!hasDisplayName) return <UserName />;
 
