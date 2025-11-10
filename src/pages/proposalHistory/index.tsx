@@ -321,7 +321,7 @@ const ProposalHistory: React.FC = () => {
                         text: `v${currentVersionIndex + 1}`,
                         color: "blue",
                       }}
-                      show={true}
+                      show
                     />
                   )}
                 </div>
