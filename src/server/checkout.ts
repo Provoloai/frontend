@@ -1,10 +1,10 @@
 import { Polar } from "@polar-sh/sdk";
 
 const POLAR_ACCESS_TOKEN = import.meta.env?.VITE_POLAR_ACCESS_TOKEN || "";
-const POLAR_ORG_ID = import.meta.env?.VITE_POLAR_ORG_ID || "";
+const POLAR_SERVER = import.meta.env?.VITE_POLAR_SERVER || "";
 
 const polar = new Polar({
-  server: "sandbox",
+  server: POLAR_SERVER as "production" | "sandbox",
   accessToken: POLAR_ACCESS_TOKEN,
 });
 
