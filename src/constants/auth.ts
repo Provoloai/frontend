@@ -44,6 +44,7 @@ export const RESERVED_USERNAMES = [
   "www",
   "mail",
   "ftp",
+  "support",
   "help",
   "test",
   "demo",
