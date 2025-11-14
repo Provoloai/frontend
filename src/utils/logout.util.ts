@@ -1,5 +1,5 @@
 export const logout = async () => {
-  await fetch(`${import.meta.env.VITE_SERVER_URL}/auth/logout`, {
+  await fetch(`/auth/logout`, {
     method: "POST",
     credentials: "include",
   });

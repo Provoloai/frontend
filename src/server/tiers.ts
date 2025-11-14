@@ -52,7 +52,7 @@ export const fetchTiers = async (): Promise<Tier[]> => {
   }
 
   try {
-    const response = await fetch(`${serverUrl}/payment/tiers`, {
+    const response = await fetch(`/payment/tiers`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -61,14 +61,18 @@ export const fetchTiers = async (): Promise<Tier[]> => {
 
     if (!response.ok) {
       console.error(`API Error: ${response.status} ${response.statusText}`);
-      throw new Error("Unable to load pricing information. Please try again later.");
+      throw new Error(
+        "Unable to load pricing information. Please try again later."
+      );
     }
 
     const result: APIResponse<Tier[]> = await response.json();
 
     if (result.status !== "success") {
       console.error("API returned error:", result.error || result.message);
-      throw new Error("Unable to load pricing information. Please try again later.");
+      throw new Error(
+        "Unable to load pricing information. Please try again later."
+      );
     }
 
     return result.data;
@@ -82,6 +86,8 @@ export const fetchTiers = async (): Promise<Tier[]> => {
     }
 
     // For network errors or other unexpected errors, show generic message
-    throw new Error("Unable to load pricing information. Please check your connection and try again.");
+    throw new Error(
+      "Unable to load pricing information. Please check your connection and try again."
+    );
   }
 };
