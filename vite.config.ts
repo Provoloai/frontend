@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import path from "path";
 
-export default defineConfig(() => ({
+export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),
@@ -29,29 +29,29 @@ export default defineConfig(() => ({
   plugins: [
     tanstackRouter({ target: "react" }),
     react(),
-    // {
-    //   name: "inject-devtools-blocker",
-    //   transformIndexHtml(html) {
-    //     if (mode === "production") {
-    //       return html.replace(
-    //         "</body>",
-    //         `<script>
-    //           (function () {
-    //             function detectDevTools() {
-    //               const start = performance.now();
-    //               debugger;
-    //               if (performance.now() - start > 100) {
-    //                 window.location.href = "about:blank";
-    //               }
-    //             }
-    //             setInterval(detectDevTools, 1000);
-    //             detectDevTools();
-    //           })();
-    //         </script></body>`
-    //       );
-    //     }
-    //     return html;
-    //   },
-    // },
+    {
+      name: "inject-devtools-blocker",
+      transformIndexHtml(html) {
+        if (mode === "production") {
+          return html.replace(
+            "</body>",
+            `<script>
+              (function () {
+                function detectDevTools() {
+                  const start = performance.now();
+                  debugger;
+                  if (performance.now() - start > 100) {
+                    window.location.href = "about:blank";
+                  }
+                }
+                setInterval(detectDevTools, 1000);
+                detectDevTools();
+              })();
+            </script></body>`
+          );
+        }
+        return html;
+      },
+    },
   ],
 }));
