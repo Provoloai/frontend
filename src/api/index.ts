@@ -9,7 +9,7 @@ const apiRequest = async <T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> => {
-  const url = `${endpoint}`;
+  const url = `/api/${endpoint}`;
 
   const defaultOptions: RequestInit = {
     headers: {
