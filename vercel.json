@@ -4,6 +4,10 @@
   },
   "rewrites": [
     {
+      "source": "/api/:path*",
+      "destination": "https://provolo-backend.fly.dev/:path*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
