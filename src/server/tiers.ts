@@ -52,7 +52,7 @@ export const fetchTiers = async (): Promise<Tier[]> => {
   }
 
   try {
-    const response = await fetch(`/payment/tiers`, {
+    const response = await fetch(`/api/payment/tiers`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

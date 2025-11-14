@@ -19,7 +19,7 @@ export function useTicketMutation(onSuccessCallback?: () => void) {
         formDataObj.append("attachments", file);
       });
 
-      const response = await fetch(`/support/ticket`, {
+      const response = await fetch(`/api/support/ticket`, {
         method: "POST",
         body: formDataObj,
       });

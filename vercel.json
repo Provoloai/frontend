@@ -5,7 +5,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://provolo-backend.fly.dev/:path*"
+      "destination": "https://provolo-backend.fly.dev/api/v1/:path*"
     },
     {
       "source": "/(.*)",
