@@ -1,10 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
 import { ApiResponse, SubmitTicketData } from "@/types/liveChat";
 
-export function useTicketMutation(
-  onSuccessCallback?: () => void
-) {
-  const url = `${import.meta.env.VITE_SERVER_URL}`;
+export function useTicketMutation(onSuccessCallback?: () => void) {
+  // const url = `${import.meta.env.VITE_SERVER_URL}`;
 
   return useMutation<ApiResponse, Error, SubmitTicketData>({
     mutationFn: async (data: SubmitTicketData) => {
@@ -17,11 +15,11 @@ export function useTicketMutation(
         formDataObj.append("subject", data.subject);
       }
 
-      data.files.forEach((file) => {
+      data.files.forEach(file => {
         formDataObj.append("attachments", file);
       });
 
-      const response = await fetch(`${url}/support/ticket`, {
+      const response = await fetch(`/support/ticket`, {
         method: "POST",
         body: formDataObj,
       });
@@ -61,4 +59,3 @@ export function useTicketMutation(
     },
   });
 }
-
