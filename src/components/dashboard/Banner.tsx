@@ -13,6 +13,8 @@ export default function Banner() {
 
           <a
             href="https://www.producthunt.com/products/provolo?launch=provolo&utm_source=twitter&utm_medium=social"
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex-none rounded-md bg-black px-3.5 py-1 text-sm font-semibold text-white shadow-sm hover:bg-black/85 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
           >
             🔥 Upvote
