@@ -373,10 +373,10 @@ const ProposalHistory: React.FC = () => {
                         disabled={currentVersionIndex === 0}
                         aria-label="Previous version"
                       >
-                        <ChevronLeft size={24} />
+                        <ChevronLeft size={15} />
                       </button>
 
-                      <span className="text-base font-medium text-gray-700 min-w-[20px] text-center">
+                      <span className="text-sm font-medium text-gray-700 min-w-[20px] text-center">
                         {currentVersionIndex + 1}/{proposalVersions.length}
                       </span>
 
@@ -387,7 +387,7 @@ const ProposalHistory: React.FC = () => {
                         }
                         aria-label="Next version"
                       >
-                        <ChevronRight size={24} />
+                        <ChevronRight size={15} />
                       </button>
                     </div>
                   )}
