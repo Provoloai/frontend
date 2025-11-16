@@ -2,14 +2,14 @@ import { apiGet } from "@/utils/api.util";
 import { useQuery } from "@tanstack/react-query";
 
 // API base configuration
-const API_BASE_URL = import.meta.env.VITE_SERVER_URL;
+// const API_BASE_URL = import.meta.env.VITE_SERVER_URL;
 
 // Generic API request function
 const apiRequest = async <T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> => {
-  const url = `${API_BASE_URL}${endpoint}`;
+  const url = `/api/${endpoint}`;
 
   const defaultOptions: RequestInit = {
     headers: {
@@ -50,7 +50,7 @@ export const proposalApi = {
     });
   },
 
-   refineGenerateProposal: async (data: {
+  refineGenerateProposal: async (data: {
     proposalId: string | undefined;
     newTone: string;
     refinementType: string;
@@ -93,7 +93,7 @@ export const optimizerApi = {
 // Auth API functions
 export const authApi = {
   login: async (idToken: string) => {
-    return apiRequest<{data: any}>("/auth/login", {
+    return apiRequest<{ data: any }>("/auth/login", {
       method: "POST",
       body: JSON.stringify({ idToken }),
     });
@@ -113,12 +113,12 @@ export const authApi = {
     );
   },
 
-    verify: async (otp: string) => {
+  verify: async (otp: string) => {
     return apiRequest<{ success: boolean; message?: string }>(
       "/auth/verify-email",
       {
         method: "POST",
-         body: JSON.stringify({ otp }),
+        body: JSON.stringify({ otp }),
       }
     );
   },
@@ -164,7 +164,7 @@ export const useGetProposal = (id: string) => {
 // Quota API functions
 export const quotaApi = {
   getQuota: async (quotaSlug: string) => {
-    return apiRequest<{ 
+    return apiRequest<{
       success: boolean;
       message: string;
       data: {
@@ -172,7 +172,7 @@ export const quotaApi = {
         count: number;
         limit: string | number;
         remaining: string | number;
-      }
+      };
     }>(`/ai/quota?quota=${quotaSlug}`, {
       method: "GET",
     });

@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { User, ApiResponse } from "../types";
 
 async function fetchSession(): Promise<User | null> {
-  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/auth/verify`, {
+  const res = await fetch(`/api/auth/verify`, {
     method: "GET",
     credentials: "include",
   });

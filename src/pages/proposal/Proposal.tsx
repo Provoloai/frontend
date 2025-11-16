@@ -604,7 +604,7 @@ const PortfolioOptimizer: React.FC = () => {
                     : "Refining your proposal..."}
                 </h3>
                 <p className="text-base leading-tight text-center w-2/3 mx-auto text-gray-400">
-                  Provolo is crafting a personalized proposal just for you
+                  Crafting a personalized proposal just for you
                 </p>
               </div>
             ) : (
