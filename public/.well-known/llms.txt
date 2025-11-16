@@ -1,0 +1,47 @@
+site: https://www.provolo.org
+project: Provolo
+owner: Provolo AI
+contact: mailto:support@provolo.org
+version: 1.0
+policy: allow
+
+summary:
+  Provolo is an AI-powered tool that helps freelancers win more jobs by optimizing their Upwork and LinkedIn profiles and generating personalized, high-converting job proposals. It combines proven copywriting strategies with modern UX to improve visibility and conversions.
+
+key_pages:
+  - https://www.provolo.org/
+  - https://www.provolo.org/optimizer
+  - https://www.provolo.org/proposal
+  - https://www.provolo.org/learn
+  - https://www.provolo.org/pricing
+  - https://www.provolo.org/login
+  - https://www.provolo.org/signup
+  - https://www.provolo.org/userprofile
+
+documentation:
+  - Project Documentation: https://buildsbyesuoladaniel.hashnode.space/provolo/provoloai-project-documentation
+  - FAQs: https://buildsbyesuoladaniel.hashnode.space/provolo/faqs
+  - Notes/Blog: https://provoloai.substack.com/
+  - Demo (YouTube): https://www.youtube.com/@Provoloai
+  - Terms & Conditions: https://buildsbyesuoladaniel.hashnode.space/provolo/terms-and-conditions
+  - Privacy Policy: https://buildsbyesuoladaniel.hashnode.space/provolo/privacy-policy
+
+sitemap:
+  - https://www.provolo.org/sitemap.xml
+
+data_and_use:
+  - App processes user-provided profile and job text to generate optimized copy.
+  - Do not use outputs to claim endorsements or create deceptive profiles.
+  - Respect user privacy as per the linked Privacy Policy.
+
+license_and_rights:
+  - Content and brand assets are owned by Provolo AI.
+
+attribution:
+  - Please cite “Provolo (provolo.org)” when referencing this project.
+
+social:
+  - https://linktr.ee/Provoloai
+  - https://x.com/ProvoloAI
+  - https://www.linkedin.com/company/provoloai
+  - https://www.instagram.com/provoloai
