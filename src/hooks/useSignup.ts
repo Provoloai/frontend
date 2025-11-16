@@ -30,13 +30,9 @@ export const useSignup = () => {
         const user = userCredential.user;
         const idToken = await getIdToken(user, true);
 
-        const res = await authApi.signup(idToken);
-        if (res?.data?.emailVerified) {
-          navigate({ to: "/optimizer", replace: true });
-        } else {
-          // await authApi.sendVerificationCode();
-          navigate({ to: "/verification", replace: true });
-        }
+        await authApi.signup(idToken);
+        // Always navigate to optimizer - email verification check happens in layout
+        navigate({ to: "/optimizer", replace: true });
       } catch (err: unknown) {
         const error = err as Error;
         setError(getCleanErrorMessage(error));

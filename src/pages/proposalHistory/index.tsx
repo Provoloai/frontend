@@ -7,6 +7,7 @@ import {
   ArrowLeft,
   ChevronLeft,
   ChevronRight,
+  Sparkles,
 } from "lucide-react";
 import CustomButton from "@/Reusables/CustomButton";
 import {
@@ -36,7 +37,7 @@ const ProposalHistory: React.FC = () => {
   const hasMultipleVersions =
     Array.isArray(rawVersions) && rawVersions.length > 1;
 
-  // Get the current proposal based on the selected version
+  // Get the current proposal based on the selected version (for train of thoughts)
   let generatedProposal = null;
 
   if (hasMultipleVersions && rawVersions.length > 0) {
@@ -48,6 +49,9 @@ const ProposalHistory: React.FC = () => {
     // If no versions array or only one version, use the single proposalResponse
     generatedProposal = proposal?.data?.proposalResponse || null;
   }
+
+  // Read MDX directly from the main proposalResponse, not from versions
+  const proposalMdx = proposal?.data?.proposalResponse?.mdx || null;
 
   // For pagination, we need an array of versions
   const proposalVersions = hasMultipleVersions ? rawVersions : [];
@@ -66,9 +70,10 @@ const ProposalHistory: React.FC = () => {
 
   // Optimized: Copy proposal to clipboard with locked feedback state and cleanup
   const copyToClipboard = useCallback(async (): Promise<void> => {
-    if (copyState !== "idle" || !generatedProposal?.mdx) return;
+    const mdxToCopy = proposal?.data?.proposalResponse?.mdx;
+    if (copyState !== "idle" || !mdxToCopy) return;
     try {
-      await navigator.clipboard.writeText(generatedProposal.mdx);
+      await navigator.clipboard.writeText(mdxToCopy);
       setCopyState("copied");
 
       // only set the timeout if one is not already running
@@ -81,7 +86,7 @@ const ProposalHistory: React.FC = () => {
     } catch {
       setCopyState("idle");
     }
-  }, [copyState, generatedProposal?.mdx]);
+  }, [copyState, proposal?.data?.proposalResponse?.mdx]);
 
   // Version navigation functions
   const goToPreviousVersion = () => {
@@ -161,13 +166,17 @@ const ProposalHistory: React.FC = () => {
     </div>
   );
 
-  // Show skeleton loader while loading
-  if (isLoading) {
+  // Show skeleton loader only while loading AND no proposal data available
+  // Stop loading as soon as we have proposal data, don't wait for all history
+  const hasProposalData =
+    proposal && (proposal.data?.proposalResponse || proposal.data?.versions);
+
+  if (isLoading && !hasProposalData) {
     return <SkeletonLoader />;
   }
 
-  // If proposal not found, show error state
-  if (!proposal) {
+  // If proposal not found after loading, show error state
+  if (!isLoading && !hasProposalData) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center p-10">
         <h2 className="text-2xl font-semibold mb-3">Proposal Not Found</h2>
@@ -223,86 +232,104 @@ const ProposalHistory: React.FC = () => {
           >
             <h3 className="text-lg font-semibold mb-4">Train of Thoughts</h3>
 
-            {generatedProposal?.hook && (
-              <div className="mb-4">
-                <h4 className="font-medium text-gray-900 mb-2">Hook</h4>
-                <p className="text-gray-700 text-sm">
-                  {generatedProposal.hook}
-                </p>
-              </div>
-            )}
-
-            {generatedProposal?.solution && (
-              <div className="mb-4">
-                <h4 className="font-medium text-gray-900 mb-2">Solution</h4>
-                <p className="text-gray-700 text-sm">
-                  {generatedProposal.solution}
-                </p>
-              </div>
-            )}
-
-            {generatedProposal?.keyPoints &&
-              generatedProposal.keyPoints.length > 0 && (
-                <div className="mb-4">
-                  <h4 className="font-medium text-gray-900 mb-2">Key Points</h4>
-                  <ul className="space-y-1 list-disc list-inside">
-                    {generatedProposal.keyPoints.map(
-                      (point: string, index: number) => (
-                        <li key={index} className="text-gray-700 text-sm">
-                          {point}
-                        </li>
-                      )
-                    )}
-                  </ul>
+            {!generatedProposal ? (
+              // Show loading state when proposal data is not ready
+              <div className="flex items-center justify-center h-64">
+                <div className="relative">
+                  <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Sparkles className="w-5 h-5 text-blue-600 animate-pulse" />
+                  </div>
                 </div>
-              )}
-
-            <div className="mb-4">
-              <h4 className="font-medium text-gray-900 mb-2">Portfolio</h4>
-              {generatedProposal?.portfolioLink ? (
-                <a
-                  href={generatedProposal.portfolioLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-800 text-sm break-all"
-                >
-                  {generatedProposal.portfolioLink}
-                </a>
-              ) : (
-                <Link
-                  to="/userprofile"
-                  className="text-blue-600 hover:text-blue-800 text-sm"
-                >
-                  Click here to set profile link
-                </Link>
-              )}
-            </div>
-
-            {generatedProposal?.availability && (
-              <div className="mb-4">
-                <h4 className="font-medium text-gray-900 mb-2">Availability</h4>
-                <p className="text-gray-700 text-sm">
-                  {generatedProposal.availability}
-                </p>
               </div>
-            )}
+            ) : (
+              <>
+                {generatedProposal?.hook && (
+                  <div className="mb-4">
+                    <h4 className="font-medium text-gray-900 mb-2">Hook</h4>
+                    <p className="text-gray-700 text-sm">
+                      {generatedProposal.hook}
+                    </p>
+                  </div>
+                )}
 
-            {generatedProposal?.support && (
-              <div className="mb-4">
-                <h4 className="font-medium text-gray-900 mb-2">Support</h4>
-                <p className="text-gray-700 text-sm">
-                  {generatedProposal.support}
-                </p>
-              </div>
-            )}
+                {generatedProposal?.solution && (
+                  <div className="mb-4">
+                    <h4 className="font-medium text-gray-900 mb-2">Solution</h4>
+                    <p className="text-gray-700 text-sm">
+                      {generatedProposal.solution}
+                    </p>
+                  </div>
+                )}
 
-            {generatedProposal?.closing && (
-              <div>
-                <h4 className="font-medium text-gray-900 mb-2">Closing</h4>
-                <p className="text-gray-700 text-sm">
-                  {generatedProposal.closing}
-                </p>
-              </div>
+                {generatedProposal?.keyPoints &&
+                  generatedProposal.keyPoints.length > 0 && (
+                    <div className="mb-4">
+                      <h4 className="font-medium text-gray-900 mb-2">
+                        Key Points
+                      </h4>
+                      <ul className="space-y-1 list-disc list-inside">
+                        {generatedProposal.keyPoints.map(
+                          (point: string, index: number) => (
+                            <li key={index} className="text-gray-700 text-sm">
+                              {point}
+                            </li>
+                          )
+                        )}
+                      </ul>
+                    </div>
+                  )}
+
+                <div className="mb-4">
+                  <h4 className="font-medium text-gray-900 mb-2">Portfolio</h4>
+                  {generatedProposal?.portfolioLink ? (
+                    <a
+                      href={generatedProposal.portfolioLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800 text-sm break-all"
+                    >
+                      {generatedProposal.portfolioLink}
+                    </a>
+                  ) : (
+                    <Link
+                      to="/userprofile"
+                      className="text-blue-600 hover:text-blue-800 text-sm"
+                    >
+                      Click here to set profile link
+                    </Link>
+                  )}
+                </div>
+
+                {generatedProposal?.availability && (
+                  <div className="mb-4">
+                    <h4 className="font-medium text-gray-900 mb-2">
+                      Availability
+                    </h4>
+                    <p className="text-gray-700 text-sm">
+                      {generatedProposal.availability}
+                    </p>
+                  </div>
+                )}
+
+                {generatedProposal?.support && (
+                  <div className="mb-4">
+                    <h4 className="font-medium text-gray-900 mb-2">Support</h4>
+                    <p className="text-gray-700 text-sm">
+                      {generatedProposal.support}
+                    </p>
+                  </div>
+                )}
+
+                {generatedProposal?.closing && (
+                  <div>
+                    <h4 className="font-medium text-gray-900 mb-2">Closing</h4>
+                    <p className="text-gray-700 text-sm">
+                      {generatedProposal.closing}
+                    </p>
+                  </div>
+                )}
+              </>
             )}
           </motion.section>
 
@@ -328,15 +355,25 @@ const ProposalHistory: React.FC = () => {
               </div>
 
               <div className="flex-1 overflow-y-auto">
-                {generatedProposal?.mdx && (
-                  <div className="p-4 bg-gray-50 rounded-lg">
+                {!generatedProposal ? (
+                  // Show loading spinner when proposal data is not ready
+                  <div className="flex items-center justify-center h-64">
+                    <div className="relative">
+                      <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Sparkles className="w-6 h-6 text-blue-600 animate-pulse" />
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-5 bg-gray-50 rounded-lg border border-gray-100">
                     <pre
-                      className="text-gray-700 text-xs whitespace-pre-wrap overflow-x-auto"
+                      className="text-gray-700 text-sm whitespace-pre-wrap overflow-x-auto font-mono leading-relaxed"
                       role="textbox"
                       aria-label="Generated proposal content"
                       tabIndex={0}
                     >
-                      {generatedProposal.mdx}
+                      {proposalMdx || ""}
                     </pre>
                   </div>
                 )}

@@ -44,11 +44,7 @@ const makeApiRequest = async (
   endpoint: string,
   options: ApiRequestOptions = {}
 ): Promise<any> => {
-  if (!import.meta.env.VITE_SERVER_URL) {
-    throw new Error("Server configuration error");
-  }
-
-  const url = `${import.meta.env.VITE_SERVER_URL}${endpoint}`;
+  const url = `/api${endpoint}`;
 
   const defaultOptions: ApiRequestOptions = {
     method: options.method || "GET",
