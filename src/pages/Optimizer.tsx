@@ -29,6 +29,7 @@ const PortfolioOptimizer = () => {
     [user]
   );
 
+  const queryClient = useQueryClient()
   // Memoize accordion sections
   const accordionSections: AccordionSection[] = useMemo(
     () => [
