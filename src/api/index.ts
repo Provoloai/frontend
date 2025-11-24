@@ -1,15 +1,20 @@
 import { apiGet } from "@/utils/api.util";
 import { useQuery } from "@tanstack/react-query";
 
-// API base configuration
-// const API_BASE_URL = import.meta.env.VITE_SERVER_URL;
-
 // Generic API request function
 const apiRequest = async <T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> => {
-  const url = `/api/${endpoint}`;
+  const NODE_ENV = (import.meta.env.VITE_NODE_ENV as string) || "";
+  const SERVER_URL = (import.meta.env.VITE_SERVER_URL as string) || "";
+
+  const apiBase =
+    NODE_ENV === "development" && SERVER_URL
+      ? SERVER_URL.replace(/\/$/, "")
+      : "/api";
+
+  const url = `${apiBase}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
 
   const defaultOptions: RequestInit = {
     headers: {
