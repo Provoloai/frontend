@@ -1,21 +1,25 @@
 import { useQuery } from "@tanstack/react-query";
-import { User, ApiResponse } from "../types";
+import { User } from "../types";
+import { apiRequest } from "@/api";
 
 async function fetchSession(): Promise<User | null> {
-  const res = await fetch(`/api/auth/verify`, {
-    method: "GET",
-    credentials: "include",
-  });
-  if (!res.ok) return null;
-  const data: ApiResponse<User> = await res.json();
-  return data?.data ?? null;
+  try {
+    const resp = await apiRequest<{ data: User }>("/auth/verify", {
+      method: "GET",
+      credentials: "include",
+    });
+    return resp?.data ?? null;
+  } catch {
+    // swallow errors and treat as no session
+    return null;
+  }
 }
 
 interface UseSessionReturn {
   user: User | null | undefined;
   loading: boolean;
   isFetching: boolean;
-  refetch: () => void;
+  refetch: () => Promise<unknown>;
 }
 
 export default function useSession(): UseSessionReturn {
