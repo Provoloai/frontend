@@ -28,7 +28,7 @@ import {
 } from "@/constants/animations";
 import type { ProposalData, ImprovementOption } from "@/types";
 import { useQueryClient } from "@tanstack/react-query";
-import Banner from "@/components/dashboard/Banner";
+// import Banner from "@/components/dashboard/Banner";
 import { Link } from "@tanstack/react-router";
 import {
   proposalFormSchema,
@@ -273,9 +273,9 @@ const PortfolioOptimizer: React.FC = () => {
           className="text-start pt-10"
           variants={proposalItemVariants}
         >
-          <div className="mb-10">
+          {/* <div className="mb-10">
             <Banner />
-          </div>
+          </div> */}
 
           <h2 className="text-3xl font-medium mb-3 text-center flex items-center gap-3">
             Proposals <Sparkles />
