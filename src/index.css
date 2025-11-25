@@ -10,7 +10,7 @@
   scroll-behavior: smooth;
   @apply font-primary;
 
-  /* outline: 1px dashed red; */
+  /* outline: 1.5px dashed black */
 }
 
 @layer base {

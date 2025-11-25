@@ -5,6 +5,7 @@ import Header from "@/components/landing/Header";
 import Features from "@/components/landing/Features";
 import Footer from "@/components/landing/Footer";
 import type { LandingPageProps } from "@/types/landingPage";
+import Faqs from "./Faqs";
 // import LiveChat from "@/Reusables/LiveChat";
 
 const LandingPage: React.FC<LandingPageProps> = () => {
