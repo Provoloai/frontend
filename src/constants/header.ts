@@ -27,8 +27,8 @@ export const HEADER_CONFIG: HeaderConfig = {
   ],
   navigation: [
     { name: "Features", href: "#features", isExternal: false },
-    { name: "FAQs", href: "https://buildsbyesuoladaniel.hashnode.space/provolo/faqs", isExternal: true },
-    { name: "Notes", href: "https://provoloai.substack.com/", isExternal: true },
+    { name: "FAQs", href: "/faq", isExternal: false },
+    { name: "Blogs", href: "https://provoloai.substack.com/", isExternal: true },
   ],
 };
 
@@ -128,7 +128,7 @@ export const HEADER_ANIMATIONS: HeaderAnimationVariants = {
 };
 
 export const HEADER_STYLES = {
-  container: "bg-transparent lg:pt-10 md:pt-8 pt-10 fixed z-20 w-screen px-5",
+  container: "backdrop-blur lg:pt-10 md:pt-8 pt-10 fixed z-20 w-screen px-5",
   nav: "mx-auto flex max-w-[906.67px] items-center justify-between lg:p-[15px] py-2 px-4 bg-white rounded-full",
   logo: "flex mr-10",
   mobileButton: "flex lg:hidden",

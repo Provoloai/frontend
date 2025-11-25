@@ -31,7 +31,7 @@ import { useQueryClient } from "@tanstack/react-query";
 // import Banner from "@/components/dashboard/Banner";
 import { Link } from "@tanstack/react-router";
 import {
-  proposalFormSchema,
+  proposalFormSchema, 
   type ProposalFormData,
 } from "@/schemas/proposalSchema";
 import SidebarBadge from "@/components/sidebar/SidebarBadge";
