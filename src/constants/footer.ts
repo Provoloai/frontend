@@ -14,7 +14,7 @@ export const FOOTER_CONFIG: FooterConfig = {
       { label: "Careers", href: "https://buildsbyesuoladaniel.hashnode.space/provolo/open-collaborations" },
       { label: "Terms & Conditions", href: "https://buildsbyesuoladaniel.hashnode.space/provolo/terms-and-conditions" },
       { label: "Privacy Policy", href: "https://buildsbyesuoladaniel.hashnode.space/provolo/privacy-policy" },
-      { label: "Docs", href: "https://buildsbyesuoladaniel.hashnode.space/provolo/provoloai-project-documentation" },
+      { label: "Help Center", href: "https://buildsbyesuoladaniel.hashnode.space/provolo/provoloai-project-documentation" },
     ],
     social: [
       { href: "https://x.com/provoloai", icon: Twitter },

@@ -25,7 +25,7 @@ const WelcomeContent: React.FC<WelcomeContentProps> = ({ onContinue }) => {
             <ul className="text-sm text-gray-600 space-y-2 mb-6 text-left inline-block">
               {WELCOME_CONFIG.features.map((feature, index) => (
                 <li key={index} className="flex items-center space-x-2">
-                  <span><WELCOME_CONFIG.featureIcon /></span>
+                  <span className="bg-gray-100 p-1 rounded-md"><WELCOME_CONFIG.featureIcon size={15}/></span>
                   <span>{feature}</span>
                 </li>
               ))}

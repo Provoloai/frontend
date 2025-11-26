@@ -18,6 +18,8 @@ import {
   Crown,
   Sparkles,
   Globe,
+  Asterisk,
+  Check,
 } from "lucide-react";
 import type { PricingTier, PricingFeature } from "@/types/pricing";
 
@@ -157,8 +159,8 @@ const PricingSkeleton = () => {
                     <div key={featureIndex} className="flex items-center gap-3">
                       <SkeletonBox
                         className={`h-5 w-5 rounded-full ${index === 1
-                          ? "bg-gradient-to-r from-blue-400 via-indigo-300 to-indigo-400"
-                          : "bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500"
+                          ? "bg-gradient-to-r from-slate-400 via-slate-300 to-slate-400"
+                          : "bg-gradient-to-r from-slate-500 via-slate-400 to-slate-500"
                           }`}
                         delay={0.5 + index * 0.1 + featureIndex * 0.05}
                       />
@@ -177,7 +179,7 @@ const PricingSkeleton = () => {
                 {/* CTA Button */}
                 <SkeletonBox
                   className={`h-12 w-full mt-8 ${index === 1
-                    ? "bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500"
+                    ? "bg-gradient-to-r from-slate-500 via-slate-400 to-slate-500"
                     : "bg-gradient-to-r from-slate-300 via-slate-200 to-slate-300"
                     }`}
                   delay={0.7 + index * 0.1}
@@ -190,6 +192,10 @@ const PricingSkeleton = () => {
     </div>
   );
 };
+
+
+
+
 
 // Transform backend tier to UI format
 const transformTierForUI = (tier: any): PricingTier => ({
@@ -224,6 +230,7 @@ export default function Pricing() {
   const { user } = useSession();
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [subscriptionError, setSubscriptionError] = useState("");
+  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "annual">("monthly");
 
   const checkout = async (polarRefId: string) => {
     setCheckoutLoading(true);
@@ -326,6 +333,48 @@ export default function Pricing() {
         <p className="text-gray-400">
           Need more capabilities for your Freelance business?
         </p>
+
+        {/* Billing Period Toggle */}
+        <motion.div
+          className="mt-8 flex justify-center"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+        >
+          <div className="relative flex bg-slate-100 rounded-full p-1">
+            <motion.div
+              className="absolute top-1 bottom-1 bg-white rounded-full shadow-sm"
+              animate={{
+                left: billingPeriod === "monthly" ? "0.25rem" : "50%",
+                right: billingPeriod === "monthly" ? "50%" : "0.25rem",
+              }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            />
+            <button
+              onClick={() => setBillingPeriod("monthly")}
+              className={classNames(
+                "relative z-10 px-6 py-2 text-sm font-normal rounded-full transition-colors duration-200",
+                billingPeriod === "monthly"
+                  ? "text-gray-600"
+                  : "text-gray-600 hover:text-gray-900"
+              )}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setBillingPeriod("annual")}
+              className={classNames(
+                "relative z-10 px-6 py-2 text-sm font-normal rounded-full transition-colors duration-200",
+                billingPeriod === "annual"
+                  ? "text-gray-600"
+                  : "text-gray-600 hover:text-gray-900"
+              )}
+            >
+              Annually
+            </button>
+          </div>
+        </motion.div>
+
         <AnimatePresence>
           {subscriptionError && (
             <motion.div
@@ -384,6 +433,24 @@ export default function Pricing() {
                 transition: { duration: 0.2, ease: "easeOut" },
               }}
             >
+              {/* Best Offer Badge */}
+              <AnimatePresence>
+                {tier.featured && billingPeriod === "annual" && (
+                  <motion.div
+                    className="absolute -top-3.5 right-10 -translate-x-1/2"
+                    initial={{ opacity: 0, y: 10, scale: 0.8 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.8 }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                  >
+                    <span className="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white px-4 py-1.5 rounded-full text-xs font-semibold shadow-lg flex items-center gap-1.5">
+                      <Crown className="h-3 w-3" />
+                      Save 10%
+                    </span>
+                  </motion.div>
+                )}
+
+              </AnimatePresence>
               <div className="flex items-center gap-3 mb-4">
                 <div
                   className={classNames(
@@ -399,7 +466,7 @@ export default function Pricing() {
                       )}
                     />
                   ) : (
-                    <Star
+                    <Asterisk
                       className={classNames(
                         tier.featured ? "text-indigo-200" : "text-primary",
                         "h-5 w-5"
@@ -429,10 +496,10 @@ export default function Pricing() {
                 <span
                   className={classNames(
                     tier.featured ? "text-gray-400" : "text-gray-500",
-                    "text-xs leading-none"
+                    "text-xs leading-none capitalize"
                   )}
                 >
-                  USD /<br /> month
+                  USD /<br /> {billingPeriod === "monthly" ? "month" : "year"}
                 </span>
               </p>
 
@@ -460,7 +527,7 @@ export default function Pricing() {
                         "p-1 rounded-md"
                       )}
                     >
-                      <Star
+                      <Check
                         className={classNames(
                           tier.featured ? "text-gray-100" : "text-primary",
                           "h-3 w-3"
@@ -498,7 +565,7 @@ export default function Pricing() {
                             )}
                           />
                         ) : (
-                          <Star
+                          <Check
                             className={classNames(
                               tier.featured ? "text-gray-100" : "text-primary",
                               "h-3 w-3"
@@ -563,7 +630,7 @@ export default function Pricing() {
                   >
                     <span className="flex items-center justify-center gap-2">
                       {checkoutLoading ? <Loader2 className="animate-spin h-4 w-4" /> : null}
-                      Get Plus 
+                      Get Plus
                     </span>
                   </motion.button>
                 )}
@@ -571,8 +638,6 @@ export default function Pricing() {
             </motion.div>
           );
         })}
-
-        {/* <svg width="21" height="20" viewBox="0 0 21 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M10.2441 10.7759C12.7597 10.8965 14.8838 12.8648 14.8838 15.0601C14.8838 15.4273 14.586 15.7251 14.2188 15.7251H5.78125C5.41399 15.7251 5.11623 15.4273 5.11621 15.0601C5.11621 12.7959 7.37906 10.77 10 10.77L10.2441 10.7759Z"></path><path d="M0 14.436C0 11.5616 3.13043 10.5652 5.2998 11.4478C4.37179 12.4185 3.78619 13.6736 3.78613 15.0601L3.78809 15.1011H0.665039C0.298096 15.1011 0.000527744 14.8029 0 14.436Z"></path><path d="M14.7988 11.5532C16.969 10.4969 20.3301 11.4561 20.3301 14.436C20.3295 14.8029 20.032 15.1011 19.665 15.1011H16.2119L16.2139 15.0601C16.2138 13.7223 15.6689 12.5079 14.7988 11.5532Z"></path><path d="M3.4248 5.00146C4.85516 5.00146 6.01454 6.16098 6.01465 7.59131C6.01454 9.02164 4.85516 10.1812 3.4248 10.1812C1.99454 10.181 0.835068 9.02157 0.834961 7.59131C0.835066 6.16105 1.99454 5.00157 3.4248 5.00146Z"></path><path d="M16.5703 5.00146C18.0006 5.00157 19.1601 6.16105 19.1602 7.59131C19.16 9.02157 18.0006 10.181 16.5703 10.1812C15.14 10.1812 13.9806 9.02164 13.9805 7.59131C13.9806 6.16098 15.14 5.00146 16.5703 5.00146Z"></path><path d="M10 4.27002C11.6099 4.27002 12.915 5.57515 12.915 7.18506C12.915 8.79497 11.6099 10.1001 10 10.1001C8.39009 10.1001 7.08496 8.79497 7.08496 7.18506C7.08496 5.57515 8.39009 4.27002 10 4.27002Z"></path></svg> */}
       </motion.div>
     </motion.div>
   );
