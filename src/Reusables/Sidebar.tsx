@@ -13,11 +13,14 @@ import SidebarSection from "@/components/sidebar/SidebarSection";
 import SidebarSectionTitle from "@/components/sidebar/SidebarSectionTitle";
 import ProposalDropdown from "@/components/sidebar/ProposalDropdown";
 import UserProfile from "../pages/user/User";
+import OptimizerDropdown from "@/components/sidebar/OptimizerDropdown";
 
 const Sidebar = () => {
   const location = useRouterState({ select: s => s.location });
   const isOnProposalHistoryPage =
     location.pathname.startsWith("/proposalHistory/");
+  const isOnOptimizerHistoryPage =
+    location.pathname.startsWith("/optimizerHistory/");
 
   const {
     isOpen,
@@ -25,6 +28,9 @@ const Sidebar = () => {
     proposalDropdownOpen,
     openProposalDropdown,
     closeProposalDropdown,
+    optimizerDropdownOpen,
+    openOptimizerDropdown,
+    closeOptimizerDropdown,
   } = useSidebar(true);
 
   const { isActive } = useActiveLink();
@@ -50,21 +56,45 @@ const Sidebar = () => {
       })
     ) || [];
 
-  // Auto-open dropdown if on a proposal history page
+  // Auto-open dropdowns based on current page
   useEffect(() => {
     if (isOnProposalHistoryPage) {
       openProposalDropdown();
     }
   }, [isOnProposalHistoryPage, openProposalDropdown]);
 
+  useEffect(() => {
+    if (isOnOptimizerHistoryPage) {
+      openOptimizerDropdown();
+    }
+  }, [isOnOptimizerHistoryPage, openOptimizerDropdown]);
+
   const handleProposalClick = (): void => {
     openProposalDropdown();
+    closeOptimizerDropdown();
+  };
+
+  const handleOptimizerClick = (): void => {
+    openOptimizerDropdown();
+    closeProposalDropdown();
+  };
+
+  const handleOtherItemClick = (): void => {
+    closeProposalDropdown();
+    closeOptimizerDropdown();
   };
 
   const proposalDropdown = (
     <ProposalDropdown
       isOpen={proposalDropdownOpen && isOpen}
       proposals={proposals}
+    />
+  );
+
+  const optimizerDropdown = (
+    <OptimizerDropdown
+      isOpen={optimizerDropdownOpen && isOpen}
+      optimizers={optimizers}
     />
   );
 
@@ -90,8 +120,10 @@ const Sidebar = () => {
           isOpen={isOpen}
           getLinkClass={getLinkClass}
           onProposalClick={handleProposalClick}
-          onOtherItemClick={closeProposalDropdown}
+          onOptimizerClick={handleOptimizerClick}
+          onOtherItemClick={handleOtherItemClick}
           proposalDropdown={proposalDropdown}
+          optimizerDropdown={optimizerDropdown}
           isProposalSection={true}
         />
 
@@ -104,7 +136,7 @@ const Sidebar = () => {
           items={UPSKILL_ITEMS}
           isOpen={isOpen}
           getLinkClass={getLinkClass}
-          onOtherItemClick={closeProposalDropdown}
+          onOtherItemClick={handleOtherItemClick}
         />
 
         {/* Feedback Section */}
@@ -113,7 +145,7 @@ const Sidebar = () => {
           items={FEEDBACK_ITEMS}
           isOpen={isOpen}
           getLinkClass={getLinkClass}
-          onOtherItemClick={closeProposalDropdown}
+          onOtherItemClick={handleOtherItemClick}
         />
 
         <UserProfile open={isOpen} />

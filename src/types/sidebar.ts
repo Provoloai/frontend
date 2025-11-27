@@ -20,6 +20,6 @@ export interface ProposalHistoryItem {
 
 export interface OptimizerHistoryItem {
   id: string;
-  jobTitle: string;
+  originalInput: string;
 }
 
