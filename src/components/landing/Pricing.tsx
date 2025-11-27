@@ -123,7 +123,7 @@ const PricingSkeleton = () => {
               <div className="space-y-6">
                 {/* Plan Name */}
                 <SkeletonBox
-                  className={`h-7 w-32 ${index === 1 ? "bg-gradient-to-r from-slate-600 via-slate-500 to-slate-600" : ""
+                  className={`h-7 w-32 ${index === 1 ? "bg-gradient-to-r from-slate-400 via-slate-400 to-slate-400" : ""
                     }`}
                   delay={0.2 + index * 0.1}
                 />
@@ -132,14 +132,14 @@ const PricingSkeleton = () => {
                 <div className="flex items-center gap-x-2">
                   <SkeletonBox
                     className={`h-16 w-28 ${index === 1
-                      ? "bg-gradient-to-r from-slate-600 via-slate-500 to-slate-600"
+                      ? "bg-gradient-to-r from-slate-500 via-slate-500 to-slate-500"
                       : ""
                       }`}
                     delay={0.3 + index * 0.1}
                   />
                   <SkeletonBox
                     className={`h-8 w-16 ${index === 1
-                      ? "bg-gradient-to-r from-slate-700 via-slate-600 to-slate-700"
+                      ? "bg-gradient-to-r from-slate-500 via-slate-500 to-slate-500"
                       : ""
                       }`}
                     delay={0.35 + index * 0.1}
@@ -148,7 +148,7 @@ const PricingSkeleton = () => {
 
                 {/* Description */}
                 <SkeletonBox
-                  className={`h-5 w-full ${index === 1 ? "bg-gradient-to-r from-slate-600 via-slate-500 to-slate-600" : ""
+                  className={`h-5 w-full ${index === 1 ? "bg-gradient-to-r from-slate-400 via-slate-400 to-slate-400" : ""
                     }`}
                   delay={0.4 + index * 0.1}
                 />
@@ -160,14 +160,14 @@ const PricingSkeleton = () => {
                       <SkeletonBox
                         className={`h-5 w-5 rounded-full ${index === 1
                           ? "bg-gradient-to-r from-slate-400 via-slate-300 to-slate-400"
-                          : "bg-gradient-to-r from-slate-500 via-slate-400 to-slate-500"
+                          : "bg-gradient-to-r from-slate-400 via-slate-400 to-slate-400"
                           }`}
                         delay={0.5 + index * 0.1 + featureIndex * 0.05}
                       />
                       <SkeletonBox
                         className={`h-4 ${featureIndex % 3 === 0 ? "w-40" : featureIndex % 3 === 1 ? "w-32" : "w-36"
                           } ${index === 1
-                            ? "bg-gradient-to-r from-slate-600 via-slate-500 to-slate-600"
+                            ? "bg-gradient-to-r from-slate-400 via-slate-400 to-slate-400"
                             : ""
                           }`}
                         delay={0.52 + index * 0.1 + featureIndex * 0.05}
@@ -179,7 +179,7 @@ const PricingSkeleton = () => {
                 {/* CTA Button */}
                 <SkeletonBox
                   className={`h-12 w-full mt-8 ${index === 1
-                    ? "bg-gradient-to-r from-slate-500 via-slate-400 to-slate-500"
+                    ? "bg-gradient-to-r from-slate-400 via-slate-400 to-slate-400"
                     : "bg-gradient-to-r from-slate-300 via-slate-200 to-slate-300"
                     }`}
                   delay={0.7 + index * 0.1}
@@ -227,7 +227,7 @@ export default function Pricing() {
   });
 
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "annual">("monthly");
-  
+
   // const displayTiers = useMemo(() => (tiers ? tiers.map(transformTierForUI) : []), [tiers]);
   const displayTiers = useMemo(() => {
     if (!tiers) return [];
