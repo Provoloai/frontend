@@ -7,8 +7,10 @@ interface SidebarSectionProps {
   isOpen: boolean;
   getLinkClass: (path: string) => string;
   onProposalClick?: () => void;
+  onOptimizerClick?: () => void;
   onOtherItemClick?: () => void;
   proposalDropdown?: React.ReactNode;
+  optimizerDropdown?: React.ReactNode;
   isProposalSection?: boolean;
 }
 
@@ -17,8 +19,10 @@ export default function SidebarSection({
   isOpen,
   getLinkClass,
   onProposalClick,
+  onOptimizerClick,
   onOtherItemClick,
   proposalDropdown,
+  optimizerDropdown,
   isProposalSection = false,
 }: SidebarSectionProps) {
   const { isActive } = useActiveLink();
@@ -27,6 +31,8 @@ export default function SidebarSection({
     <>
       {items.map((item) => {
         const isProposalLink = item.to === "/proposal";
+        const isOptimizerLink = item.to === "/optimizer";
+        
         return (
           <SidebarLink
             key={item.label}
@@ -35,13 +41,15 @@ export default function SidebarSection({
             isOpen={isOpen}
             linkClass={getLinkClass(item.to)}
             onProposalClick={onProposalClick}
+            onOptimizerClick={onOptimizerClick}
             onOtherItemClick={onOtherItemClick}
             proposalDropdown={isProposalLink && isProposalSection ? proposalDropdown : undefined}
+            optimizerDropdown={isOptimizerLink && isProposalSection ? optimizerDropdown : undefined}
             isProposalLink={isProposalLink}
+            isOptimizerLink={isOptimizerLink}
           />
         );
       })}
     </>
   );
 }
-

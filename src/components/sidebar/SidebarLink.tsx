@@ -9,9 +9,12 @@ interface SidebarLinkProps {
   isOpen: boolean;
   linkClass: string;
   onProposalClick?: () => void;
+  onOptimizerClick?: () => void;
   onOtherItemClick?: () => void;
   proposalDropdown?: React.ReactNode;
+  optimizerDropdown?: React.ReactNode;
   isProposalLink?: boolean;
+  isOptimizerLink?: boolean;
 }
 
 export default function SidebarLink({
@@ -20,9 +23,12 @@ export default function SidebarLink({
   isOpen,
   linkClass,
   onProposalClick,
+  onOptimizerClick,
   onOtherItemClick,
   proposalDropdown,
+  optimizerDropdown,
   isProposalLink = false,
+  isOptimizerLink = false,
 }: SidebarLinkProps) {
   const { to, icon, label, badge, external } = item;
 
@@ -62,7 +68,8 @@ export default function SidebarLink({
     className: `${linkClass} ${isOpen ? "gap-3" : ""}`,
     ...(external && { target: "_blank", rel: "noopener noreferrer" }),
     ...(isProposalLink && onProposalClick && { onClick: onProposalClick }),
-    ...(!isProposalLink && !external && onOtherItemClick && { onClick: onOtherItemClick }),
+    ...(isOptimizerLink && onOptimizerClick && { onClick: onOptimizerClick }),
+    ...(!isProposalLink && !isOptimizerLink && !external && onOtherItemClick && { onClick: onOtherItemClick }),
   };
 
   return (
@@ -77,7 +84,9 @@ export default function SidebarLink({
 
       {/* Proposal History Dropdown */}
       {isProposalLink && proposalDropdown}
+      
+      {/* Optimizer History Dropdown */}
+      {isOptimizerLink && optimizerDropdown}
     </div>
   );
 }
-

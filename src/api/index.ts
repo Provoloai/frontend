@@ -166,6 +166,21 @@ export const useGetProposal = (id: string) => {
   });
 };
 
+export const useGetOptimizerList = (page: number = 1, limit: number = 10) => {
+  return useQuery({
+    queryKey: ["optimizer-history", page, limit],
+    queryFn: () => apiGet(`/ai/optimizer-history`),
+  });
+};
+
+export const useGetOptimizer = (id: string) => {
+  return useQuery({
+    queryKey: ["optimizer-history", id],
+    queryFn: () => apiGet(`/ai/optimizer-history/${id}`),
+    enabled: !!id, // Only run query if id exists
+  });
+};
+
 // Quota API functions
 export const quotaApi = {
   getQuota: async (quotaSlug: string) => {
