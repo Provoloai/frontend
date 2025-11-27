@@ -226,11 +226,41 @@ export default function Pricing() {
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
-  const displayTiers = useMemo(() => (tiers ? tiers.map(transformTierForUI) : []), [tiers]);
+  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "annual">("monthly");
+  
+  // const displayTiers = useMemo(() => (tiers ? tiers.map(transformTierForUI) : []), [tiers]);
+  const displayTiers = useMemo(() => {
+    if (!tiers) return [];
+
+    // Group tiers by their name (base product)
+    const tierGroups = tiers.reduce((acc: Record<string, any[]>, tier: any) => {
+      const baseName = tier.name; // use name directly since it's consistent
+      if (!acc[baseName]) acc[baseName] = [];
+      acc[baseName].push(tier);
+      return acc;
+    }, {});
+
+    // Pick tier based on billing period using recurringInterval
+    return Object.values(tierGroups).map((group: any[]) => {
+      const selectedTier =
+        group.find(t =>
+          billingPeriod === "monthly"
+            ? t.recurringInterval === "monthly"
+            : t.recurringInterval === "yearly"
+        ) || group[0];
+
+      return transformTierForUI(selectedTier);
+    });
+  }, [tiers, billingPeriod]);
+
+  // console.log('All tiers from backend:', tiers);
+  // console.log('Display tiers:', displayTiers);
+
+
   const { user } = useSession();
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [subscriptionError, setSubscriptionError] = useState("");
-  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "annual">("monthly");
+  // const [billingPeriod, setBillingPeriod] = useState<"monthly" | "annual">("monthly");
 
   const checkout = async (polarRefId: string) => {
     setCheckoutLoading(true);
@@ -630,7 +660,7 @@ export default function Pricing() {
                   >
                     <span className="flex items-center justify-center gap-2">
                       {checkoutLoading ? <Loader2 className="animate-spin h-4 w-4" /> : null}
-                      Get Plus
+                      Upgrade Plan
                     </span>
                   </motion.button>
                 )}
