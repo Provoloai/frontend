@@ -3,10 +3,10 @@ import { motion } from "motion/react";
 import { useSidebar } from "@/hooks/useSidebar";
 import { useActiveLink } from "@/hooks/useActiveLink";
 import { useSidebarLinkClass } from "@/hooks/useSidebarLinkClass";
-import { useGetProposalList } from "@/api";
+import { useGetOptimizerList, useGetProposalList } from "@/api";
 import { useRouterState } from "@tanstack/react-router";
 import { NAV_ITEMS, UPSKILL_ITEMS, FEEDBACK_ITEMS } from "@/constants/sidebar";
-import { ProposalHistoryItem } from "@/types/sidebar";
+import { OptimizerHistoryItem, ProposalHistoryItem } from "@/types/sidebar";
 import SidebarToggle from "@/components/sidebar/SidebarToggle";
 import SidebarLogo from "@/components/sidebar/SidebarLogo";
 import SidebarSection from "@/components/sidebar/SidebarSection";
@@ -15,9 +15,10 @@ import ProposalDropdown from "@/components/sidebar/ProposalDropdown";
 import UserProfile from "../pages/user/User";
 
 const Sidebar = () => {
-  const location = useRouterState({ select: (s) => s.location });
-  const isOnProposalHistoryPage = location.pathname.startsWith('/proposalHistory/');
-  
+  const location = useRouterState({ select: s => s.location });
+  const isOnProposalHistoryPage =
+    location.pathname.startsWith("/proposalHistory/");
+
   const {
     isOpen,
     toggle,
@@ -25,7 +26,7 @@ const Sidebar = () => {
     openProposalDropdown,
     closeProposalDropdown,
   } = useSidebar(true);
-  
+
   const { isActive } = useActiveLink();
   const { getLinkClass } = useSidebarLinkClass(isActive, isOpen);
 
@@ -36,6 +37,16 @@ const Sidebar = () => {
       (item: { id: string; jobTitle: string }) => ({
         id: item.id,
         jobTitle: item.jobTitle,
+      })
+    ) || [];
+
+  // Fetch optimizer history
+  const { data: optimizerHistory } = useGetOptimizerList();
+  const optimizers: OptimizerHistoryItem[] =
+    optimizerHistory?.data?.records?.map(
+      (item: { id: string; originalInput: string }) => ({
+        id: item.id,
+        originalInput: item.originalInput,
       })
     ) || [];
 
@@ -73,7 +84,6 @@ const Sidebar = () => {
 
       {/* Navigation */}
       <nav className="flex flex-col gap-2 h-full" aria-label="Main navigation">
-
         {/* Main Navigation Items */}
         <SidebarSection
           items={NAV_ITEMS}
@@ -107,7 +117,6 @@ const Sidebar = () => {
         />
 
         <UserProfile open={isOpen} />
-        
       </nav>
     </motion.div>
   );
