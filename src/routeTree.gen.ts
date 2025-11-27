@@ -28,6 +28,7 @@ import { Route as SidebarlayoutProtectedExampleRouteImport } from './routes/_sid
 import { Route as AuthProtectSignupRouteImport } from './routes/_auth/_protect.signup'
 import { Route as AuthProtectLoginRouteImport } from './routes/_auth/_protect.login'
 import { Route as SidebarlayoutProtectedProposalHistoryProposalIdRouteImport } from './routes/_sidebarlayout._protected/proposalHistory/$proposalId'
+import { Route as SidebarlayoutProtectedOptimizerHistoryOptimizerIdRouteImport } from './routes/_sidebarlayout._protected/optimizerHistory/$optimizerId'
 
 const WelcomeRoute = WelcomeRouteImport.update({
   id: '/welcome',
@@ -129,6 +130,12 @@ const SidebarlayoutProtectedProposalHistoryProposalIdRoute =
     path: '/proposalHistory/$proposalId',
     getParentRoute: () => SidebarlayoutRoute,
   } as any)
+const SidebarlayoutProtectedOptimizerHistoryOptimizerIdRoute =
+  SidebarlayoutProtectedOptimizerHistoryOptimizerIdRouteImport.update({
+    id: '/_protected/optimizerHistory/$optimizerId',
+    path: '/optimizerHistory/$optimizerId',
+    getParentRoute: () => SidebarlayoutRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/error': typeof ErrorRoute
@@ -146,6 +153,7 @@ export interface FileRoutesByFullPath {
   '/proposal': typeof SidebarlayoutProtectedProposalRoute
   '/resume': typeof SidebarlayoutProtectedResumeRoute
   '/userprofile': typeof SidebarlayoutProtectedUserprofileRoute
+  '/optimizerHistory/$optimizerId': typeof SidebarlayoutProtectedOptimizerHistoryOptimizerIdRoute
   '/proposalHistory/$proposalId': typeof SidebarlayoutProtectedProposalHistoryProposalIdRoute
 }
 export interface FileRoutesByTo {
@@ -164,6 +172,7 @@ export interface FileRoutesByTo {
   '/proposal': typeof SidebarlayoutProtectedProposalRoute
   '/resume': typeof SidebarlayoutProtectedResumeRoute
   '/userprofile': typeof SidebarlayoutProtectedUserprofileRoute
+  '/optimizerHistory/$optimizerId': typeof SidebarlayoutProtectedOptimizerHistoryOptimizerIdRoute
   '/proposalHistory/$proposalId': typeof SidebarlayoutProtectedProposalHistoryProposalIdRoute
 }
 export interface FileRoutesById {
@@ -186,6 +195,7 @@ export interface FileRoutesById {
   '/_sidebarlayout/_protected/proposal': typeof SidebarlayoutProtectedProposalRoute
   '/_sidebarlayout/_protected/resume': typeof SidebarlayoutProtectedResumeRoute
   '/_sidebarlayout/_protected/userprofile': typeof SidebarlayoutProtectedUserprofileRoute
+  '/_sidebarlayout/_protected/optimizerHistory/$optimizerId': typeof SidebarlayoutProtectedOptimizerHistoryOptimizerIdRoute
   '/_sidebarlayout/_protected/proposalHistory/$proposalId': typeof SidebarlayoutProtectedProposalHistoryProposalIdRoute
 }
 export interface FileRouteTypes {
@@ -206,6 +216,7 @@ export interface FileRouteTypes {
     | '/proposal'
     | '/resume'
     | '/userprofile'
+    | '/optimizerHistory/$optimizerId'
     | '/proposalHistory/$proposalId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -224,6 +235,7 @@ export interface FileRouteTypes {
     | '/proposal'
     | '/resume'
     | '/userprofile'
+    | '/optimizerHistory/$optimizerId'
     | '/proposalHistory/$proposalId'
   id:
     | '__root__'
@@ -245,6 +257,7 @@ export interface FileRouteTypes {
     | '/_sidebarlayout/_protected/proposal'
     | '/_sidebarlayout/_protected/resume'
     | '/_sidebarlayout/_protected/userprofile'
+    | '/_sidebarlayout/_protected/optimizerHistory/$optimizerId'
     | '/_sidebarlayout/_protected/proposalHistory/$proposalId'
   fileRoutesById: FileRoutesById
 }
@@ -394,6 +407,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SidebarlayoutProtectedProposalHistoryProposalIdRouteImport
       parentRoute: typeof SidebarlayoutRoute
     }
+    '/_sidebarlayout/_protected/optimizerHistory/$optimizerId': {
+      id: '/_sidebarlayout/_protected/optimizerHistory/$optimizerId'
+      path: '/optimizerHistory/$optimizerId'
+      fullPath: '/optimizerHistory/$optimizerId'
+      preLoaderRoute: typeof SidebarlayoutProtectedOptimizerHistoryOptimizerIdRouteImport
+      parentRoute: typeof SidebarlayoutRoute
+    }
   }
 }
 
@@ -416,6 +436,7 @@ interface SidebarlayoutRouteChildren {
   SidebarlayoutProtectedProposalRoute: typeof SidebarlayoutProtectedProposalRoute
   SidebarlayoutProtectedResumeRoute: typeof SidebarlayoutProtectedResumeRoute
   SidebarlayoutProtectedUserprofileRoute: typeof SidebarlayoutProtectedUserprofileRoute
+  SidebarlayoutProtectedOptimizerHistoryOptimizerIdRoute: typeof SidebarlayoutProtectedOptimizerHistoryOptimizerIdRoute
   SidebarlayoutProtectedProposalHistoryProposalIdRoute: typeof SidebarlayoutProtectedProposalHistoryProposalIdRoute
 }
 
@@ -428,6 +449,8 @@ const SidebarlayoutRouteChildren: SidebarlayoutRouteChildren = {
   SidebarlayoutProtectedResumeRoute: SidebarlayoutProtectedResumeRoute,
   SidebarlayoutProtectedUserprofileRoute:
     SidebarlayoutProtectedUserprofileRoute,
+  SidebarlayoutProtectedOptimizerHistoryOptimizerIdRoute:
+    SidebarlayoutProtectedOptimizerHistoryOptimizerIdRoute,
   SidebarlayoutProtectedProposalHistoryProposalIdRoute:
     SidebarlayoutProtectedProposalHistoryProposalIdRoute,
 }
