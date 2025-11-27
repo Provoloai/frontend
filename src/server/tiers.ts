@@ -44,31 +44,36 @@ interface APIResponse<T = any> {
 
 // API function to fetch tiers
 export const fetchTiers = async (): Promise<Tier[]> => {
-  const serverUrl = import.meta.env.VITE_SERVER_URL as string;
+  const NODE_ENV = (import.meta.env.VITE_NODE_ENV as string) || "";
+  const SERVER_URL = (import.meta.env.VITE_SERVER_URL as string) || "";
 
-  if (!serverUrl) {
-    console.error("VITE_SERVER_URL not configured in environment variables");
-    throw new Error("Service temporarily unavailable. Please try again later.");
-  }
+  const apiBase =
+    NODE_ENV === "development" && SERVER_URL
+      ? SERVER_URL.replace(/\/$/, "")
+      : "/api";
 
   try {
-    const response = await fetch(`${serverUrl}/payment/tiers`, {
+    const response = await fetch(`${apiBase}/payment/tiers`, {
       method: "GET",
       headers: {
-        "Content-Type": "application/json",
+        Accept: "application/json",
       },
     });
 
     if (!response.ok) {
       console.error(`API Error: ${response.status} ${response.statusText}`);
-      throw new Error("Unable to load pricing information. Please try again later.");
+      throw new Error(
+        "Unable to load pricing information. Please try again later."
+      );
     }
 
     const result: APIResponse<Tier[]> = await response.json();
 
     if (result.status !== "success") {
       console.error("API returned error:", result.error || result.message);
-      throw new Error("Unable to load pricing information. Please try again later.");
+      throw new Error(
+        "Unable to load pricing information. Please try again later."
+      );
     }
 
     return result.data;
@@ -82,6 +87,8 @@ export const fetchTiers = async (): Promise<Tier[]> => {
     }
 
     // For network errors or other unexpected errors, show generic message
-    throw new Error("Unable to load pricing information. Please check your connection and try again.");
+    throw new Error(
+      "Unable to load pricing information. Please check your connection and try again."
+    );
   }
 };

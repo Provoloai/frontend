@@ -34,8 +34,8 @@ const OptimizerResults: React.FC<OptimizerResultsProps> = ({
             <span>/</span>
             {quotaData.limit === -1 || quotaData.limit === "unlimited" ? (
               <>
-                <InfinityIcon size={14} className="text-gray-500" />
-                <span>optimizations</span>
+                <InfinityIcon size={20} className="text-gray-500" />
+                <span>Optimizations</span>
               </>
             ) : (
               <span>{quotaData.limit} optimizations</span>

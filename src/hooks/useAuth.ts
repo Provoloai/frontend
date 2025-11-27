@@ -24,13 +24,10 @@ export const useAuth = () => {
         const user = userCredential.user;
         const idToken = await getIdToken(user, true);
 
-        const res = await authApi.login(idToken);
+        await authApi.login(idToken);
 
-        if (res?.data?.emailVerified) {
-          navigate({ to: "/optimizer", replace: true });
-        } else {
-          navigate({ to: "/verification", replace: true });
-        }
+        // Always navigate to optimizer - email verification check happens in layout
+        navigate({ to: "/optimizer", replace: true });
       } catch (err: unknown) {
         const error = err as Error;
         setError(getCleanErrorMessage(error));

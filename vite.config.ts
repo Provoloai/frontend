@@ -3,10 +3,6 @@ import react from "@vitejs/plugin-react";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import path from "path";
 
-const ReactCompilerConfig = {
-  target: "19",
-};
-
 export default defineConfig(() => ({
   resolve: {
     alias: {

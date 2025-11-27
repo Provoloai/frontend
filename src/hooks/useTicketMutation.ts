@@ -1,10 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
 import { ApiResponse, SubmitTicketData } from "@/types/liveChat";
 
-export function useTicketMutation(
-  onSuccessCallback?: () => void
-) {
-  const url = `${import.meta.env.VITE_SERVER_URL}`;
+export function useTicketMutation(onSuccessCallback?: () => void) {
+  // const url = `${import.meta.env.VITE_SERVER_URL}`;
 
   return useMutation<ApiResponse, Error, SubmitTicketData>({
     mutationFn: async (data: SubmitTicketData) => {
@@ -17,13 +15,26 @@ export function useTicketMutation(
         formDataObj.append("subject", data.subject);
       }
 
-      data.files.forEach((file) => {
+      data.files.forEach(file => {
         formDataObj.append("attachments", file);
       });
 
-      const response = await fetch(`${url}/support/ticket`, {
+      const NODE_ENV = (import.meta.env.VITE_NODE_ENV as string) || "";
+      const SERVER_URL = (import.meta.env.VITE_SERVER_URL as string) || "";
+      const apiBase =
+        NODE_ENV === "development" && SERVER_URL
+          ? SERVER_URL.replace(/\/$/, "")
+          : "/api";
+
+      const url = `${apiBase}${"/support/ticket"}`;
+
+      const response = await fetch(url, {
         method: "POST",
         body: formDataObj,
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+        },
       });
 
       // Get response text first
@@ -61,4 +72,3 @@ export function useTicketMutation(
     },
   });
 }
-
