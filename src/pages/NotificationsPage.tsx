@@ -128,18 +128,18 @@ const NotificationsPage = () => {
     return (
         <div className="flex-1 flex flex-col py-10 overflow-y-auto">
             <div className="p-6 sm:p-10 m-full w-full max-w-4xl">
-                <Link
+                {/* <Link
                     to="/optimizer"
                     className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 mb-4 transition-colors"
                 >
                     <ArrowLeft size={16} />
                     Back to Optimizer
-                </Link>
+                </Link> */}
 
                 <div className="flex items-center justify-between mb-8">
                     <div>
                         <h2 className="text-3xl font-bold text-gray-900">
-                            Notifications
+                            Older Notifications
                         </h2>
                         <p className="text-sm text-gray-500 mt-1">
                             {unreadCount > 0 ? `${unreadCount} unread notification${unreadCount > 1 ? 's' : ''}` : 'All caught up!'}
@@ -176,8 +176,8 @@ const NotificationsPage = () => {
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, y: -20 }}
                                         className={`bg-white rounded-xl border transition-all duration-200 overflow-hidden ${notification.unread
-                                                ? 'border-blue-200 shadow-sm'
-                                                : 'border-gray-100 hover:border-gray-200'
+                                            ? 'border-blue-200 shadow-sm'
+                                            : 'border-gray-100 hover:border-gray-200'
                                             }`}
                                     >
                                         <div
