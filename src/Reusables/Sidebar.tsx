@@ -14,6 +14,7 @@ import SidebarSectionTitle from "@/components/sidebar/SidebarSectionTitle";
 import ProposalDropdown from "@/components/sidebar/ProposalDropdown";
 import UserProfile from "../pages/user/User";
 import OptimizerDropdown from "@/components/sidebar/OptimizerDropdown";
+import Notifications from "@/components/sidebar/Notifications";
 
 const Sidebar = () => {
   const location = useRouterState({ select: s => s.location });
@@ -108,6 +109,7 @@ const Sidebar = () => {
     >
       {/* Toggle button */}
       <SidebarToggle isOpen={isOpen} onToggle={toggle} />
+
 
       {/* Logo */}
       <SidebarLogo isOpen={isOpen} />

@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Link, useRouter } from '@tanstack/react-router'
+import { TriangleAlert } from 'lucide-react'
 
 const ErrorPage = ({ error, info, reset }) => {
   const isDevelopment = import.meta.env.VITE_NODE_ENV === "development"
@@ -24,16 +25,13 @@ const ErrorPage = ({ error, info, reset }) => {
         <div className="p-6 rounded-lg text-center">
           <div className='w-full text-center flex justify-center'>
             {/* Error Icon */}
-            <svg width="150" height="150" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="100" cy="100" r="80" fill="#FEE2E2" stroke="#EF4444" strokeWidth="2"/>
-              <path d="M70 70L130 130M130 70L70 130" stroke="#EF4444" strokeWidth="4" strokeLinecap="round"/>
-            </svg>
+            <TriangleAlert size={100}  color='red'/>
           </div>
 
           <h1 className="text-4xl sm:text-5xl font-semibold text-center mb-2 mt-5 text-gray-800">
             Something went wrong
           </h1>
-          
+
           <p className="text-center text-gray-600 lg:w-2/3 mx-auto text-sm mb-6">
             We encountered an unexpected error. Don't worry, our team has been notified.
           </p>
@@ -75,26 +73,26 @@ const ErrorPage = ({ error, info, reset }) => {
           )}
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
+          <div className="flex flex-col sm:flex-col gap-4 items-center justify-center">
             <button
               onClick={handleReset}
               className="btn-primary px-6 py-3 rounded-md text-white text-sm hover:opacity-90 transition-opacity"
             >
               Try Again
             </button>
-            
+
             <button
               onClick={handleRefresh}
-              className="px-6 py-3 rounded-md border border-gray-300 text-gray-700 text-sm hover:bg-gray-50 transition-colors"
+              className="px-6 py-3 rounded-md border bg-gray-100 border-gray-300 text-gray-700 text-sm hover:bg-gray-200 transition-colors w-full"
             >
               Refresh Page
             </button>
-            
-            <Link 
-              to="/" 
-              className="px-6 py-3 rounded-md text-blue-600 text-sm hover:text-blue-800 transition-colors"
+
+            <Link
+              to="/"
+              className="px-6 py-3 rounded-md text-blue-600 text-sm hover:text-blue-800 transition-colors w-full"
             >
-              Go to Home
+              Go Back Home
             </Link>
           </div>
         </div>
