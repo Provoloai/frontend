@@ -123,7 +123,7 @@ const PricingSkeleton = () => {
               <div className="space-y-6">
                 {/* Plan Name */}
                 <SkeletonBox
-                  className={`h-7 w-32 ${index === 1 ? "bg-gradient-to-r from-slate-600 via-slate-500 to-slate-600" : ""
+                  className={`h-7 w-32 ${index === 1 ? "bg-gradient-to-r from-slate-400 via-slate-400 to-slate-400" : ""
                     }`}
                   delay={0.2 + index * 0.1}
                 />
@@ -132,14 +132,14 @@ const PricingSkeleton = () => {
                 <div className="flex items-center gap-x-2">
                   <SkeletonBox
                     className={`h-16 w-28 ${index === 1
-                      ? "bg-gradient-to-r from-slate-600 via-slate-500 to-slate-600"
+                      ? "bg-gradient-to-r from-slate-500 via-slate-500 to-slate-500"
                       : ""
                       }`}
                     delay={0.3 + index * 0.1}
                   />
                   <SkeletonBox
                     className={`h-8 w-16 ${index === 1
-                      ? "bg-gradient-to-r from-slate-700 via-slate-600 to-slate-700"
+                      ? "bg-gradient-to-r from-slate-500 via-slate-500 to-slate-500"
                       : ""
                       }`}
                     delay={0.35 + index * 0.1}
@@ -148,7 +148,7 @@ const PricingSkeleton = () => {
 
                 {/* Description */}
                 <SkeletonBox
-                  className={`h-5 w-full ${index === 1 ? "bg-gradient-to-r from-slate-600 via-slate-500 to-slate-600" : ""
+                  className={`h-5 w-full ${index === 1 ? "bg-gradient-to-r from-slate-400 via-slate-400 to-slate-400" : ""
                     }`}
                   delay={0.4 + index * 0.1}
                 />
@@ -160,14 +160,14 @@ const PricingSkeleton = () => {
                       <SkeletonBox
                         className={`h-5 w-5 rounded-full ${index === 1
                           ? "bg-gradient-to-r from-slate-400 via-slate-300 to-slate-400"
-                          : "bg-gradient-to-r from-slate-500 via-slate-400 to-slate-500"
+                          : "bg-gradient-to-r from-slate-400 via-slate-400 to-slate-400"
                           }`}
                         delay={0.5 + index * 0.1 + featureIndex * 0.05}
                       />
                       <SkeletonBox
                         className={`h-4 ${featureIndex % 3 === 0 ? "w-40" : featureIndex % 3 === 1 ? "w-32" : "w-36"
                           } ${index === 1
-                            ? "bg-gradient-to-r from-slate-600 via-slate-500 to-slate-600"
+                            ? "bg-gradient-to-r from-slate-400 via-slate-400 to-slate-400"
                             : ""
                           }`}
                         delay={0.52 + index * 0.1 + featureIndex * 0.05}
@@ -179,7 +179,7 @@ const PricingSkeleton = () => {
                 {/* CTA Button */}
                 <SkeletonBox
                   className={`h-12 w-full mt-8 ${index === 1
-                    ? "bg-gradient-to-r from-slate-500 via-slate-400 to-slate-500"
+                    ? "bg-gradient-to-r from-slate-400 via-slate-400 to-slate-400"
                     : "bg-gradient-to-r from-slate-300 via-slate-200 to-slate-300"
                     }`}
                   delay={0.7 + index * 0.1}
@@ -226,11 +226,41 @@ export default function Pricing() {
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
-  const displayTiers = useMemo(() => (tiers ? tiers.map(transformTierForUI) : []), [tiers]);
+  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "annual">("monthly");
+
+  // const displayTiers = useMemo(() => (tiers ? tiers.map(transformTierForUI) : []), [tiers]);
+  const displayTiers = useMemo(() => {
+    if (!tiers) return [];
+
+    // Group tiers by their name (base product)
+    const tierGroups = tiers.reduce((acc: Record<string, any[]>, tier: any) => {
+      const baseName = tier.name; // use name directly since it's consistent
+      if (!acc[baseName]) acc[baseName] = [];
+      acc[baseName].push(tier);
+      return acc;
+    }, {});
+
+    // Pick tier based on billing period using recurringInterval
+    return Object.values(tierGroups).map((group: any[]) => {
+      const selectedTier =
+        group.find(t =>
+          billingPeriod === "monthly"
+            ? t.recurringInterval === "monthly"
+            : t.recurringInterval === "yearly"
+        ) || group[0];
+
+      return transformTierForUI(selectedTier);
+    });
+  }, [tiers, billingPeriod]);
+
+  // console.log('All tiers from backend:', tiers);
+  // console.log('Display tiers:', displayTiers);
+
+
   const { user } = useSession();
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [subscriptionError, setSubscriptionError] = useState("");
-  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "annual">("monthly");
+  // const [billingPeriod, setBillingPeriod] = useState<"monthly" | "annual">("monthly");
 
   const checkout = async (polarRefId: string) => {
     setCheckoutLoading(true);
@@ -630,7 +660,7 @@ export default function Pricing() {
                   >
                     <span className="flex items-center justify-center gap-2">
                       {checkoutLoading ? <Loader2 className="animate-spin h-4 w-4" /> : null}
-                      Get Plus
+                      Upgrade Plan
                     </span>
                   </motion.button>
                 )}

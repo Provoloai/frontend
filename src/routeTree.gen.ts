@@ -23,11 +23,13 @@ import { Route as SidebarlayoutProtectedResumeRouteImport } from './routes/_side
 import { Route as SidebarlayoutProtectedProposalRouteImport } from './routes/_sidebarlayout._protected/proposal'
 import { Route as SidebarlayoutProtectedPricingRouteImport } from './routes/_sidebarlayout._protected/pricing'
 import { Route as SidebarlayoutProtectedOptimizerRouteImport } from './routes/_sidebarlayout._protected/optimizer'
+import { Route as SidebarlayoutProtectedNotificationsRouteImport } from './routes/_sidebarlayout._protected/notifications'
 import { Route as SidebarlayoutProtectedLearnRouteImport } from './routes/_sidebarlayout._protected/learn'
 import { Route as SidebarlayoutProtectedExampleRouteImport } from './routes/_sidebarlayout._protected/example'
 import { Route as AuthProtectSignupRouteImport } from './routes/_auth/_protect.signup'
 import { Route as AuthProtectLoginRouteImport } from './routes/_auth/_protect.login'
 import { Route as SidebarlayoutProtectedProposalHistoryProposalIdRouteImport } from './routes/_sidebarlayout._protected/proposalHistory/$proposalId'
+import { Route as SidebarlayoutProtectedOptimizerHistoryOptimizerIdRouteImport } from './routes/_sidebarlayout._protected/optimizerHistory/$optimizerId'
 
 const WelcomeRoute = WelcomeRouteImport.update({
   id: '/welcome',
@@ -101,6 +103,12 @@ const SidebarlayoutProtectedOptimizerRoute =
     path: '/optimizer',
     getParentRoute: () => SidebarlayoutRoute,
   } as any)
+const SidebarlayoutProtectedNotificationsRoute =
+  SidebarlayoutProtectedNotificationsRouteImport.update({
+    id: '/_protected/notifications',
+    path: '/notifications',
+    getParentRoute: () => SidebarlayoutRoute,
+  } as any)
 const SidebarlayoutProtectedLearnRoute =
   SidebarlayoutProtectedLearnRouteImport.update({
     id: '/_protected/learn',
@@ -129,6 +137,12 @@ const SidebarlayoutProtectedProposalHistoryProposalIdRoute =
     path: '/proposalHistory/$proposalId',
     getParentRoute: () => SidebarlayoutRoute,
   } as any)
+const SidebarlayoutProtectedOptimizerHistoryOptimizerIdRoute =
+  SidebarlayoutProtectedOptimizerHistoryOptimizerIdRouteImport.update({
+    id: '/_protected/optimizerHistory/$optimizerId',
+    path: '/optimizerHistory/$optimizerId',
+    getParentRoute: () => SidebarlayoutRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/error': typeof ErrorRoute
@@ -141,11 +155,13 @@ export interface FileRoutesByFullPath {
   '/signup': typeof AuthProtectSignupRoute
   '/example': typeof SidebarlayoutProtectedExampleRoute
   '/learn': typeof SidebarlayoutProtectedLearnRoute
+  '/notifications': typeof SidebarlayoutProtectedNotificationsRoute
   '/optimizer': typeof SidebarlayoutProtectedOptimizerRoute
   '/pricing': typeof SidebarlayoutProtectedPricingRoute
   '/proposal': typeof SidebarlayoutProtectedProposalRoute
   '/resume': typeof SidebarlayoutProtectedResumeRoute
   '/userprofile': typeof SidebarlayoutProtectedUserprofileRoute
+  '/optimizerHistory/$optimizerId': typeof SidebarlayoutProtectedOptimizerHistoryOptimizerIdRoute
   '/proposalHistory/$proposalId': typeof SidebarlayoutProtectedProposalHistoryProposalIdRoute
 }
 export interface FileRoutesByTo {
@@ -159,11 +175,13 @@ export interface FileRoutesByTo {
   '/signup': typeof AuthProtectSignupRoute
   '/example': typeof SidebarlayoutProtectedExampleRoute
   '/learn': typeof SidebarlayoutProtectedLearnRoute
+  '/notifications': typeof SidebarlayoutProtectedNotificationsRoute
   '/optimizer': typeof SidebarlayoutProtectedOptimizerRoute
   '/pricing': typeof SidebarlayoutProtectedPricingRoute
   '/proposal': typeof SidebarlayoutProtectedProposalRoute
   '/resume': typeof SidebarlayoutProtectedResumeRoute
   '/userprofile': typeof SidebarlayoutProtectedUserprofileRoute
+  '/optimizerHistory/$optimizerId': typeof SidebarlayoutProtectedOptimizerHistoryOptimizerIdRoute
   '/proposalHistory/$proposalId': typeof SidebarlayoutProtectedProposalHistoryProposalIdRoute
 }
 export interface FileRoutesById {
@@ -181,11 +199,13 @@ export interface FileRoutesById {
   '/_auth/_protect/signup': typeof AuthProtectSignupRoute
   '/_sidebarlayout/_protected/example': typeof SidebarlayoutProtectedExampleRoute
   '/_sidebarlayout/_protected/learn': typeof SidebarlayoutProtectedLearnRoute
+  '/_sidebarlayout/_protected/notifications': typeof SidebarlayoutProtectedNotificationsRoute
   '/_sidebarlayout/_protected/optimizer': typeof SidebarlayoutProtectedOptimizerRoute
   '/_sidebarlayout/_protected/pricing': typeof SidebarlayoutProtectedPricingRoute
   '/_sidebarlayout/_protected/proposal': typeof SidebarlayoutProtectedProposalRoute
   '/_sidebarlayout/_protected/resume': typeof SidebarlayoutProtectedResumeRoute
   '/_sidebarlayout/_protected/userprofile': typeof SidebarlayoutProtectedUserprofileRoute
+  '/_sidebarlayout/_protected/optimizerHistory/$optimizerId': typeof SidebarlayoutProtectedOptimizerHistoryOptimizerIdRoute
   '/_sidebarlayout/_protected/proposalHistory/$proposalId': typeof SidebarlayoutProtectedProposalHistoryProposalIdRoute
 }
 export interface FileRouteTypes {
@@ -201,11 +221,13 @@ export interface FileRouteTypes {
     | '/signup'
     | '/example'
     | '/learn'
+    | '/notifications'
     | '/optimizer'
     | '/pricing'
     | '/proposal'
     | '/resume'
     | '/userprofile'
+    | '/optimizerHistory/$optimizerId'
     | '/proposalHistory/$proposalId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -219,11 +241,13 @@ export interface FileRouteTypes {
     | '/signup'
     | '/example'
     | '/learn'
+    | '/notifications'
     | '/optimizer'
     | '/pricing'
     | '/proposal'
     | '/resume'
     | '/userprofile'
+    | '/optimizerHistory/$optimizerId'
     | '/proposalHistory/$proposalId'
   id:
     | '__root__'
@@ -240,11 +264,13 @@ export interface FileRouteTypes {
     | '/_auth/_protect/signup'
     | '/_sidebarlayout/_protected/example'
     | '/_sidebarlayout/_protected/learn'
+    | '/_sidebarlayout/_protected/notifications'
     | '/_sidebarlayout/_protected/optimizer'
     | '/_sidebarlayout/_protected/pricing'
     | '/_sidebarlayout/_protected/proposal'
     | '/_sidebarlayout/_protected/resume'
     | '/_sidebarlayout/_protected/userprofile'
+    | '/_sidebarlayout/_protected/optimizerHistory/$optimizerId'
     | '/_sidebarlayout/_protected/proposalHistory/$proposalId'
   fileRoutesById: FileRoutesById
 }
@@ -359,6 +385,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SidebarlayoutProtectedOptimizerRouteImport
       parentRoute: typeof SidebarlayoutRoute
     }
+    '/_sidebarlayout/_protected/notifications': {
+      id: '/_sidebarlayout/_protected/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof SidebarlayoutProtectedNotificationsRouteImport
+      parentRoute: typeof SidebarlayoutRoute
+    }
     '/_sidebarlayout/_protected/learn': {
       id: '/_sidebarlayout/_protected/learn'
       path: '/learn'
@@ -394,6 +427,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SidebarlayoutProtectedProposalHistoryProposalIdRouteImport
       parentRoute: typeof SidebarlayoutRoute
     }
+    '/_sidebarlayout/_protected/optimizerHistory/$optimizerId': {
+      id: '/_sidebarlayout/_protected/optimizerHistory/$optimizerId'
+      path: '/optimizerHistory/$optimizerId'
+      fullPath: '/optimizerHistory/$optimizerId'
+      preLoaderRoute: typeof SidebarlayoutProtectedOptimizerHistoryOptimizerIdRouteImport
+      parentRoute: typeof SidebarlayoutRoute
+    }
   }
 }
 
@@ -411,23 +451,29 @@ const LayoutRouteWithChildren =
 interface SidebarlayoutRouteChildren {
   SidebarlayoutProtectedExampleRoute: typeof SidebarlayoutProtectedExampleRoute
   SidebarlayoutProtectedLearnRoute: typeof SidebarlayoutProtectedLearnRoute
+  SidebarlayoutProtectedNotificationsRoute: typeof SidebarlayoutProtectedNotificationsRoute
   SidebarlayoutProtectedOptimizerRoute: typeof SidebarlayoutProtectedOptimizerRoute
   SidebarlayoutProtectedPricingRoute: typeof SidebarlayoutProtectedPricingRoute
   SidebarlayoutProtectedProposalRoute: typeof SidebarlayoutProtectedProposalRoute
   SidebarlayoutProtectedResumeRoute: typeof SidebarlayoutProtectedResumeRoute
   SidebarlayoutProtectedUserprofileRoute: typeof SidebarlayoutProtectedUserprofileRoute
+  SidebarlayoutProtectedOptimizerHistoryOptimizerIdRoute: typeof SidebarlayoutProtectedOptimizerHistoryOptimizerIdRoute
   SidebarlayoutProtectedProposalHistoryProposalIdRoute: typeof SidebarlayoutProtectedProposalHistoryProposalIdRoute
 }
 
 const SidebarlayoutRouteChildren: SidebarlayoutRouteChildren = {
   SidebarlayoutProtectedExampleRoute: SidebarlayoutProtectedExampleRoute,
   SidebarlayoutProtectedLearnRoute: SidebarlayoutProtectedLearnRoute,
+  SidebarlayoutProtectedNotificationsRoute:
+    SidebarlayoutProtectedNotificationsRoute,
   SidebarlayoutProtectedOptimizerRoute: SidebarlayoutProtectedOptimizerRoute,
   SidebarlayoutProtectedPricingRoute: SidebarlayoutProtectedPricingRoute,
   SidebarlayoutProtectedProposalRoute: SidebarlayoutProtectedProposalRoute,
   SidebarlayoutProtectedResumeRoute: SidebarlayoutProtectedResumeRoute,
   SidebarlayoutProtectedUserprofileRoute:
     SidebarlayoutProtectedUserprofileRoute,
+  SidebarlayoutProtectedOptimizerHistoryOptimizerIdRoute:
+    SidebarlayoutProtectedOptimizerHistoryOptimizerIdRoute,
   SidebarlayoutProtectedProposalHistoryProposalIdRoute:
     SidebarlayoutProtectedProposalHistoryProposalIdRoute,
 }

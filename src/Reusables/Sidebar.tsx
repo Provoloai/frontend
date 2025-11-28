@@ -3,29 +3,37 @@ import { motion } from "motion/react";
 import { useSidebar } from "@/hooks/useSidebar";
 import { useActiveLink } from "@/hooks/useActiveLink";
 import { useSidebarLinkClass } from "@/hooks/useSidebarLinkClass";
-import { useGetProposalList } from "@/api";
+import { useGetOptimizerList, useGetProposalList } from "@/api";
 import { useRouterState } from "@tanstack/react-router";
 import { NAV_ITEMS, UPSKILL_ITEMS, FEEDBACK_ITEMS } from "@/constants/sidebar";
-import { ProposalHistoryItem } from "@/types/sidebar";
+import { OptimizerHistoryItem, ProposalHistoryItem } from "@/types/sidebar";
 import SidebarToggle from "@/components/sidebar/SidebarToggle";
 import SidebarLogo from "@/components/sidebar/SidebarLogo";
 import SidebarSection from "@/components/sidebar/SidebarSection";
 import SidebarSectionTitle from "@/components/sidebar/SidebarSectionTitle";
 import ProposalDropdown from "@/components/sidebar/ProposalDropdown";
 import UserProfile from "../pages/user/User";
+import OptimizerDropdown from "@/components/sidebar/OptimizerDropdown";
+import Notifications from "@/components/sidebar/Notifications";
 
 const Sidebar = () => {
-  const location = useRouterState({ select: (s) => s.location });
-  const isOnProposalHistoryPage = location.pathname.startsWith('/proposalHistory/');
-  
+  const location = useRouterState({ select: s => s.location });
+  const isOnProposalHistoryPage =
+    location.pathname.startsWith("/proposalHistory/");
+  const isOnOptimizerHistoryPage =
+    location.pathname.startsWith("/optimizerHistory/");
+
   const {
     isOpen,
     toggle,
     proposalDropdownOpen,
     openProposalDropdown,
     closeProposalDropdown,
+    optimizerDropdownOpen,
+    openOptimizerDropdown,
+    closeOptimizerDropdown,
   } = useSidebar(true);
-  
+
   const { isActive } = useActiveLink();
   const { getLinkClass } = useSidebarLinkClass(isActive, isOpen);
 
@@ -39,21 +47,55 @@ const Sidebar = () => {
       })
     ) || [];
 
-  // Auto-open dropdown if on a proposal history page
+  // Fetch optimizer history
+  const { data: optimizerHistory } = useGetOptimizerList();
+  const optimizers: OptimizerHistoryItem[] =
+    optimizerHistory?.data?.records?.map(
+      (item: { id: string; originalInput: string }) => ({
+        id: item.id,
+        originalInput: item.originalInput,
+      })
+    ) || [];
+
+  // Auto-open dropdowns based on current page
   useEffect(() => {
     if (isOnProposalHistoryPage) {
       openProposalDropdown();
     }
   }, [isOnProposalHistoryPage, openProposalDropdown]);
 
+  useEffect(() => {
+    if (isOnOptimizerHistoryPage) {
+      openOptimizerDropdown();
+    }
+  }, [isOnOptimizerHistoryPage, openOptimizerDropdown]);
+
   const handleProposalClick = (): void => {
     openProposalDropdown();
+    closeOptimizerDropdown();
+  };
+
+  const handleOptimizerClick = (): void => {
+    openOptimizerDropdown();
+    closeProposalDropdown();
+  };
+
+  const handleOtherItemClick = (): void => {
+    closeProposalDropdown();
+    closeOptimizerDropdown();
   };
 
   const proposalDropdown = (
     <ProposalDropdown
       isOpen={proposalDropdownOpen && isOpen}
       proposals={proposals}
+    />
+  );
+
+  const optimizerDropdown = (
+    <OptimizerDropdown
+      isOpen={optimizerDropdownOpen && isOpen}
+      optimizers={optimizers}
     />
   );
 
@@ -68,20 +110,22 @@ const Sidebar = () => {
       {/* Toggle button */}
       <SidebarToggle isOpen={isOpen} onToggle={toggle} />
 
+
       {/* Logo */}
       <SidebarLogo isOpen={isOpen} />
 
       {/* Navigation */}
       <nav className="flex flex-col gap-2 h-full" aria-label="Main navigation">
-
         {/* Main Navigation Items */}
         <SidebarSection
           items={NAV_ITEMS}
           isOpen={isOpen}
           getLinkClass={getLinkClass}
           onProposalClick={handleProposalClick}
-          onOtherItemClick={closeProposalDropdown}
+          onOptimizerClick={handleOptimizerClick}
+          onOtherItemClick={handleOtherItemClick}
           proposalDropdown={proposalDropdown}
+          optimizerDropdown={optimizerDropdown}
           isProposalSection={true}
         />
 
@@ -94,7 +138,7 @@ const Sidebar = () => {
           items={UPSKILL_ITEMS}
           isOpen={isOpen}
           getLinkClass={getLinkClass}
-          onOtherItemClick={closeProposalDropdown}
+          onOtherItemClick={handleOtherItemClick}
         />
 
         {/* Feedback Section */}
@@ -103,11 +147,10 @@ const Sidebar = () => {
           items={FEEDBACK_ITEMS}
           isOpen={isOpen}
           getLinkClass={getLinkClass}
-          onOtherItemClick={closeProposalDropdown}
+          onOtherItemClick={handleOtherItemClick}
         />
 
         <UserProfile open={isOpen} />
-        
       </nav>
     </motion.div>
   );

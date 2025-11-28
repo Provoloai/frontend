@@ -7,6 +7,7 @@ import UserName from "../pages/auth/UserName";
 import EmailVerification from "../pages/auth/EmailVerification";
 import VerifyingAuth from "../Reusables/VerifyingAuth";
 import useSession from "../hooks/useSession";
+import Notifications from "@/components/sidebar/Notifications";
 
 export const Route = createFileRoute("/_sidebarlayout")({
   component: RouteComponent,
@@ -41,7 +42,8 @@ function RouteComponent() {
 
   return (
     <div className="flex h-screen bg-gray-50 ">
-      <Sidebar /> 
+      <Sidebar />
+      <Notifications />
       <Outlet />
     </div>
   );
