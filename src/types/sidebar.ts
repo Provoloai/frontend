@@ -20,6 +20,10 @@ export interface ProposalHistoryItem {
 
 export interface OptimizerHistoryItem {
   id: string;
-  originalInput: string;
+  originalInput: {
+    professionalTitle: string;
+    fullName: string;
+    content: string;
+  };
 }
 

@@ -207,5 +207,102 @@ export const useGetQuota = (quotaSlug: string) => {
   });
 };
 
+// Notification API types
+export enum NotificationCategory {
+  SYSTEM = "system",
+  USER = "user",
+  PROMOTION = "promotion",
+  ADMIN = "admin",
+  OTHER = "other",
+  PROFILE = "profile",
+  PROPOSAL = "proposal",
+  KNOWLEDGE = "knowledge",
+  COMMUNITY = "community",
+  ACHIEVEMENT = "achievement",
+  SUBSCRIPTION = "subscription",
+  RESEARCH = "research",
+}
+
+export interface FirebaseTimestamp {
+  _seconds: number;
+  _nanoseconds: number;
+}
+
+export interface BackendNotification {
+  id: string;
+  recipient: string;
+  title: string;
+  message: string;
+  read: boolean;
+  category: NotificationCategory;
+  createdAt: string | FirebaseTimestamp;
+}
+
+export interface NotificationsResponse {
+  title: string;
+  message: string;
+  status: string;
+  data: {
+    notifications: BackendNotification[];
+    lastVisibleId: string;
+    totalCount: number;
+    pageSize: number;
+    currentPage: number;
+    totalPages: number;
+    remainingPages: number;
+  };
+}
+
+// Notification API functions
+export const notificationApi = {
+  getNotifications: async (limit: number = 20, startAfter?: string) => {
+    const queryParams = new URLSearchParams({
+      limit: limit.toString(),
+    });
+    
+    if (startAfter) {
+      queryParams.append("startAfter", startAfter);
+    }
+
+    return apiRequest<NotificationsResponse>(
+      `/notifications?${queryParams.toString()}`,
+      {
+        method: "GET",
+      }
+    );
+  },
+
+  markNotificationAsRead: async (id: string) => {
+    return apiRequest<{
+      title: string;
+      message: string;
+      status: string;
+      data: null;
+    }>(`/notifications/${id}/read`, {
+      method: "PATCH",
+    });
+  },
+
+  markAllNotificationsAsRead: async () => {
+    return apiRequest<{
+      title: string;
+      message: string;
+      status: string;
+      data: {
+        count: number;
+      };
+    }>("/notifications/read-all", {
+      method: "PATCH",
+    });
+  },
+};
+
+export const useGetNotifications = (limit: number = 20, startAfter?: string) => {
+  return useQuery({
+    queryKey: ["notifications", limit, startAfter],
+    queryFn: () => notificationApi.getNotifications(limit, startAfter),
+  });
+};
+
 // Export the generic API request function for custom use cases
 export { apiRequest };

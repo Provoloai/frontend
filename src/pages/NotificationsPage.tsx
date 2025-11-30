@@ -1,126 +1,40 @@
-import { Link } from '@tanstack/react-router'
-import React, { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'motion/react';
-import { Bell, Clock, MessageCircle, FileText, Star, Send, CreditCard, Search, UserCheck, Database, BellRing, ArrowLeft } from "lucide-react";
-
+import { Clock, CheckCircle2 } from "lucide-react";
+import { useNotificationsStore } from '@/stores/notificationsStore';
+import { useNotifications } from '@/hooks/useNotifications';
 
 const NotificationsPage = () => {
-    const [expandedId, setExpandedId] = useState(null);
-    const [notifications, setNotifications] = useState([
-        {
-            id: 1,
-            type: 'profile',
-            icon: UserCheck,
-            title: 'Profile Optimized',
-            description: 'Your Upwork profile has been fully optimized',
-            fullContent: 'Your Upwork profile optimization is complete. We rewrote your bio to be more client-focused, improved keyword placement for better ranking, suggested stronger project titles, and provided visual layout recommendations. You can now review your before-and-after comparison.',
-            time: '5h ago',
-            unread: true,
-            color: 'blue'
-        },
-        {
-            id: 2,
-            type: 'proposal',
-            icon: FileText,
-            title: 'Proposal ready',
-            description: 'Your AI proposal has been generated',
-            fullContent: 'Your proposal for the job posting you submitted has been successfully generated. It includes a client-focused opening, tailored value propositions, and a concise closing CTA. Review and edit before sending.',
-            time: '2h ago',
-            unread: true,
-            color: 'green'
-        },
-        {
-            id: 3,
-            type: 'knowledge',
-            icon: Database,
-            title: 'Knowledge Base Updated',
-            description: 'LinkedIn import completed',
-            fullContent: 'Your LinkedIn data has been successfully imported into your Provolo Knowledge Base. We extracted your skills, experience, tone style, and top achievements. Review or edit the imported details anytime for better personalization.',
-            time: '1d ago',
-            unread: false,
-            color: 'purple'
-        },
-        {
-            id: 4,
-            type: 'community',
-            icon: MessageCircle,
-            title: 'New discussion in Provolo Learn',
-            description: 'A new freelance growth thread is live',
-            fullContent: 'A new discussion has been posted in Provolo Learn: “How to raise your rates without losing clients.” Join the conversation, share your experience, and learn from other freelancers in the community.',
-            time: '3d ago',
-            unread: true,
-            color: 'orange'
-        },
-        {
-            id: 5,
-            type: 'achievement',
-            icon: Star,
-            title: 'Milestone unlocked',
-            description: 'You completed your first optimization',
-            fullContent: 'Congratulations! You just completed your first full profile optimization with Provolo. This unlocks your Level 1 Freelancer Badge. Keep optimizing, submitting proposals, and growing your presence to level up further.',
-            time: '4d ago',
-            unread: false,
-            color: 'yellow'
-        },
-        {
-            id: 6,
-            type: 'proposal',
-            icon: Send,
-            title: 'Job Detected',
-            description: 'A job matching your skills was found',
-            fullContent: 'We found a new job posting that aligns with your skills and niche preferences. You can generate a proposal instantly using your Provolo Knowledge Base for maximum personalization.',
-            time: '6h ago',
-            unread: true,
-            color: 'cyan'
-        },
-        {
-            id: 7,
-            type: 'subscription',
-            icon: CreditCard,
-            title: 'Premium activated',
-            description: 'Your Provolo Plus subscription is now active',
-            fullContent: 'Your Provolo Plus subscription is now active. You now have access to AI Proposals, LinkedIn Optimization, community features, analytics, and unlimited profile rewrites. Enjoy the full power of Provolo!',
-            time: '1d ago',
-            unread: false,
-            color: 'green'
-        },
-        {
-            id: 8,
-            type: 'research',
-            icon: Search,
-            title: 'Proposal analysis complete',
-            description: 'We analyzed your past proposals',
-            fullContent: 'Your proposal history has been analyzed. We identified common strengths, weaknesses, and recommended structure improvements. You’ll see more tailored proposals going forward.',
-            time: '2d ago',
-            unread: false,
-            color: 'gray'
-        }
+    const [expandedId, setExpandedId] = useState<number | string | null>(null);
+    const notifications = useNotificationsStore((state) => state.notifications);
+    const isLoading = useNotificationsStore((state) => state.isLoading);
+    const error = useNotificationsStore((state) => state.error);
+    const markAsRead = useNotificationsStore((state) => state.markAsRead);
+    const markAllAsRead = useNotificationsStore((state) => state.markAllAsRead);
 
-    ]);
+    // Fetch all notifications (will fetch more if needed)
+    useNotifications(20);
 
-    const unreadCount = notifications.filter(n => n.unread).length;
+    // Show older notifications (everything after the first 5)
+    const olderNotifications = useMemo(() => notifications.slice(5), [notifications]);
+    
+    // Total unread count across all notifications
+    const olderUnreadCount = useMemo(() => olderNotifications.filter((n) => n.unread).length, [olderNotifications]);
 
-    const markAsRead = (id) => {
-        setNotifications(notifications.map(n =>
-            n.id === id ? { ...n, unread: false } : n
-        ));
-    };
-
-    const toggleExpand = (id) => {
+    const toggleExpand = (id: number | string) => {
         setExpandedId(expandedId === id ? null : id);
         markAsRead(id);
     };
 
-    const markAllAsRead = () => {
-        setNotifications(notifications.map(n => ({ ...n, unread: false })));
-    };
-
-    const getIconColor = (color) => {
-        const colors = {
+    const getIconColor = (color: string) => {
+        const colors: Record<string, string> = {
             blue: 'bg-blue-100 text-blue-600',
             purple: 'bg-purple-100 text-purple-600',
             gray: 'bg-gray-100 text-gray-600',
-            green: 'bg-green-100 text-green-600'
+            green: 'bg-green-100 text-green-600',
+            orange: 'bg-orange-100 text-orange-600',
+            yellow: 'bg-yellow-100 text-yellow-600',
+            cyan: 'bg-cyan-100 text-cyan-600',
         };
         return colors[color] || colors.gray;
     };
@@ -142,10 +56,10 @@ const NotificationsPage = () => {
                             Older Notifications
                         </h2>
                         <p className="text-sm text-gray-500 mt-1">
-                            {unreadCount > 0 ? `${unreadCount} unread notification${unreadCount > 1 ? 's' : ''}` : 'All caught up!'}
+                            {olderUnreadCount > 0 ? `${olderUnreadCount} unread notification${olderUnreadCount > 1 ? 's' : ''}` : olderNotifications.length > 0 ? 'All caught up!' : 'No older notifications'}
                         </p>
                     </div>
-                    {unreadCount > 0 && (
+                    {olderUnreadCount > 0 && (
                         <button
                             onClick={markAllAsRead}
                             className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
@@ -157,16 +71,34 @@ const NotificationsPage = () => {
 
                 {/* Notifications List */}
                 <div className="space-y-3">
-                    {notifications.length === 0 ? (
+                    {isLoading ? (
+                        <div className="py-16 text-center bg-white rounded-2xl border border-gray-100">
+                            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                            </div>
+                            <p className="text-gray-500 text-sm">Loading notifications...</p>
+                        </div>
+                    ) : error ? (
+                        <div className="py-16 text-center bg-white rounded-2xl border border-gray-100">
+                            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
+                                <CheckCircle2 size={24} className="text-red-400" />
+                            </div>
+                            <p className="text-red-500 text-sm">{error}</p>
+                        </div>
+                    ) : olderNotifications.length === 0 ? (
                         <div className="py-16 text-center bg-white rounded-2xl border border-gray-100">
                             <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
                                 <CheckCircle2 size={24} className="text-gray-400" />
                             </div>
-                            <p className="text-gray-500 text-sm">No notifications yet</p>
+                            <p className="text-gray-500 text-sm">
+                                {notifications.length > 0 
+                                    ? 'All your recent notifications are shown in the sidebar.' 
+                                    : 'No notifications yet'}
+                            </p>
                         </div>
                     ) : (
                         <AnimatePresence>
-                            {notifications.map((notification) => {
+                            {olderNotifications.map((notification) => {
                                 const IconComponent = notification.icon;
                                 const isExpanded = expandedId === notification.id;
                                 return (

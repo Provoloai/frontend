@@ -1,108 +1,34 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Bell, Clock, MessageCircle, FileText, Star, Send, CreditCard, Search, UserCheck, Database, BellRing } from "lucide-react";
+import { useState, useRef, useEffect, useMemo } from 'react';
+import { Bell, Clock, BellRing } from "lucide-react";
 import { Link } from '@tanstack/react-router';
+import { useNotificationsStore } from '@/stores/notificationsStore';
+import { useNotifications } from '@/hooks/useNotifications';
 
 export default function Notifications() {
     const [isOpen, setIsOpen] = useState(false);
-    const [expandedId, setExpandedId] = useState(null);
-    const [notifications, setNotifications] = useState([
-        {
-            id: 1,
-            type: 'profile',
-            icon: UserCheck,
-            title: 'Profile Optimized',
-            description: 'Your Upwork profile has been fully optimized',
-            fullContent: 'Your Upwork profile optimization is complete. We rewrote your bio to be more client-focused, improved keyword placement for better ranking, suggested stronger project titles, and provided visual layout recommendations. You can now review your before-and-after comparison.',
-            time: '5h ago',
-            unread: true,
-            color: 'blue'
-        },
-        {
-            id: 2,
-            type: 'proposal',
-            icon: FileText,
-            title: 'Proposal ready',
-            description: 'Your AI proposal has been generated',
-            fullContent: 'Your proposal for the job posting you submitted has been successfully generated. It includes a client-focused opening, tailored value propositions, and a concise closing CTA. Review and edit before sending.',
-            time: '2h ago',
-            unread: true,
-            color: 'green'
-        },
-        {
-            id: 3,
-            type: 'knowledge',
-            icon: Database,
-            title: 'Knowledge Base Updated',
-            description: 'LinkedIn import completed',
-            fullContent: 'Your LinkedIn data has been successfully imported into your Provolo Knowledge Base. We extracted your skills, experience, tone style, and top achievements. Review or edit the imported details anytime for better personalization.',
-            time: '1d ago',
-            unread: false,
-            color: 'purple'
-        },
-        {
-            id: 4,
-            type: 'community',
-            icon: MessageCircle,
-            title: 'New discussion in Provolo Learn',
-            description: 'A new freelance growth thread is live',
-            fullContent: 'A new discussion has been posted in Provolo Learn: “How to raise your rates without losing clients.” Join the conversation, share your experience, and learn from other freelancers in the community.',
-            time: '3d ago',
-            unread: true,
-            color: 'orange'
-        },
-        {
-            id: 5,
-            type: 'achievement',
-            icon: Star,
-            title: 'Milestone unlocked',
-            description: 'You completed your first optimization',
-            fullContent: 'Congratulations! You just completed your first full profile optimization with Provolo. This unlocks your Level 1 Freelancer Badge. Keep optimizing, submitting proposals, and growing your presence to level up further.',
-            time: '4d ago',
-            unread: false,
-            color: 'yellow'
-        },
-        {
-            id: 6,
-            type: 'proposal',
-            icon: Send,
-            title: 'Job Detected',
-            description: 'A job matching your skills was found',
-            fullContent: 'We found a new job posting that aligns with your skills and niche preferences. You can generate a proposal instantly using your Provolo Knowledge Base for maximum personalization.',
-            time: '6h ago',
-            unread: true,
-            color: 'cyan'
-        },
-        {
-            id: 7,
-            type: 'subscription',
-            icon: CreditCard,
-            title: 'Premium activated',
-            description: 'Your Provolo Plus subscription is now active',
-            fullContent: 'Your Provolo Plus subscription is now active. You now have access to AI Proposals, LinkedIn Optimization, community features, analytics, and unlimited profile rewrites. Enjoy the full power of Provolo!',
-            time: '1d ago',
-            unread: false,
-            color: 'green'
-        },
-        {
-            id: 8,
-            type: 'research',
-            icon: Search,
-            title: 'Proposal analysis complete',
-            description: 'We analyzed your past proposals',
-            fullContent: 'Your proposal history has been analyzed. We identified common strengths, weaknesses, and recommended structure improvements. You’ll see more tailored proposals going forward.',
-            time: '2d ago',
-            unread: false,
-            color: 'gray'
-        }
+    const [expandedId, setExpandedId] = useState<number | string | null>(null);
+    const [isMarkingAllAsRead, setIsMarkingAllAsRead] = useState(false);
+    const notifications = useNotificationsStore((state) => state.notifications);
+    const totalCount = useNotificationsStore((state) => state.totalCount);
+    const markAsReadAsync = useNotificationsStore((state) => state.markAsReadAsync);
+    const markAllAsReadAsync = useNotificationsStore((state) => state.markAllAsReadAsync);
+    
+    // Fetch first 5 notifications when component mounts
+    useNotifications(5);
+    
+    // Always show first 5 notifications in sidebar
+    const recentNotifications = useMemo(() => notifications.slice(0, 5), [notifications]);
+    const unreadCount = useMemo(() => notifications.filter((n) => n.unread).length, [notifications]);
+    
+    // Show "View older notifications" only if there are more than 5 notifications
+    // Check both stored notifications length and totalCount from API
+    const hasMoreNotifications = notifications.length > 5 || totalCount > 5;
 
-    ]);
-
-    const menuRef = useRef(null);
-    const unreadCount = notifications.filter(n => n.unread).length;
+    const menuRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (menuRef.current && !menuRef.current.contains(event.target)) {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
                 setIsOpen(false);
             }
         };
@@ -116,27 +42,23 @@ export default function Notifications() {
         };
     }, [isOpen]);
 
-    const markAsRead = (id) => {
-        setNotifications(notifications.map(n =>
-            n.id === id ? { ...n, unread: false } : n
-        ));
-    };
-
-    const toggleExpand = (id) => {
+    const toggleExpand = (id: number | string) => {
         setExpandedId(expandedId === id ? null : id);
-        markAsRead(id);
+        // Call async API method to mark as read
+        markAsReadAsync(String(id)).catch((error) => {
+            console.error('Failed to mark notification as read:', error);
+        });
     };
 
-    const markAllAsRead = () => {
-        setNotifications(notifications.map(n => ({ ...n, unread: false })));
-    };
-
-    const getIconColor = (color) => {
-        const colors = {
+    const getIconColor = (color: string) => {
+        const colors: Record<string, string> = {
             blue: 'bg-blue-100 text-blue-600',
             purple: 'bg-purple-100 text-purple-600',
             gray: 'bg-gray-100 text-gray-600',
-            green: 'bg-green-100 text-green-600'
+            green: 'bg-green-100 text-green-600',
+            orange: 'bg-orange-100 text-orange-600',
+            yellow: 'bg-yellow-100 text-yellow-600',
+            cyan: 'bg-cyan-100 text-cyan-600',
         };
         return colors[color] || colors.gray;
     };
@@ -146,7 +68,7 @@ export default function Notifications() {
             {/* Bell Button */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="relative inline-flex items-center justify-center w-8 h-8 rounded-md bg-white shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 border border-gray-100"
+                className="relative inline-flex items-center justify-center w-8 h-8 rounded-md bg-white transition-all duration-200 hover:scale-105 border border-gray-100"
             >
                 <BellRing size={20} className="text-gray-700" />
                 {unreadCount > 0 && (
@@ -170,10 +92,20 @@ export default function Notifications() {
                             </div>
                             {unreadCount > 0 && (
                                 <button
-                                    onClick={markAllAsRead}
-                                    className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                                    onClick={async () => {
+                                        setIsMarkingAllAsRead(true);
+                                        try {
+                                            await markAllAsReadAsync();
+                                        } catch (error) {
+                                            console.error('Failed to mark all as read:', error);
+                                        } finally {
+                                            setIsMarkingAllAsRead(false);
+                                        }
+                                    }}
+                                    disabled={isMarkingAllAsRead}
+                                    className="text-sm font-medium text-blue-600 hover:text-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                 >
-                                    Mark all read
+                                    {isMarkingAllAsRead ? 'Marking...' : 'Mark all read'}
                                 </button>
                             )}
                         </div>
@@ -181,7 +113,7 @@ export default function Notifications() {
 
                     {/* Notifications List */}
                     <div className="max-h-[480px] overflow-y-auto">
-                        {notifications.length === 0 ? (
+                        {recentNotifications.length === 0 ? (
                             <div className="px-6 py-12 text-center">
                                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
                                     <Bell size={24} className="text-gray-400" />
@@ -190,7 +122,7 @@ export default function Notifications() {
                             </div>
                         ) : (
                             <div className="divide-y divide-gray-50">
-                                {notifications.map((notification) => {
+                                {recentNotifications.map((notification) => {
                                     const IconComponent = notification.icon;
                                     const isExpanded = expandedId === notification.id;
                                     return (
@@ -219,7 +151,7 @@ export default function Notifications() {
                                                                 <span className="flex-shrink-0 w-2 h-2 bg-blue-600 rounded-full mt-1.5"></span>
                                                             )}
                                                         </div>
-                                                        <p className="text-sm text-gray-600 mt-0.5 line-clamp-2">
+                                                        <p className="text-sm text-gray-600 mt-0.5 line-clamp-2 truncate">
                                                             {notification.description}
                                                         </p>
                                                         <div className="flex items-center gap-1 mt-2 text-xs text-gray-500">
@@ -248,15 +180,15 @@ export default function Notifications() {
                     </div>
 
                     {/* Footer */}
-                    {/* {notifications.length > 0 && (
-                        <div className="px-6 py-3 border-t border-gray-100 bg-gray-50">
-                            <button className="w-full text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">
-                                <Link to="/notifications">
-                                    View all notifications
-                                </Link>
-                            </button>
-                        </div>
-                    )} */}
+                    {hasMoreNotifications && (
+                        <Link to="/notifications">
+                            <div className="px-6 py-3 border-t border-gray-100 bg-gray-50">
+                                <button className="w-full text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">
+                                    View older notifications
+                                </button>
+                            </div>
+                        </Link>
+                    )}
                 </div>
             )}
         </div>
