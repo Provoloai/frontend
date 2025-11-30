@@ -259,7 +259,7 @@ export const notificationApi = {
     const queryParams = new URLSearchParams({
       limit: limit.toString(),
     });
-    
+
     if (startAfter) {
       queryParams.append("startAfter", startAfter);
     }
@@ -297,7 +297,10 @@ export const notificationApi = {
   },
 };
 
-export const useGetNotifications = (limit: number = 20, startAfter?: string) => {
+export const useGetNotifications = (
+  limit: number = 20,
+  startAfter?: string
+) => {
   return useQuery({
     queryKey: ["notifications", limit, startAfter],
     queryFn: () => notificationApi.getNotifications(limit, startAfter),
