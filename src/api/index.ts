@@ -271,6 +271,30 @@ export const notificationApi = {
       }
     );
   },
+
+  markNotificationAsRead: async (id: string) => {
+    return apiRequest<{
+      title: string;
+      message: string;
+      status: string;
+      data: null;
+    }>(`/notifications/${id}/read`, {
+      method: "PATCH",
+    });
+  },
+
+  markAllNotificationsAsRead: async () => {
+    return apiRequest<{
+      title: string;
+      message: string;
+      status: string;
+      data: {
+        count: number;
+      };
+    }>("/notifications/read-all", {
+      method: "PATCH",
+    });
+  },
 };
 
 export const useGetNotifications = (limit: number = 20, startAfter?: string) => {
