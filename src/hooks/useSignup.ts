@@ -1,5 +1,10 @@
 import { useState, useCallback } from "react";
-import { createUserWithEmailAndPassword, getIdToken } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  getIdToken,
+  GoogleAuthProvider,
+  signInWithPopup,
+} from "firebase/auth";
 import { useNavigate } from "@tanstack/react-router";
 import { auth } from "@/lib/firebase";
 import { authApi } from "@/api";
@@ -16,12 +21,31 @@ export const useSignup = () => {
       password: "",
     });
 
+  const signUpWithGoogle = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError("");
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      const idToken = await getIdToken(user, true);
+      await authApi.signup(idToken);
+      navigate({ to: "/optimizer", replace: true });
+    } catch (err: unknown) {
+      const error = err as Error;
+      setError(getCleanErrorMessage(error));
+    } finally {
+      setIsLoading(false);
+    }
+  }, [navigate]);
+
   const signUpWithEmail = useCallback(
     async (formData: SignupFormData) => {
       try {
         setIsLoading(true);
         setError("");
 
+        // Create email/password user
         const userCredential = await createUserWithEmailAndPassword(
           auth,
           formData.email,
@@ -60,6 +84,7 @@ export const useSignup = () => {
 
   return {
     signUpWithEmail,
+    signUpWithGoogle,
     isLoading,
     error,
     validationErrors,

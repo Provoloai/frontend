@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { FcGoogle } from "react-icons/fc";
 import { Check, Key, Mail, X } from "lucide-react";
 import TextInputField from "@/Reusables/TextInputField";
 import CustomButton from "@/Reusables/CustomButton";
@@ -6,7 +7,9 @@ import CustomSnackbar from "@/Reusables/CustomSnackbar";
 import { SIGNUP_CONFIG, PASSWORD_REQUIREMENTS } from "@/constants/auth";
 import type { SignupFormProps, RequirementItem } from "@/types/auth";
 
-const SignupForm: React.FC<SignupFormProps> = ({
+const SignupForm: React.FC<
+  SignupFormProps & { onGoogleSignup?: () => void }
+> = ({
   formData,
   touched,
   validationErrors,
@@ -17,11 +20,14 @@ const SignupForm: React.FC<SignupFormProps> = ({
   onBlur,
   onSubmit,
   onErrorClose,
+  onGoogleSignup,
 }) => {
-  const requirementsList: RequirementItem[] = PASSWORD_REQUIREMENTS.map(req => ({
-    ...req,
-    met: requirements[req.key],
-  }));
+  const requirementsList: RequirementItem[] = PASSWORD_REQUIREMENTS.map(
+    req => ({
+      ...req,
+      met: requirements[req.key],
+    })
+  );
 
   return (
     <div className="sm:mx-auto sm:w-full sm:max-w-lg bg-white lg:p-10 md:p-8 p-5 mt-10 rounded-md border z-30">
@@ -30,7 +36,7 @@ const SignupForm: React.FC<SignupFormProps> = ({
           {SIGNUP_CONFIG.title}
         </h2>
       </div>
-      
+
       <form onSubmit={onSubmit} className="space-y-6">
         {/* Email Field */}
         <div>
@@ -44,7 +50,7 @@ const SignupForm: React.FC<SignupFormProps> = ({
               label="Email"
               placeholder={SIGNUP_CONFIG.emailPlaceholder}
               iconStart={<Mail size={20} />}
-              onChange={(e) => onInputChange("email", e.target.value)}
+              onChange={e => onInputChange("email", e.target.value)}
               onBlur={() => onBlur("email")}
               touched={touched.email || !!validationErrors.email}
               error={validationErrors.email}
@@ -61,7 +67,7 @@ const SignupForm: React.FC<SignupFormProps> = ({
               required
               value={formData.password}
               iconStart={<Key size={20} />}
-              onChange={(e) => onInputChange("password", e.target.value)}
+              onChange={e => onInputChange("password", e.target.value)}
               onBlur={() => onBlur("password")}
               type="password"
               label="Password"
@@ -71,7 +77,7 @@ const SignupForm: React.FC<SignupFormProps> = ({
 
             {/* Password Requirements */}
             <div className="mt-3 flex flex-wrap gap-2 items-center">
-              {requirementsList.map((requirement) => (
+              {requirementsList.map(requirement => (
                 <div
                   key={requirement.key}
                   className={`flex items-center gap-1 h-full px-1.5 py-1 rounded ${
@@ -97,10 +103,25 @@ const SignupForm: React.FC<SignupFormProps> = ({
         </div>
 
         <div>
-          <CustomButton type="submit" disabled={isLoading} className="btn-primary text-sm">
+          <CustomButton
+            type="submit"
+            disabled={isLoading}
+            className="btn-primary text-sm"
+          >
             {isLoading ? SIGNUP_CONFIG.loadingText : SIGNUP_CONFIG.submitText}
           </CustomButton>
         </div>
+        <CustomButton
+          type="button"
+          disabled={isLoading}
+          className="w-full flex items-center justify-center gap-2 text-sm mt-2 border border-gray-300 bg-white text-black hover:bg-gray-50"
+          onClick={onGoogleSignup}
+        >
+          <span className="flex items-center gap-2">
+            <FcGoogle size={20} />
+            <p className="text-black text-sm">Sign up with Google</p>
+          </span>
+        </CustomButton>
       </form>
 
       <p className="mt-5 text-center text-xs text-gray-500">
