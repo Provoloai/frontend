@@ -7,10 +7,11 @@ import { useNotifications } from '@/hooks/useNotifications';
 export default function Notifications() {
     const [isOpen, setIsOpen] = useState(false);
     const [expandedId, setExpandedId] = useState<number | string | null>(null);
+    const [isMarkingAllAsRead, setIsMarkingAllAsRead] = useState(false);
     const notifications = useNotificationsStore((state) => state.notifications);
     const totalCount = useNotificationsStore((state) => state.totalCount);
-    const markAsRead = useNotificationsStore((state) => state.markAsRead);
-    const markAllAsRead = useNotificationsStore((state) => state.markAllAsRead);
+    const markAsReadAsync = useNotificationsStore((state) => state.markAsReadAsync);
+    const markAllAsReadAsync = useNotificationsStore((state) => state.markAllAsReadAsync);
     
     // Fetch first 5 notifications when component mounts
     useNotifications(5);
@@ -43,7 +44,10 @@ export default function Notifications() {
 
     const toggleExpand = (id: number | string) => {
         setExpandedId(expandedId === id ? null : id);
-        markAsRead(id);
+        // Call async API method to mark as read
+        markAsReadAsync(String(id)).catch((error) => {
+            console.error('Failed to mark notification as read:', error);
+        });
     };
 
     const getIconColor = (color: string) => {
@@ -88,10 +92,20 @@ export default function Notifications() {
                             </div>
                             {unreadCount > 0 && (
                                 <button
-                                    onClick={markAllAsRead}
-                                    className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                                    onClick={async () => {
+                                        setIsMarkingAllAsRead(true);
+                                        try {
+                                            await markAllAsReadAsync();
+                                        } catch (error) {
+                                            console.error('Failed to mark all as read:', error);
+                                        } finally {
+                                            setIsMarkingAllAsRead(false);
+                                        }
+                                    }}
+                                    disabled={isMarkingAllAsRead}
+                                    className="text-sm font-medium text-blue-600 hover:text-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                 >
-                                    Mark all read
+                                    {isMarkingAllAsRead ? 'Marking...' : 'Mark all read'}
                                 </button>
                             )}
                         </div>

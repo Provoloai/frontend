@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { UserCheck, FileText, Database, MessageCircle, Star, Send, CreditCard, Search, Bell, Users, Megaphone, Shield, AlertCircle, LucideIcon } from "lucide-react";
+import { notificationApi } from '@/api/index';
 
 const iconMap: Record<string, LucideIcon> = {
     UserCheck,
@@ -75,6 +76,8 @@ interface NotificationsState {
     markAsRead: (id: number | string) => void;
     markAllAsRead: () => void;
     addNotifications: (notifications: Notification[]) => void;
+    markAsReadAsync: (id: string) => Promise<void>;
+    markAllAsReadAsync: () => Promise<void>;
 }
 
 export const useNotificationsStore = create<NotificationsState>()(
@@ -125,6 +128,34 @@ export const useNotificationsStore = create<NotificationsState>()(
                 set((state) => ({
                     notifications: state.notifications.map((n) => ({ ...n, unread: false })),
                 }));
+            },
+
+            markAsReadAsync: async (id: string) => {
+                try {
+                    await notificationApi.markNotificationAsRead(id);
+                    // Update local state after successful API call
+                    set((state) => ({
+                        notifications: state.notifications.map((n) =>
+                            n.id === id ? { ...n, unread: false } : n
+                        ),
+                    }));
+                } catch (error) {
+                    console.error(`Failed to mark notification ${id} as read:`, error);
+                    throw error;
+                }
+            },
+
+            markAllAsReadAsync: async () => {
+                try {
+                    await notificationApi.markAllNotificationsAsRead();
+                    // Update local state after successful API call
+                    set((state) => ({
+                        notifications: state.notifications.map((n) => ({ ...n, unread: false })),
+                    }));
+                } catch (error) {
+                    console.error('Failed to mark all notifications as read:', error);
+                    throw error;
+                }
             },
         }),
         {
