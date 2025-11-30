@@ -8,44 +8,44 @@ const OptimizerHistoryPage = () => {
   const { optimizerId } = useParams({
     from: "/_sidebarlayout/_protected/optimizerHistory/$optimizerId",
   });
-  
+
   // Fetch the optimizer based on the ID from URL params
   const { data: optimizer, isLoading } = useGetOptimizer(optimizerId);
 
   // Extract results from the optimizer response
   const results = optimizer?.data?.response || null;
-  
+
   // Tab state
   const [activeTab, setActiveTab] = useState(0);
-  
+
   // Content ref for copy functionality
   const contentRef = useRef<HTMLDivElement>(null);
-  
+
   // Memoize tab sections based on the fetched data
   const tabSections = useMemo(
     () => [
-      { 
-        title: "Weaknesses and Optimization Ideas", 
+      {
+        title: "Weaknesses and Optimization Ideas",
         content: results?.weaknessesAndOptimization || "No data available",
         icon: AlertCircle
       },
-      { 
-        title: "Optimized Profile Overview", 
+      {
+        title: "Optimized Profile Overview",
         content: results?.optimizedProfileOverview || "No data available",
         icon: CheckCircle
       },
-      { 
-        title: "Suggested Project Titles and Layouts", 
+      {
+        title: "Suggested Project Titles and Layouts",
         content: results?.suggestedProjectTitles || "No data available",
         icon: Lightbulb
       },
-      { 
-        title: "Recommended Visuals/Layout Hierarchies", 
+      {
+        title: "Recommended Visuals/Layout Hierarchies",
         content: results?.recommendedVisuals || "No data available",
         icon: Image
       },
-      { 
-        title: "Before and After Comparison", 
+      {
+        title: "Before and After Comparison",
         content: results?.beforeAfterComparison || "No data available",
         icon: ArrowLeftRight
       },
@@ -81,16 +81,16 @@ const OptimizerHistoryPage = () => {
     },
   };
 
-   if (isLoading) {
+  if (isLoading) {
     return (
       <div className="flex-1 flex flex-col">
         <div className="p-6 sm:p-10 m-auto w-full">
           {/* Back button skeleton */}
           <div className="h-5 w-32 bg-gray-200 rounded mb-4 animate-pulse"></div>
-          
+
           {/* Title skeleton */}
           <div className="h-7 w-64 bg-gray-200 rounded mb-8 animate-pulse"></div>
-          
+
           {/* Tab navigation skeleton */}
           <div className="border-b border-gray-200 mb-6">
             <div className="flex flex-wrap gap-2 -mb-px pb-3">
@@ -102,13 +102,13 @@ const OptimizerHistoryPage = () => {
               ))}
             </div>
           </div>
-          
+
           {/* Content skeleton */}
           <div className="rounded-lg shadow-sm border border-gray-200 bg-gray-50">
             <div className="p-6">
               {/* Content title skeleton */}
               <div className="h-6 w-72 bg-gray-200 rounded mb-4 animate-pulse"></div>
-              
+
               {/* Content lines skeleton */}
               <div className="space-y-3">
                 <div className="h-4 w-full bg-gray-200 rounded animate-pulse"></div>
@@ -120,7 +120,7 @@ const OptimizerHistoryPage = () => {
                 <div className="h-4 w-2/3 bg-gray-200 rounded animate-pulse"></div>
               </div>
             </div>
-            
+
             {/* Copy button skeleton */}
             <div className="w-full text-end px-6 pb-6">
               <div className="h-8 w-16 bg-gray-200 rounded inline-block animate-pulse"></div>
@@ -146,7 +146,7 @@ const OptimizerHistoryPage = () => {
 
   return (
     <div className="flex-1 flex flex-col py-10">
-      <div className="p-6 sm:p-10 m-auto w-full">
+      <div className="p-6 sm:p-10 m-full w-full">
         <Link
             to="/optimizer"
             className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 mb-4 transition-colors"
@@ -157,7 +157,7 @@ const OptimizerHistoryPage = () => {
         <h2 className="text-lg mb-8 font-bold truncate">
           {optimizer?.data?.originalInput?.professionalTitle || "Optimizer History"}
         </h2>
-        
+
         {/* Tab Navigation */}
         <div className="border-b border-gray-200 mb-6">
           <nav className="flex flex-wrap -mb-px">
@@ -165,7 +165,7 @@ const OptimizerHistoryPage = () => {
               const isActive = activeTab === index;
               const tabColors = colorClassMap[section.title];
               const Icon = section.icon;
-              
+
               return (
                 <button
                   key={index}
@@ -173,10 +173,9 @@ const OptimizerHistoryPage = () => {
                   className={`
                     mr-2 py-3 px-4 text-sm font-medium border-b-2 transition-colors
                     flex items-center gap-2
-                    ${
-                      isActive
-                        ? tabColors.tab
-                        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                    ${isActive
+                      ? tabColors.tab
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                     }
                   `}
                 >
