@@ -4,8 +4,9 @@ export interface UserNavigationItem {
 }
 
 export interface UserData {
-  name: string;
+  name?: string;
   email: string;
+  providers?: string[];
 }
 
 export interface UserState {
