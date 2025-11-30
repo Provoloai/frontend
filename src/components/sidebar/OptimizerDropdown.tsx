@@ -48,7 +48,7 @@ export default function OptimizerDropdown({
                   }`}
                   params={{ optimizerId: item.id }}
                 >
-                  {item.originalInput}
+                  {item.originalInput?.professionalTitle}
                 </Link>
               </div>
             );

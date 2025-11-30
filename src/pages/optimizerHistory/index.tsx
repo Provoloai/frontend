@@ -11,11 +11,7 @@ const OptimizerHistoryPage = () => {
   
   // Fetch the optimizer based on the ID from URL params
   const { data: optimizer, isLoading } = useGetOptimizer(optimizerId);
-  
-  // Debug: Log the optimizer data to see its structure
-  console.log("Optimizer data:", optimizer);
-  console.log("Optimizer response:", optimizer?.data?.response);
-  
+
   // Extract results from the optimizer response
   const results = optimizer?.data?.response || null;
   
@@ -158,8 +154,8 @@ const OptimizerHistoryPage = () => {
             <ArrowLeft size={16} />
             Back to Optimizer
           </Link>
-        <h2 className="text-lg mb-8 font-bold truncate w-[35rem]">
-          {optimizer?.data?.originalInput || "Optimizer History"}
+        <h2 className="text-lg mb-8 font-bold truncate">
+          {optimizer?.data?.originalInput?.professionalTitle || "Optimizer History"}
         </h2>
         
         {/* Tab Navigation */}
