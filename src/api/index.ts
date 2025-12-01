@@ -149,6 +149,15 @@ export const authApi = {
       }
     );
   },
+  updateProviders: async (providers: string[], idToken?: string) => {
+    return apiRequest<{ success: boolean; message?: string }>(
+      "/auth/update-providers",
+      {
+        method: "PUT",
+        body: JSON.stringify({ providers, idToken }),
+      }
+    );
+  },
 };
 
 export const useGetProposalList = (page: number = 1, limit: number = 10) => {
