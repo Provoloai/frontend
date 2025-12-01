@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, QueryObserverResult } from "@tanstack/react-query";
 import { User } from "../types";
 import { apiRequest } from "@/api";
 
@@ -19,7 +19,7 @@ interface UseSessionReturn {
   user: User | null | undefined;
   loading: boolean;
   isFetching: boolean;
-  refetch: () => Promise<unknown>;
+  refetch: () => Promise<QueryObserverResult<User | null, Error>>;
 }
 
 export default function useSession(): UseSessionReturn {
