@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { Mail, Key, Check } from "lucide-react";
 import CustomButton from "@/Reusables/CustomButton";
@@ -13,7 +13,9 @@ interface AccountLinkingSectionProps {
   user: UserData | null | undefined;
 }
 
-export default function AccountLinkingSection({ user }: AccountLinkingSectionProps) {
+export default function AccountLinkingSection({
+  user,
+}: AccountLinkingSectionProps) {
   const {
     linkGoogle,
     setPassword,
@@ -25,12 +27,11 @@ export default function AccountLinkingSection({ user }: AccountLinkingSectionPro
 
   const [newPassword, setNewPassword] = useState("");
 
-
   if (!user) return null;
 
   const providers = user.providers || [];
   console.log("Current user providers:", providers); // Debugging provider string
-  
+
   // Check for both common variations just in case, or rely on the log to fix it permanently later
   const hasGoogle = providers.some(p => p === "google.com" || p === "google");
   const hasPassword = providers.some(p => p === "password" || p === "email");
@@ -38,9 +39,15 @@ export default function AccountLinkingSection({ user }: AccountLinkingSectionPro
   const passwordRequirements = checkPasswordRequirements(newPassword);
   const isPasswordValid = Object.values(passwordRequirements).every(Boolean);
 
-  const handleSetPassword = async (e: React.FormEvent) => {
+  const handleSetPassword = async (
+    e: React.FormEvent | React.MouseEvent | React.KeyboardEvent
+  ) => {
     e.preventDefault();
-    if (!isPasswordValid) return;
+    console.log("handleSetPassword called, preventing default");
+    if (!isPasswordValid) {
+      console.log("Password invalid, skipping");
+      return;
+    }
     await setPassword(newPassword);
     setNewPassword("");
   };
@@ -77,8 +84,9 @@ export default function AccountLinkingSection({ user }: AccountLinkingSectionPro
             <span className="inline-block">
               <CustomButton
                 onClick={linkGoogle}
-                disabled={loading}
-                className="text-xs px-4 py-2 h-auto min-h-0 bg-white border border-gray-300 text-black hover:bg-gray-50 shadow-sm rounded-md whitespace-nowrap"
+                isLoading={loading}
+                loadingText="Linking..."
+                className="text-xs px-4 py-2 h-auto min-h-0 bg-white border border-gray-300 !text-black hover:bg-gray-50 shadow-sm rounded-md whitespace-nowrap"
               >
                 Link Google
               </CustomButton>
@@ -109,7 +117,7 @@ export default function AccountLinkingSection({ user }: AccountLinkingSectionPro
           </div>
 
           {!hasPassword && (
-            <form onSubmit={handleSetPassword} className="space-y-3 mt-4 pt-4 border-t border-gray-200">
+            <div className="space-y-3 mt-4 pt-4 border-t border-gray-200">
               <p className="text-sm text-gray-600">
                 Set a password to login with your email address.
               </p>
@@ -119,25 +127,33 @@ export default function AccountLinkingSection({ user }: AccountLinkingSectionPro
                   name="new-password"
                   type="password"
                   value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
+                  onChange={e => setNewPassword(e.target.value)}
                   onBlur={() => {}}
+                  onKeyDown={e => {
+                    if (e.key === "Enter") {
+                      handleSetPassword(e);
+                    }
+                  }}
                   placeholder="Enter new password"
                   iconStart={<Key size={16} />}
                   label="New Password"
                 />
               </div>
-              
+
               {/* Password Requirements */}
               {newPassword && (
                 <div className="flex flex-wrap gap-2 mt-2">
-                  {PASSWORD_REQUIREMENTS.map((req) => {
-                    const met = passwordRequirements[req.key as keyof typeof passwordRequirements];
+                  {PASSWORD_REQUIREMENTS.map(req => {
+                    const met =
+                      passwordRequirements[
+                        req.key as keyof typeof passwordRequirements
+                      ];
                     return (
                       <div
                         key={req.key}
                         className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium border ${
-                          met 
-                            ? "bg-green-50 text-green-700 border-green-100" 
+                          met
+                            ? "bg-green-50 text-green-700 border-green-100"
                             : "bg-gray-100 text-gray-500 border-gray-200"
                         }`}
                       >
@@ -150,15 +166,18 @@ export default function AccountLinkingSection({ user }: AccountLinkingSectionPro
               )}
 
               <div className="flex justify-end">
-                 <CustomButton
-                  type="submit"
+                <CustomButton
+                  type="button"
+                  onClick={e => handleSetPassword(e)}
                   disabled={loading || !newPassword || !isPasswordValid}
+                  isLoading={loading}
+                  loadingText="Setting..."
                   className="text-xs px-4 py-2 h-auto min-h-0 bg-black text-white hover:bg-gray-800"
                 >
                   Set Password
                 </CustomButton>
               </div>
-            </form>
+            </div>
           )}
         </div>
       </div>
@@ -169,7 +188,7 @@ export default function AccountLinkingSection({ user }: AccountLinkingSectionPro
         snackbarMessage={error}
         close={clearMessages}
       />
-      
+
       <CustomSnackbar
         open={!!successMessage}
         snackbarColor="success"

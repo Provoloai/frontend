@@ -19,7 +19,8 @@ const Login = () => {
   });
 
   // Auth hook
-  const { signInWithEmail, isLoading, error, clearError } = useAuth();
+  const { signInWithEmail, signInWithGoogle, isLoading, error, clearError } =
+    useAuth();
 
   // Event handlers
   const handleInputChange = useCallback(
@@ -55,6 +56,7 @@ const Login = () => {
         onBlur={handleBlur}
         onSubmit={handleSubmit}
         onErrorClose={clearError}
+        onGoogleSignIn={signInWithGoogle}
       />
       {/* <Link
         to="/"

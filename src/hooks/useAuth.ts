@@ -1,5 +1,10 @@
 import { useState, useCallback } from "react";
-import { getIdToken, signInWithEmailAndPassword } from "firebase/auth";
+import {
+  getIdToken,
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+} from "firebase/auth";
 import { useNavigate } from "@tanstack/react-router";
 import { auth } from "@/lib/firebase";
 import { authApi } from "@/api";
@@ -38,12 +43,34 @@ export const useAuth = () => {
     [navigate]
   );
 
+  const signInWithGoogle = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError("");
+
+      const provider = new GoogleAuthProvider();
+      const userCredential = await signInWithPopup(auth, provider);
+      const user = userCredential.user;
+      const idToken = await getIdToken(user, true);
+
+      await authApi.login(idToken);
+
+      navigate({ to: "/optimizer", replace: true });
+    } catch (err: unknown) {
+      const error = err as Error;
+      setError(getCleanErrorMessage(error));
+    } finally {
+      setIsLoading(false);
+    }
+  }, [navigate]);
+
   const clearError = useCallback(() => {
     setError("");
   }, []);
 
   return {
     signInWithEmail,
+    signInWithGoogle,
     isLoading,
     error,
     clearError,
