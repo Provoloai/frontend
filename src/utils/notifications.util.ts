@@ -142,7 +142,7 @@ export const formatRelativeTime = (dateInput: string | FirebaseTimestamp | undef
         
         return `${diffInYears}y ago`;
     } catch (error) {
-        console.warn('Error formatting date:', dateString, error);
+        console.warn('Error formatting date:', dateInput, error);
         return 'recently';
     }
 };
@@ -164,6 +164,7 @@ export const transformBackendNotification = (backendNotif: BackendNotification):
         time: formatRelativeTime(createdAt),
         unread: !backendNotif.read,
         color: categoryColorMap[category] || "gray",
+        link: (backendNotif as any).link, // Include link if present in backend response
     };
 };
 

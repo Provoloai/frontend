@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'motion/react';
-import { Clock, CheckCircle2 } from "lucide-react";
+import { Clock, CheckCircle2, Bell } from "lucide-react";
 import { useNotificationsStore } from '@/stores/notificationsStore';
 import { useNotifications } from '@/hooks/useNotifications';
 
@@ -17,7 +17,7 @@ const NotificationsPage = () => {
 
     // Show older notifications (everything after the first 5)
     const olderNotifications = useMemo(() => notifications.slice(5), [notifications]);
-    
+
     // Total unread count across all notifications
     const olderUnreadCount = useMemo(() => olderNotifications.filter((n) => n.unread).length, [olderNotifications]);
 
@@ -88,11 +88,11 @@ const NotificationsPage = () => {
                     ) : olderNotifications.length === 0 ? (
                         <div className="py-16 text-center bg-white rounded-2xl border border-gray-100">
                             <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
-                                <CheckCircle2 size={24} className="text-gray-400" />
+                                <Bell size={24} className="text-gray-400" />
                             </div>
                             <p className="text-gray-500 text-sm">
-                                {notifications.length > 0 
-                                    ? 'All your recent notifications are shown in the sidebar.' 
+                                {notifications.length > 0
+                                    ? 'All your recent notifications are shown in the sidebar.'
                                     : 'No notifications yet'}
                             </p>
                         </div>

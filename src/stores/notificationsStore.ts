@@ -30,6 +30,7 @@ export interface Notification {
     time: string;
     unread: boolean;
     color: string;
+    link?: string;
 }
 
 interface NotificationData {
@@ -42,6 +43,7 @@ interface NotificationData {
     time: string;
     unread: boolean;
     color: string;
+    link?: string;
 }
 
 // Convert NotificationData to Notification by adding icon component
@@ -61,6 +63,7 @@ const toNotificationData = (notification: Notification): NotificationData => ({
     time: notification.time,
     unread: notification.unread,
     color: notification.color,
+    link: notification.link,
 });
 
 interface NotificationsState {

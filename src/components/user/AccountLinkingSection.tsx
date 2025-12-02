@@ -63,7 +63,7 @@ export default function AccountLinkingSection({
 
       <div className="space-y-4">
         {/* Google Linking */}
-        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-100">
+        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-white to bg-gray-50 rounded-lg border border-gray-100">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-white rounded-full shadow-sm">
               <FcGoogle size={20} />
@@ -86,17 +86,17 @@ export default function AccountLinkingSection({
                 onClick={linkGoogle}
                 isLoading={loading}
                 loadingText="Linking..."
-                className="text-xs px-4 py-2 h-auto min-h-0 bg-white border border-gray-300 !text-black hover:bg-gray-50 shadow-sm rounded-md whitespace-nowrap"
+                className="text-xs h-auto min-h-0 bg-white border border-gray-100 !text-black hover:bg-gray-50 shadow-sm rounded-md whitespace-nowrap"
               >
-                Link Google
+                Connect Google
               </CustomButton>
             </span>
           )}
         </div>
 
         {/* Password Linking */}
-        <div className="p-4 bg-gray-50 rounded-lg border border-gray-100">
-          <div className="flex items-center justify-between mb-4">
+        <div className="p-4 bg-gradient-to-r from-white to bg-gray-50 rounded-lg border border-gray-100">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-white rounded-full shadow-sm">
                 <Mail size={20} className="text-gray-600" />

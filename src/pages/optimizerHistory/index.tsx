@@ -1,8 +1,19 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { useGetOptimizer } from "@/api";
 import { Link, useParams } from "@tanstack/react-router";
 import ReactMarkdown from "react-markdown";
-import { AlertCircle, CheckCircle, Lightbulb, Image, ArrowLeftRight, ArrowLeft } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle,
+  Lightbulb,
+  Image,
+  ArrowLeftRight,
+  ArrowLeft,
+  Copy,
+  Check,
+} from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import CustomButton from "@/Reusables/CustomButton";
 
 const OptimizerHistoryPage = () => {
   const { optimizerId } = useParams({
@@ -17,6 +28,8 @@ const OptimizerHistoryPage = () => {
 
   // Tab state
   const [activeTab, setActiveTab] = useState(0);
+  const [copyState, setCopyState] = useState<"idle" | "copied">("idle");
+  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Content ref for copy functionality
   const contentRef = useRef<HTMLDivElement>(null);
@@ -25,145 +38,149 @@ const OptimizerHistoryPage = () => {
   const tabSections = useMemo(
     () => [
       {
-        title: "Weaknesses and Optimization Ideas",
+        title: "Weaknesses & Ideas",
+        fullTitle: "Weaknesses and Optimization Ideas",
         content: results?.weaknessesAndOptimization || "No data available",
-        icon: AlertCircle
+        icon: AlertCircle,
+        color: "text-red-600",
+        bgColor: "bg-red-50",
+        borderColor: "border-red-200",
       },
       {
-        title: "Optimized Profile Overview",
+        title: "Optimized Profile",
+        fullTitle: "Optimized Profile Overview",
         content: results?.optimizedProfileOverview || "No data available",
-        icon: CheckCircle
+        icon: CheckCircle,
+        color: "text-green-600",
+        bgColor: "bg-green-50",
+        borderColor: "border-green-200",
       },
       {
-        title: "Suggested Project Titles and Layouts",
+        title: "Project Titles",
+        fullTitle: "Suggested Project Titles and Layouts",
         content: results?.suggestedProjectTitles || "No data available",
-        icon: Lightbulb
+        icon: Lightbulb,
+        color: "text-yellow-600",
+        bgColor: "bg-yellow-50",
+        borderColor: "border-yellow-200",
       },
       {
-        title: "Recommended Visuals/Layout Hierarchies",
+        title: "Visuals & Layouts",
+        fullTitle: "Recommended Visuals/Layout Hierarchies",
         content: results?.recommendedVisuals || "No data available",
-        icon: Image
+        icon: Image,
+        color: "text-blue-600",
+        bgColor: "bg-blue-50",
+        borderColor: "border-blue-200",
       },
       {
-        title: "Before and After Comparison",
+        title: "Comparison",
+        fullTitle: "Before and After Comparison",
         content: results?.beforeAfterComparison || "No data available",
-        icon: ArrowLeftRight
+        icon: ArrowLeftRight,
+        color: "text-purple-600",
+        bgColor: "bg-purple-50",
+        borderColor: "border-purple-200",
       },
     ],
     [results]
   );
 
-  const colorClassMap: Record<string, { tab: string; content: string; copy: string }> = {
-    "Weaknesses and Optimization Ideas": {
-      tab: "border-red-500 text-red-600",
-      content: "border-red-100 bg-red-50",
-      copy: "text-red-600 border-red-300 hover:bg-red-100",
-    },
-    "Optimized Profile Overview": {
-      tab: "border-green-500 text-green-600",
-      content: "border-green-100 bg-green-50",
-      copy: "text-green-600 border-green-300 hover:bg-green-100",
-    },
-    "Suggested Project Titles and Layouts": {
-      tab: "border-yellow-500 text-yellow-600",
-      content: "border-yellow-100 bg-yellow-50",
-      copy: "text-yellow-600 border-yellow-300 hover:bg-yellow-100",
-    },
-    "Recommended Visuals/Layout Hierarchies": {
-      tab: "border-blue-500 text-blue-600",
-      content: "border-blue-100 bg-blue-50",
-      copy: "text-blue-600 border-blue-300 hover:bg-blue-100",
-    },
-    "Before and After Comparison": {
-      tab: "border-purple-500 text-purple-600",
-      content: "border-purple-100 bg-purple-50",
-      copy: "text-purple-600 border-purple-300 hover:bg-purple-100",
-    },
+  const handleCopy = async () => {
+    if (!contentRef.current) return;
+    try {
+      await navigator.clipboard.writeText(contentRef.current.innerText);
+      setCopyState("copied");
+
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopyState("idle");
+      }, 2000);
+    } catch (err) {
+      console.error("Failed to copy text: ", err);
+      setCopyState("idle");
+    }
   };
+
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+    };
+  }, []);
 
   if (isLoading) {
     return (
-      <div className="flex-1 flex flex-col">
-        <div className="p-6 sm:p-10 m-auto w-full">
-          {/* Back button skeleton */}
-          <div className="h-5 w-32 bg-gray-200 rounded mb-4 animate-pulse"></div>
-
-          {/* Title skeleton */}
-          <div className="h-7 w-64 bg-gray-200 rounded mb-8 animate-pulse"></div>
-
-          {/* Tab navigation skeleton */}
-          <div className="border-b border-gray-200 mb-6">
-            <div className="flex flex-wrap gap-2 -mb-px pb-3">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <div
-                  key={i}
-                  className="h-10 w-48 bg-gray-200 rounded animate-pulse"
-                ></div>
-              ))}
-            </div>
-          </div>
-
-          {/* Content skeleton */}
-          <div className="rounded-lg shadow-sm border border-gray-200 bg-gray-50">
-            <div className="p-6">
-              {/* Content title skeleton */}
-              <div className="h-6 w-72 bg-gray-200 rounded mb-4 animate-pulse"></div>
-
-              {/* Content lines skeleton */}
-              <div className="space-y-3">
-                <div className="h-4 w-full bg-gray-200 rounded animate-pulse"></div>
-                <div className="h-4 w-full bg-gray-200 rounded animate-pulse"></div>
-                <div className="h-4 w-3/4 bg-gray-200 rounded animate-pulse"></div>
-                <div className="h-4 w-full bg-gray-200 rounded animate-pulse"></div>
-                <div className="h-4 w-5/6 bg-gray-200 rounded animate-pulse"></div>
-                <div className="h-4 w-full bg-gray-200 rounded animate-pulse"></div>
-                <div className="h-4 w-2/3 bg-gray-200 rounded animate-pulse"></div>
-              </div>
-            </div>
-
-            {/* Copy button skeleton */}
-            <div className="w-full text-end px-6 pb-6">
-              <div className="h-8 w-16 bg-gray-200 rounded inline-block animate-pulse"></div>
-            </div>
-          </div>
+      <div className="flex-1 flex flex-col p-6 sm:p-10 w-4xl mx-auto">
+        <div className="h-5 w-32 bg-gray-200 rounded mb-4 animate-pulse mt-10" />
+        <div className="h-8 w-64 bg-gray-200 rounded mb-8 animate-pulse" />
+        <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div
+              key={i}
+              className="h-10 w-32 bg-gray-200 rounded-full animate-pulse flex-shrink-0"
+            />
+          ))}
         </div>
+        <div className="h-96 bg-gray-100 rounded-2xl animate-pulse" />
       </div>
     );
   }
 
   if (!results) {
     return (
-      <div className="flex-1 flex items-center justify-center py-20">
-        <div className="text-center">
-          <p className="text-lg text-gray-500">No optimizer results found</p>
-        </div>
+      <div className="flex-1 flex flex-col items-center justify-center p-10">
+        <h2 className="text-2xl font-semibold mb-3">No Results Found</h2>
+        <p className="text-gray-500 mb-6">
+          We couldn't find any optimization history for this item.
+        </p>
+        <Link to="/optimizer">
+          <CustomButton className="flex items-center gap-2">
+            <ArrowLeft size={18} />
+            Back to Optimizer
+          </CustomButton>
+        </Link>
       </div>
     );
   }
 
   const currentSection = tabSections[activeTab];
-  const classes = colorClassMap[currentSection.title];
 
   return (
-    <div className="flex-1 flex flex-col py-10">
-      <div className="p-6 sm:p-10 m-full w-full">
-        <Link
+    <div className="flex-1 flex flex-col overflow-y-auto bg-gray-50/50">
+      <div className="p-6 sm:p-10 mx-auto w-4xl w-full">
+        {/* className="p-6 sm:p-10 w-4xl max-h-fit" */}
+
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="text-start pt-10"
+        >
+          <Link
             to="/optimizer"
-            className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 mb-4 transition-colors"
+            className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 mb-6 transition-colors group"
           >
-            <ArrowLeft size={16} />
+            <ArrowLeft
+              size={16}
+              className="group-hover:-translate-x-1 transition-transform"
+            />
             Back to Optimizer
           </Link>
-        <h2 className="text-lg mb-8 font-bold truncate">
-          {optimizer?.data?.originalInput?.professionalTitle || "Optimizer History"}
-        </h2>
 
-        {/* Tab Navigation */}
-        <div className="border-b border-gray-200 mb-6">
-          <nav className="flex flex-wrap -mb-px">
+          <h2 className="text-3xl font-medium text-gray-900 mb-2 truncate">
+            {optimizer?.data?.originalInput?.professionalTitle ||
+              "Optimization Results"}
+          </h2>
+          <p className="text-gray-500 mb-8">
+            Review your personalized optimization insights and suggestions.
+          </p>
+        </motion.div>
+
+        {/* Modern Tab Navigation */}
+        <div className="mb-8 overflow-x-auto pb-2 -mx-6 px-6 sm:mx-0 sm:px-0 scrollbar-hide">
+          <div className="flex space-x-2 min-w-max">
             {tabSections.map((section, index) => {
               const isActive = activeTab === index;
-              const tabColors = colorClassMap[section.title];
               const Icon = section.icon;
 
               return (
@@ -171,58 +188,102 @@ const OptimizerHistoryPage = () => {
                   key={index}
                   onClick={() => setActiveTab(index)}
                   className={`
-                    mr-2 py-3 px-4 text-sm font-medium border-b-2 transition-colors
-                    flex items-center gap-2
+                    relative px-4 py-2.5 rounded-full text-sm font-medium transition-all duration-200
+                    flex items-center gap-2 border
                     ${isActive
-                      ? tabColors.tab
-                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                      ? "bg-gray-900 text-white border-gray-900 shadow-md"
+                      : "bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                     }
                   `}
                 >
-                  <Icon size={16} />
+                  <Icon size={16} className={isActive ? "text-white" : ""} />
                   {section.title}
+                  {isActive && (
+                    <motion.div
+                      layoutId="activeTabIndicator"
+                      className="absolute inset-0 rounded-full bg-white/10"
+                      initial={false}
+                      transition={{
+                        type: "spring",
+                        stiffness: 500,
+                        damping: 30,
+                      }}
+                    />
+                  )}
                 </button>
               );
             })}
-          </nav>
+          </div>
         </div>
 
-        {/* Tab Content */}
-        <div className={`rounded-lg shadow-sm border ${classes.content}`}>
-          <div className="p-6">
-            <h3 className="text-lg font-semibold mb-4 text-gray-800">
-              {currentSection.title}
-            </h3>
-            <div
-              ref={contentRef}
-              className="prose prose-sm max-w-none max-h-[500px] overflow-y-auto pr-4"
-            >
-              <ReactMarkdown>{currentSection.content}</ReactMarkdown>
+        {/* Content Card */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden"
+          >
+            {/* Header */}
+            <div className="border-b border-gray-100 bg-gray-50/50 px-6 py-4 flex items-center justify-between flex-wrap gap-4">
+              <div className="flex items-center gap-3">
+                <div
+                  className={`p-2 rounded-lg ${currentSection.bgColor} ${currentSection.color}`}
+                >
+                  <currentSection.icon size={20} />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {currentSection.fullTitle}
+                </h3>
+              </div>
+
+              <span>
+                <CustomButton
+                  onClick={handleCopy}
+                  className={`
+                  text-xs h-9 min-h-0 px-4 border
+                  ${copyState === "copied"
+                      ? "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-50"
+                      : "bg-gray-100 text-black border-gray-200 hover:bg-gray-50"
+                    }
+                `}
+                >
+                  {copyState === "copied" ? (
+                    <p className="flex items-center gap-1 text-blue-600 text-xs">
+                      <Check size={14} className="mr-1.5" />
+                      Copied
+                    </p>
+                  ) : (
+                    <p className="flex items-center gap-1 text-black text-xs">
+
+                      <Copy size={14} className="mr-1.5" />
+                      Copy
+                    </p>
+                  )}
+                </CustomButton>
+              </span>
             </div>
-          </div>
-          <div className="w-full text-end px-6 pb-6">
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                let textToCopy = currentSection.content;
-                if (contentRef.current) {
-                  textToCopy = contentRef.current.innerText;
-                }
-                navigator.clipboard.writeText(textToCopy);
 
-                const target = e.currentTarget;
-                const original = target.innerText;
-                target.innerText = "Copied!";
-                setTimeout(() => {
-                  target.innerText = original;
-                }, 1200);
-              }}
-              className={`text-xs border px-3 py-1.5 rounded transition ${classes.copy}`}
-            >
-              Copy
-            </button>
-          </div>
-        </div>
+            {/* Markdown Content */}
+            <div className="p-6 sm:p-8">
+              <div
+                ref={contentRef}
+                className="prose prose-slate prose-sm sm:prose-sm max-w-none
+                  prose-headings:font-semibold prose-headings:text-gray-900
+                  prose-p:text-gray-600 prose-li:text-gray-600
+                  prose-strong:text-gray-900 prose-strong:font-semibold
+                  prose-code:text-blue-600 prose-code:bg-blue-50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none
+                  prose-pre:bg-gray-900 prose-pre:text-gray-50
+                  prose-blockquote:border-l-4 prose-blockquote:border-gray-200 prose-blockquote:pl-4 prose-blockquote:italic
+                "
+              >
+                <ReactMarkdown>{currentSection.content}</ReactMarkdown>
+              </div>
+            </div>
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );
