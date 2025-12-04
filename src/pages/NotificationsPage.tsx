@@ -1,29 +1,33 @@
 import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'motion/react';
-import { Clock, CheckCircle2 } from "lucide-react";
+import { Clock, CheckCircle2, Bell } from "lucide-react";
 import { useNotificationsStore } from '@/stores/notificationsStore';
 import { useNotifications } from '@/hooks/useNotifications';
 
 const NotificationsPage = () => {
     const [expandedId, setExpandedId] = useState<number | string | null>(null);
+    const [isMarkingAllAsRead, setIsMarkingAllAsRead] = useState(false);
     const notifications = useNotificationsStore((state) => state.notifications);
     const isLoading = useNotificationsStore((state) => state.isLoading);
     const error = useNotificationsStore((state) => state.error);
-    const markAsRead = useNotificationsStore((state) => state.markAsRead);
-    const markAllAsRead = useNotificationsStore((state) => state.markAllAsRead);
+    const markAsReadAsync = useNotificationsStore((state) => state.markAsReadAsync);
+    const markAllAsReadAsync = useNotificationsStore((state) => state.markAllAsReadAsync);
 
     // Fetch all notifications (will fetch more if needed)
     useNotifications(20);
 
     // Show older notifications (everything after the first 5)
     const olderNotifications = useMemo(() => notifications.slice(5), [notifications]);
-    
+
     // Total unread count across all notifications
     const olderUnreadCount = useMemo(() => olderNotifications.filter((n) => n.unread).length, [olderNotifications]);
 
     const toggleExpand = (id: number | string) => {
         setExpandedId(expandedId === id ? null : id);
-        markAsRead(id);
+        // Call async API method to mark as read
+        markAsReadAsync(String(id)).catch((error) => {
+            console.error('Failed to mark notification as read:', error);
+        });
     };
 
     const getIconColor = (color: string) => {
@@ -61,10 +65,20 @@ const NotificationsPage = () => {
                     </div>
                     {olderUnreadCount > 0 && (
                         <button
-                            onClick={markAllAsRead}
-                            className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                            onClick={async () => {
+                                setIsMarkingAllAsRead(true);
+                                try {
+                                    await markAllAsReadAsync();
+                                } catch (error) {
+                                    console.error('Failed to mark all as read:', error);
+                                } finally {
+                                    setIsMarkingAllAsRead(false);
+                                }
+                            }}
+                            disabled={isMarkingAllAsRead}
+                            className="text-sm font-medium text-blue-600 hover:text-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         >
-                            Mark all as read
+                            {isMarkingAllAsRead ? 'Marking...' : 'Mark all as read'}
                         </button>
                     )}
                 </div>
@@ -88,11 +102,11 @@ const NotificationsPage = () => {
                     ) : olderNotifications.length === 0 ? (
                         <div className="py-16 text-center bg-white rounded-2xl border border-gray-100">
                             <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
-                                <CheckCircle2 size={24} className="text-gray-400" />
+                                <Bell size={24} className="text-gray-400" />
                             </div>
                             <p className="text-gray-500 text-sm">
-                                {notifications.length > 0 
-                                    ? 'All your recent notifications are shown in the sidebar.' 
+                                {notifications.length > 0
+                                    ? 'All your recent notifications are shown in the sidebar.'
                                     : 'No notifications yet'}
                             </p>
                         </div>

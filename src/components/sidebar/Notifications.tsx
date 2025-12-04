@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { Bell, Clock, BellRing } from "lucide-react";
-import { Link } from '@tanstack/react-router';
+import { Bell, Clock, BellRing, ArrowRight, MoveRight } from "lucide-react";
+import { Link, useNavigate } from '@tanstack/react-router';
 import { useNotificationsStore } from '@/stores/notificationsStore';
 import { useNotifications } from '@/hooks/useNotifications';
 
@@ -8,18 +8,19 @@ export default function Notifications() {
     const [isOpen, setIsOpen] = useState(false);
     const [expandedId, setExpandedId] = useState<number | string | null>(null);
     const [isMarkingAllAsRead, setIsMarkingAllAsRead] = useState(false);
+    const navigate = useNavigate();
     const notifications = useNotificationsStore((state) => state.notifications);
     const totalCount = useNotificationsStore((state) => state.totalCount);
     const markAsReadAsync = useNotificationsStore((state) => state.markAsReadAsync);
     const markAllAsReadAsync = useNotificationsStore((state) => state.markAllAsReadAsync);
-    
+
     // Fetch first 5 notifications when component mounts
     useNotifications(5);
-    
+
     // Always show first 5 notifications in sidebar
     const recentNotifications = useMemo(() => notifications.slice(0, 5), [notifications]);
     const unreadCount = useMemo(() => notifications.filter((n) => n.unread).length, [notifications]);
-    
+
     // Show "View older notifications" only if there are more than 5 notifications
     // Check both stored notifications length and totalCount from API
     const hasMoreNotifications = notifications.length > 5 || totalCount > 5;
@@ -61,6 +62,15 @@ export default function Notifications() {
             cyan: 'bg-cyan-100 text-cyan-600',
         };
         return colors[color] || colors.gray;
+    };
+
+    const handleNotificationLink = (link: string) => {
+        if (link.startsWith('http://') || link.startsWith('https://')) {
+            window.open(link, '_blank');
+        } else {
+            navigate({ to: link as any });
+            setIsOpen(false);
+        }
     };
 
     return (
@@ -164,11 +174,19 @@ export default function Notifications() {
 
                                             {/* Expanded Content */}
                                             {isExpanded && (
-                                                <div className="px-6 pb-4 animate-in fade-in slide-in-from-top-1 duration-200">
+                                                <div className="px-6  animate-in fade-in slide-in-from-top-1 duration-200">
                                                     <div className="ml-[52px] p-4 bg-gray-50 rounded-lg border border-gray-200">
                                                         <p className="text-sm text-gray-700 leading-relaxed">
                                                             {notification.fullContent}
                                                         </p>
+                                                        {notification.link && (
+                                                            <button
+                                                                onClick={() => handleNotificationLink(notification.link!)}
+                                                                className="mt-3  flex align-middle gap-1 hover:gap-3 transition-all duration-300 text-xs text-gray-500 hover:text-gray-950 hover:underline"
+                                                            >
+                                                                Check it out
+                                                            </button>
+                                                        )}
                                                     </div>
                                                 </div>
                                             )}

@@ -12,7 +12,7 @@ export const useNotifications = (limit: number = 20, startAfter?: string) => {
     const setError = useNotificationsStore((state) => state.setError);
     const addNotifications = useNotificationsStore((state) => state.addNotifications);
     const lastVisibleId = useNotificationsStore((state) => state.lastVisibleId);
-    
+
     useEffect(() => {
         setLoading(isLoading);
         if (error) {
