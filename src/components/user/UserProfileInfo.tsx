@@ -24,7 +24,7 @@ const UserProfileInfo: React.FC<UserProfileInfoProps> = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
     >
-      <h2 className="text-base text-gray-900">{USER_PROFILE_CONFIG.personalInfo.title}</h2>
+      <h2 className="text-lg text-gray-900">{USER_PROFILE_CONFIG.personalInfo.title}</h2>
       <p className="mt-1 text-sm text-gray-600">{USER_PROFILE_CONFIG.personalInfo.description}</p>
 
       <motion.div

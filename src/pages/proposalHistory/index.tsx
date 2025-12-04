@@ -51,7 +51,7 @@ const ProposalHistory: React.FC = () => {
   }
 
   // Read MDX directly from the main proposalResponse, not from versions
-  const proposalMdx = proposal?.data?.proposalResponse?.mdx || null;
+  const proposalMdx = generatedProposal?.mdx || null;
 
   // For pagination, we need an array of versions
   const proposalVersions = hasMultipleVersions ? rawVersions : [];
@@ -70,7 +70,7 @@ const ProposalHistory: React.FC = () => {
 
   // Optimized: Copy proposal to clipboard with locked feedback state and cleanup
   const copyToClipboard = useCallback(async (): Promise<void> => {
-    const mdxToCopy = proposal?.data?.proposalResponse?.mdx;
+    const mdxToCopy = generatedProposal?.mdx;
     if (copyState !== "idle" || !mdxToCopy) return;
     try {
       await navigator.clipboard.writeText(mdxToCopy);
@@ -86,7 +86,7 @@ const ProposalHistory: React.FC = () => {
     } catch {
       setCopyState("idle");
     }
-  }, [copyState, proposal?.data?.proposalResponse?.mdx]);
+  }, [copyState, generatedProposal?.mdx]);
 
   // Version navigation functions
   const goToPreviousVersion = () => {

@@ -12,7 +12,7 @@ export default function SidebarLogo({ isOpen }: SidebarLogoProps) {
       layout
       transition={{ duration: 0.3 }}
     >
-      <Logo />
+        <Logo />
     </motion.div>
   );
 }

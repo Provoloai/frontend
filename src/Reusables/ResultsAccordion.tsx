@@ -1,107 +1,231 @@
-import { ChevronDown } from "lucide-react";
-import React from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import ReactMarkdown from "react-markdown";
+import {
+  ChevronDown,
+  AlertCircle,
+  CheckCircle,
+  Lightbulb,
+  Image,
+  ArrowLeftRight,
+  Copy,
+  Check,
+} from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import CustomButton from "@/Reusables/CustomButton";
 
-// 1. Create a map for the FULL class strings.
-// Tailwind will scan this and generate all the classes.
-const colorClassMap = {
+// Map titles to icons and colors
+const sectionConfig: Record<string, any> = {
   "Weaknesses and Optimization Ideas": {
-    details: "border-red-100 bg-red-50",
-    summary: "bg-red-50 text-red-800", // Note: bg-red is not a default color, using bg-red-50
-    copy: "text-red-600 border-red-300", // Example: "text-red" is not a specific class
+    icon: AlertCircle,
+    color: "text-red-600",
+    bgColor: "bg-red-50",
+    borderColor: "border-red-200",
+    shortTitle: "Weaknesses & Ideas",
   },
   "Optimized Profile Overview": {
-    details: "border-green-100 bg-green-50",
-    summary: "bg-green-50 text-green-800",
-    copy: "text-green-600 border-green-300",
+    icon: CheckCircle,
+    color: "text-green-600",
+    bgColor: "bg-green-50",
+    borderColor: "border-green-200",
+    shortTitle: "Optimized Profile",
   },
   "Suggested Project Titles and Layouts": {
-    details: "border-yellow-100 bg-yellow-50",
-    summary: "bg-yellow-50 text-yellow-800",
-    copy: "text-yellow-600 border-yellow-300",
+    icon: Lightbulb,
+    color: "text-yellow-600",
+    bgColor: "bg-yellow-50",
+    borderColor: "border-yellow-200",
+    shortTitle: "Project Titles",
   },
   "Recommended Visuals/Layout Hierarchies": {
-    details: "border-blue-100 bg-blue-50",
-    summary: "bg-blue-50 text-blue-800",
-    copy: "text-blue-600 border-blue-300",
+    icon: Image,
+    color: "text-blue-600",
+    bgColor: "bg-blue-50",
+    borderColor: "border-blue-200",
+    shortTitle: "Visuals & Layouts",
   },
   "Before and After Comparison": {
-    details: "border-purple-100 bg-purple-50",
-    summary: "bg-purple-50 text-purple-800",
-    copy: "text-purple-600 border-purple-300",
+    icon: ArrowLeftRight,
+    color: "text-purple-600",
+    bgColor: "bg-purple-50",
+    borderColor: "border-purple-200",
+    shortTitle: "Comparison",
   },
   default: {
-    details: "border-gray-100 bg-gray-50",
-    summary: "bg-gray-50 text-gray-800",
-    copy: "text-gray-600 border-gray-300",
+    icon: ChevronDown,
+    color: "text-gray-600",
+    bgColor: "bg-gray-50",
+    borderColor: "border-gray-200",
+    shortTitle: "Section",
   },
 };
 
-const ResultsAccordion = ({ sections }) => {
+interface Section {
+  title: string;
+  content: string;
+}
+
+interface ResultsAccordionProps {
+  sections: Section[];
+}
+
+const ResultsAccordion: React.FC<ResultsAccordionProps> = ({ sections }) => {
+  const [activeTab, setActiveTab] = useState(0);
+  const [copyState, setCopyState] = useState<"idle" | "copied">("idle");
+  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // Prepare tab data
+  const tabs = useMemo(() => {
+    return sections.map((section: Section) => {
+      const config = sectionConfig[section.title] || sectionConfig.default;
+      return {
+        ...section,
+        ...config,
+        fullTitle: section.title,
+        title: config.shortTitle || section.title,
+      };
+    });
+  }, [sections]);
+
+  const handleCopy = async () => {
+    if (!contentRef.current) return;
+    try {
+      await navigator.clipboard.writeText(contentRef.current.innerText);
+      setCopyState("copied");
+
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopyState("idle");
+      }, 2000);
+    } catch (err) {
+      console.error("Failed to copy text: ", err);
+      setCopyState("idle");
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+    };
+  }, []);
+
+  if (!sections || sections.length === 0) return null;
+
+  const currentSection = tabs[activeTab];
+
   return (
-    <div className="mt-10 p-6 max-w-4xl mx-auto w-full bg-white rounded-xl border border-gray-200 card">
-      <h2 className="font-medium mb-8 text-center flex items-center gap-3 text-2xl">
+    <div className="mt-10 p-6 sm:p-10 mx-auto w-4xl w-full">
+      <h2 className="font-medium mb-8 text-center flex items-center justify-center gap-3 text-2xl">
         Optimization Insights ✦︎
       </h2>
 
-      {sections.map(({ title, content }, idx) => {
-        // 2. Look up the classes. Fall back to 'default' if title not found.
-        const classes = colorClassMap[title] || colorClassMap.default;
-        const contentRef = React.createRef<HTMLDivElement>();
+      {/* Modern Tab Navigation */}
+      <div className="mb-8 overflow-x-auto pb-2 -mx-6 px-6 sm:mx-0 sm:px-0 scrollbar-hide">
+        <div className="flex space-x-2 min-w-max">
+          {tabs.map((section: any, index: number) => {
+            const isActive = activeTab === index;
+            const Icon = section.icon;
 
-        return (
-          <details
-            key={idx}
-            open={idx === 0}
-            // 3. Apply the full, static classes
-            className={`mb-5 border rounded-lg overflow-hidden group transition-all ${classes.details}`}
-          >
-            <summary
-              className={`flex justify-between items-center cursor-pointer px-6 py-5 ${classes.summary}`}
-            >
-              <p className="text-lg flex align-middle items-center justify-between w-full">
-                {title}
-                <ChevronDown size={18} />
-              </p>
-            </summary>
+            return (
+              <button
+                key={index}
+                onClick={() => setActiveTab(index)}
+                className={`
+                  relative px-4 py-2.5 rounded-full text-sm font-medium transition-all duration-200
+                  flex items-center gap-2 border
+                  ${isActive
+                    ? "bg-gray-900 text-white border-gray-900 shadow-md"
+                    : "bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                  }
+                `}
+              >
+                <Icon size={16} className={isActive ? "text-white" : ""} />
+                {section.title}
+                {isActive && (
+                  <motion.div
+                    layoutId="activeTabIndicator"
+                    className="absolute inset-0 rounded-full bg-white/10"
+                    initial={false}
+                    transition={{
+                      type: "spring",
+                      stiffness: 500,
+                      damping: 30,
+                    }}
+                  />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
-            {/*
-              4. The 'prose' fix:
-              - Removed text-base, text-gray-800, leading-relaxed, space-y-4
-              - 'prose' and 'prose-sm' will handle all markdown styling.
-            */}
+      {/* Content Card */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.2 }}
+          className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden"
+        >
+          {/* Header */}
+          <div className="border-b border-gray-100 bg-gray-50/50 px-6 py-4 flex items-center justify-between flex-wrap gap-4">
+            <div className="flex items-center gap-3">
+              <div
+                className={`p-2 rounded-lg ${currentSection.bgColor} ${currentSection.color}`}
+              >
+                <currentSection.icon size={20} />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">
+                {currentSection.fullTitle}
+              </h3>
+            </div>
+
+            <span>
+              <CustomButton
+                onClick={handleCopy}
+                className={`
+                  text-xs h-9 min-h-0 px-4 border
+                  ${copyState === "copied"
+                    ? "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-50"
+                    : "bg-gray-100 text-black border-gray-200 hover:bg-gray-50"
+                  }
+                `}
+              >
+                {copyState === "copied" ? (
+                  <p className="flex items-center gap-1 text-blue-600 text-xs">
+                    <Check size={14} className="mr-1.5" />
+                    Copied
+                  </p>
+                ) : (
+                  <p className="flex items-center gap-1 text-black text-xs">
+                    <Copy size={14} className="mr-1.5" />
+                    Copy
+                  </p>
+                )}
+              </CustomButton>
+            </span>
+          </div>
+
+          {/* Markdown Content */}
+          <div className="p-6 sm:p-8">
             <div
               ref={contentRef}
-              className="px-7 py-6 prose prose-sm max-w-none"
+              className="prose prose-slate prose-sm sm:prose-sm max-w-none
+                prose-headings:font-semibold prose-headings:text-gray-900
+                prose-p:text-gray-600 prose-li:text-gray-600
+                prose-strong:text-gray-900 prose-strong:font-semibold
+                prose-code:text-blue-600 prose-code:bg-blue-50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none
+                prose-pre:bg-gray-900 prose-pre:text-gray-50
+                prose-blockquote:border-l-4 prose-blockquote:border-gray-200 prose-blockquote:pl-4 prose-blockquote:italic
+              "
             >
-              <ReactMarkdown>{content}</ReactMarkdown>
+              <ReactMarkdown>{currentSection.content}</ReactMarkdown>
             </div>
-            <div className="w-full text-end p-6">
-              <button
-                onClick={e => {
-                  e.preventDefault();
-                  let textToCopy = content;
-                  if (contentRef.current) {
-                    // .textContent can be lossy, prefer innerText
-                    textToCopy = contentRef.current.innerText;
-                  }
-                  navigator.clipboard.writeText(textToCopy);
-
-                  const target = e.currentTarget; // Use currentTarget
-                  const original = target.innerText;
-                  target.innerText = "Copied!";
-                  setTimeout(() => {
-                    target.innerText = original;
-                  }, 1200);
-                }}
-                className={`text-xs border px-3 py-1.5 rounded transition ${classes.copy}`}
-              >
-                Copy
-              </button>
-            </div>
-          </details>
-        );
-      })}
+          </div>
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 };
