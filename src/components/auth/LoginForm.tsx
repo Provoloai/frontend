@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Key, Mail } from "lucide-react";
-import { FcGoogle } from "react-icons/fc";
+// import { FcGoogle } from "react-icons/fc";
 import TextInputField from "@/Reusables/TextInputField";
 import CustomButton from "@/Reusables/CustomButton";
 import CustomSnackbar from "@/Reusables/CustomSnackbar";
@@ -16,7 +16,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
   onBlur,
   onSubmit,
   onErrorClose,
-  onGoogleSignIn,
+  // onGoogleSignIn,
 }) => {
   return (
     <div className="sm:mx-auto sm:w-full sm:max-w-lg bg-white lg:p-10 md:p-8 p-5 mt-10 rounded-md border z-30">
@@ -82,7 +82,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
           </CustomButton>
         </div>
 
-        <div className="relative">
+        {/* <div className="relative">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-gray-200" />
           </div>
@@ -107,7 +107,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
               <p className="text-black text-sm">Sign in with Google</p>
             </span>
           </CustomButton>
-        </div>
+        </div> */}
       </form>
 
       <p className="mt-5 text-center text-xs text-gray-500">
