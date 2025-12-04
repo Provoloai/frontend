@@ -132,7 +132,7 @@ const PortfolioOptimizer = () => {
         <motion.h2 className="text-3xl mb-3 text-center" variants={optimizerItemVariants}>
           Let's Optimize Your Profile, {displayName}
         </motion.h2>
-
+ 
         {/* Input Section */}
         <OptimizerForm
           isLoading={isLoading}
