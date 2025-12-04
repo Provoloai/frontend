@@ -28,7 +28,8 @@ const getFeatureIcon = (featureName: string) => {
   const name = featureName.toLowerCase();
 
   if (name.includes("profile") || name.includes("optimization")) return Target;
-  if (name.includes("proposal") || name.includes("application")) return FileText;
+  if (name.includes("proposal") || name.includes("application"))
+    return FileText;
   if (name.includes("search") || name.includes("seo")) return Search;
   if (name.includes("support") || name.includes("help")) return MessageSquare;
   if (name.includes("analytics") || name.includes("insight")) return BarChart3;
@@ -45,7 +46,13 @@ const getFeatureIcon = (featureName: string) => {
 };
 
 // Enhanced Skeleton Components
-const SkeletonBox = ({ className = "", delay = 0 }: { className?: string; delay?: number }) => (
+const SkeletonBox = ({
+  className = "",
+  delay = 0,
+}: {
+  className?: string;
+  delay?: number;
+}) => (
   <motion.div
     className={`bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 bg-[length:200%_100%] rounded-xl ${className}`}
     initial={{ opacity: 0, scale: 0.95 }}
@@ -111,65 +118,81 @@ const PricingSkeleton = () => {
           className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto"
           variants={containerVariants}
         >
-          {[0, 1].map((index) => (
+          {[0, 1].map(index => (
             <motion.div
               key={index}
-              className={`${index === 1
-                ? "bg-slate-900 shadow-2xl ring-1 ring-slate-800"
-                : "bg-white/80 shadow-lg ring-1 ring-slate-200"
-                } rounded-3xl p-8 sm:p-10`}
+              className={`${
+                index === 1
+                  ? "bg-slate-900 shadow-2xl ring-1 ring-slate-800"
+                  : "bg-white/80 shadow-lg ring-1 ring-slate-200"
+              } rounded-3xl p-8 sm:p-10`}
               variants={cardVariants}
             >
               <div className="space-y-6">
                 {/* Plan Name */}
                 <SkeletonBox
-                  className={`h-7 w-32 ${index === 1 ? "bg-gradient-to-r from-slate-400 via-slate-400 to-slate-400" : ""
-                    }`}
+                  className={`h-7 w-32 ${
+                    index === 1
+                      ? "bg-gradient-to-r from-slate-400 via-slate-400 to-slate-400"
+                      : ""
+                  }`}
                   delay={0.2 + index * 0.1}
                 />
 
                 {/* Price */}
                 <div className="flex items-center gap-x-2">
                   <SkeletonBox
-                    className={`h-16 w-28 ${index === 1
-                      ? "bg-gradient-to-r from-slate-500 via-slate-500 to-slate-500"
-                      : ""
-                      }`}
+                    className={`h-16 w-28 ${
+                      index === 1
+                        ? "bg-gradient-to-r from-slate-500 via-slate-500 to-slate-500"
+                        : ""
+                    }`}
                     delay={0.3 + index * 0.1}
                   />
                   <SkeletonBox
-                    className={`h-8 w-16 ${index === 1
-                      ? "bg-gradient-to-r from-slate-500 via-slate-500 to-slate-500"
-                      : ""
-                      }`}
+                    className={`h-8 w-16 ${
+                      index === 1
+                        ? "bg-gradient-to-r from-slate-500 via-slate-500 to-slate-500"
+                        : ""
+                    }`}
                     delay={0.35 + index * 0.1}
                   />
                 </div>
 
                 {/* Description */}
                 <SkeletonBox
-                  className={`h-5 w-full ${index === 1 ? "bg-gradient-to-r from-slate-400 via-slate-400 to-slate-400" : ""
-                    }`}
+                  className={`h-5 w-full ${
+                    index === 1
+                      ? "bg-gradient-to-r from-slate-400 via-slate-400 to-slate-400"
+                      : ""
+                  }`}
                   delay={0.4 + index * 0.1}
                 />
 
                 {/* Features List */}
                 <div className="space-y-4 pt-4">
-                  {[0, 1, 2, 3, 4].map((featureIndex) => (
+                  {[0, 1, 2, 3, 4].map(featureIndex => (
                     <div key={featureIndex} className="flex items-center gap-3">
                       <SkeletonBox
-                        className={`h-5 w-5 rounded-full ${index === 1
-                          ? "bg-gradient-to-r from-slate-400 via-slate-300 to-slate-400"
-                          : "bg-gradient-to-r from-slate-400 via-slate-400 to-slate-400"
-                          }`}
+                        className={`h-5 w-5 rounded-full ${
+                          index === 1
+                            ? "bg-gradient-to-r from-slate-400 via-slate-300 to-slate-400"
+                            : "bg-gradient-to-r from-slate-400 via-slate-400 to-slate-400"
+                        }`}
                         delay={0.5 + index * 0.1 + featureIndex * 0.05}
                       />
                       <SkeletonBox
-                        className={`h-4 ${featureIndex % 3 === 0 ? "w-40" : featureIndex % 3 === 1 ? "w-32" : "w-36"
-                          } ${index === 1
+                        className={`h-4 ${
+                          featureIndex % 3 === 0
+                            ? "w-40"
+                            : featureIndex % 3 === 1
+                              ? "w-32"
+                              : "w-36"
+                        } ${
+                          index === 1
                             ? "bg-gradient-to-r from-slate-400 via-slate-400 to-slate-400"
                             : ""
-                          }`}
+                        }`}
                         delay={0.52 + index * 0.1 + featureIndex * 0.05}
                       />
                     </div>
@@ -178,10 +201,11 @@ const PricingSkeleton = () => {
 
                 {/* CTA Button */}
                 <SkeletonBox
-                  className={`h-12 w-full mt-8 ${index === 1
-                    ? "bg-gradient-to-r from-slate-400 via-slate-400 to-slate-400"
-                    : "bg-gradient-to-r from-slate-300 via-slate-200 to-slate-300"
-                    }`}
+                  className={`h-12 w-full mt-8 ${
+                    index === 1
+                      ? "bg-gradient-to-r from-slate-400 via-slate-400 to-slate-400"
+                      : "bg-gradient-to-r from-slate-300 via-slate-200 to-slate-300"
+                  }`}
                   delay={0.7 + index * 0.1}
                 />
               </div>
@@ -192,10 +216,6 @@ const PricingSkeleton = () => {
     </div>
   );
 };
-
-
-
-
 
 // Transform backend tier to UI format
 const transformTierForUI = (tier: any): PricingTier => ({
@@ -223,10 +243,16 @@ export default function Pricing() {
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     retry: 3,
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
-  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "annual">("monthly");
+  const { user } = useSession();
+
+  // Set initial billing period based on user's current plan
+  // If user has plusAnnual, default to annual tab
+  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "annual">(
+    user?.tierId === "plusAnnual" ? "annual" : "monthly"
+  );
 
   // const displayTiers = useMemo(() => (tiers ? tiers.map(transformTierForUI) : []), [tiers]);
   const displayTiers = useMemo(() => {
@@ -256,8 +282,7 @@ export default function Pricing() {
   // console.log('All tiers from backend:', tiers);
   // console.log('Display tiers:', displayTiers);
 
-
-  const { user } = useSession();
+  // user already defined above
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [subscriptionError, setSubscriptionError] = useState("");
   // const [billingPeriod, setBillingPeriod] = useState<"monthly" | "annual">("monthly");
@@ -356,8 +381,7 @@ export default function Pricing() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1 }}
       >
-        <h2 className="text-3xl font-medium mb-3 text-center gap-3"
-        >
+        <h2 className="text-3xl font-medium mb-3 text-center gap-3">
           Upgrade your plan
         </h2>
         <p className="text-gray-400">
@@ -414,7 +438,9 @@ export default function Pricing() {
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.3 }}
             >
-              <span className="text-red-600 font-bold text-lg">{subscriptionError}</span>
+              <span className="text-red-600 font-bold text-lg">
+                {subscriptionError}
+              </span>
             </motion.div>
           )}
         </AnimatePresence>
@@ -434,8 +460,12 @@ export default function Pricing() {
           let newFeatures: PricingFeature[] = tier.features;
           if (tierIdx > 0) {
             const prevTier = displayTiers[tierIdx - 1];
-            const prevSlugs = new Set(prevTier.features.map((f: PricingFeature) => f.slug));
-            newFeatures = tier.features.filter((f: PricingFeature) => !prevSlugs.has(f.slug));
+            const prevSlugs = new Set(
+              prevTier.features.map((f: PricingFeature) => f.slug)
+            );
+            newFeatures = tier.features.filter(
+              (f: PricingFeature) => !prevSlugs.has(f.slug)
+            );
             inherited = prevTier.name;
           }
 
@@ -443,7 +473,9 @@ export default function Pricing() {
             <motion.div
               key={tier.id}
               className={classNames(
-                tier.featured ? "relative bg-gray-900 shadow-2xl" : "bg-white/60 sm:mx-8 lg:mx-0",
+                tier.featured
+                  ? "relative bg-gray-900 shadow-2xl"
+                  : "bg-white/60 sm:mx-8 lg:mx-0",
                 tier.featured
                   ? ""
                   : tierIdx === 0
@@ -479,7 +511,6 @@ export default function Pricing() {
                     </span>
                   </motion.div>
                 )}
-
               </AnimatePresence>
               <div className="flex items-center gap-3 mb-4">
                 <div
@@ -488,7 +519,7 @@ export default function Pricing() {
                     "p-2 rounded-lg"
                   )}
                 >
-                  {typeof IconComponent === 'function' ? (
+                  {typeof IconComponent === "function" ? (
                     <IconComponent
                       className={classNames(
                         tier.featured ? "text-indigo-200" : "text-primary",
@@ -587,7 +618,7 @@ export default function Pricing() {
                           "p-1 rounded-md"
                         )}
                       >
-                        {typeof FeatureIcon === 'function' ? (
+                        {typeof FeatureIcon === "function" ? (
                           <FeatureIcon
                             className={classNames(
                               tier.featured ? "text-gray-100" : "text-primary",
@@ -628,7 +659,10 @@ export default function Pricing() {
                       Current plan
                     </motion.span>
                   ) : null
-                ) : user?.tierId === tier.id ? (
+                ) : user?.tierId === tier.id ||
+                  (user?.tierId === "plusAnnual" &&
+                    tier.name === "Plus" &&
+                    billingPeriod === "annual") ? (
                   <motion.span
                     className={classNames(
                       tier.featured
@@ -659,8 +693,15 @@ export default function Pricing() {
                     whileTap={{ scale: 0.98 }}
                   >
                     <span className="flex items-center justify-center gap-2">
-                      {checkoutLoading ? <Loader2 className="animate-spin h-4 w-4" /> : null}
-                      Upgrade Plan
+                      {checkoutLoading ? (
+                        <Loader2 className="animate-spin h-4 w-4" />
+                      ) : null}
+                      {/* Show "Downgrade" if user has plusAnnual and viewing Plus monthly plan */}
+                      {user?.tierId === "plusAnnual" &&
+                      tier.name === "Plus" &&
+                      billingPeriod === "monthly"
+                        ? "Downgrade"
+                        : "Upgrade Plan"}
                     </span>
                   </motion.button>
                 )}

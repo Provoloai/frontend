@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { FcGoogle } from "react-icons/fc";
+// import { FcGoogle } from "react-icons/fc";
 import { Check, Key, Mail, X } from "lucide-react";
 import TextInputField from "@/Reusables/TextInputField";
 import CustomButton from "@/Reusables/CustomButton";
@@ -20,7 +20,7 @@ const SignupForm: React.FC<
   onBlur,
   onSubmit,
   onErrorClose,
-  onGoogleSignup,
+  // onGoogleSignup,
 }) => {
   const requirementsList: RequirementItem[] = PASSWORD_REQUIREMENTS.map(
     req => ({
@@ -111,7 +111,7 @@ const SignupForm: React.FC<
             {isLoading ? SIGNUP_CONFIG.loadingText : SIGNUP_CONFIG.submitText}
           </CustomButton>
         </div>
-        <CustomButton
+        {/* <CustomButton
           type="button"
           disabled={isLoading}
           className="w-full flex items-center justify-center gap-2 text-sm mt-2 border border-gray-300 bg-white text-black hover:bg-gray-50"
@@ -121,7 +121,7 @@ const SignupForm: React.FC<
             <FcGoogle size={20} />
             <p className="text-black text-sm">Sign up with Google</p>
           </span>
-        </CustomButton>
+        </CustomButton> */}
       </form>
 
       <p className="mt-5 text-center text-xs text-gray-500">
