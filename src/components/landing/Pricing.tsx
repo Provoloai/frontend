@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "motion/react";
-import { proSubscription } from "@/server/checkout";
+import { proSubscription, getCustomerPortalUrl } from "@/server/checkout";
 import { fetchTiers } from "@/server/tiers";
 import useSession from "@/hooks/useSession";
 import { useState, useMemo } from "react";
@@ -297,6 +297,24 @@ export default function Pricing() {
       console.error("Subscription error:", error);
       setSubscriptionError(
         "An error occurred during subscription. Please try again, if persists, contact support."
+      );
+    } finally {
+      setCheckoutLoading(false);
+    }
+  };
+
+  const handleDowngrade = async () => {
+    if (!user?.polarId) {
+      setSubscriptionError("No subscription found. Please contact support.");
+      return;
+    }
+    setCheckoutLoading(true);
+    try {
+      const url = await getCustomerPortalUrl(user);
+      if (url) window.location.href = url;
+    } catch (e) {
+      setSubscriptionError(
+        e instanceof Error ? e.message : "Unable to open subscription portal."
       );
     } finally {
       setCheckoutLoading(false);
@@ -678,7 +696,18 @@ export default function Pricing() {
                   </motion.span>
                 ) : (
                   <motion.button
-                    onClick={() => checkout(tier.polarRefId)}
+                    onClick={() => {
+                      // Check if this is a downgrade action
+                      const isDowngrade =
+                        user?.tierId === "plusAnnual" &&
+                        tier.name === "Plus" &&
+                        billingPeriod === "monthly";
+                      if (isDowngrade) {
+                        handleDowngrade();
+                      } else {
+                        checkout(tier.polarRefId);
+                      }
+                    }}
                     className={classNames(
                       tier.featured
                         ? "bg-indigo-500 text-white shadow-xs hover:bg-indigo-400 focus-visible:outline-indigo-500"
