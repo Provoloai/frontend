@@ -109,30 +109,19 @@ const SignupForm: React.FC<
               {isLoading ? SIGNUP_CONFIG.loadingText : SIGNUP_CONFIG.submitText}
             </CustomButton>
           </div>
+        </form>
 
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-200" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="bg-white px-2 text-gray-500">
-                Or continue with
-              </span>
-            </div>
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-200" />
           </div>
-
-          <CustomButton
-            type="button"
-            disabled={isLoading}
-            className="w-full flex items-center justify-center gap-2 text-sm mt-2 border border-gray-300 bg-white text-black hover:bg-gray-50"
-            onClick={onGoogleSignup}
-          >
-            <span className="flex items-center gap-2">
-              <FcGoogle size={20} />
-              <p className="text-black text-sm">Sign up with Google</p>
+          <div className="relative flex justify-center text-sm">
+            <span className="bg-white px-2 text-gray-500">
+              Or continue with
             </span>
-          </CustomButton>
+          </div>
         </div>
+
         {/* <CustomButton
           type="button"
           disabled={isLoading}
@@ -144,7 +133,6 @@ const SignupForm: React.FC<
             <p className="text-black text-sm">Sign up with Google</p>
           </span>
         </CustomButton> */}
-      </form>
 
         <p className="mt-5 text-center text-xs text-gray-500">
           {SIGNUP_CONFIG.signInText}{" "}
