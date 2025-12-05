@@ -1,4 +1,4 @@
-import { Wrench } from "lucide-react";
+import { Construction } from "lucide-react";
 import Header from "@/components/landing/Header";
 
 export default function UnderMaintenance() {
@@ -10,7 +10,7 @@ export default function UnderMaintenance() {
           <div className="p-6 rounded-lg text-center">
             <div className="w-full text-center flex justify-center">
               {/* Maintenance Icon */}
-              <Wrench size={100} className="text-[#195CEF]" />
+              <Construction size={100} className="text-[#195CEF]" />
             </div>
 
             <h1 className="text-4xl sm:text-5xl font-semibold text-center mb-2 mt-5 text-gray-800">
@@ -24,14 +24,14 @@ export default function UnderMaintenance() {
             </p>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-col gap-4 items-center justify-center">
+            {/* <div className="flex flex-col sm:flex-col gap-4 items-center justify-center">
               <button
                 onClick={() => window.location.reload()}
                 className="btn-primary px-6 py-3 rounded-md text-white text-sm hover:opacity-90 transition-opacity w-full max-w-xs"
               >
                 Refresh Page
               </button>
-            </div>
+            </div> */}
 
             {/* Animated dots */}
             <div className="flex justify-center items-center gap-2 mt-8">
