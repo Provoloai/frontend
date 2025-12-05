@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "motion/react";
-import { proSubscription } from "@/server/checkout";
+import { proSubscription, getCustomerPortalUrl } from "@/server/checkout";
 import { fetchTiers } from "@/server/tiers";
 import useSession from "@/hooks/useSession";
 import { useState, useMemo } from "react";
@@ -18,6 +18,8 @@ import {
   Crown,
   Sparkles,
   Globe,
+  Asterisk,
+  Check,
 } from "lucide-react";
 import type { PricingTier, PricingFeature } from "@/types/pricing";
 
@@ -26,7 +28,8 @@ const getFeatureIcon = (featureName: string) => {
   const name = featureName.toLowerCase();
 
   if (name.includes("profile") || name.includes("optimization")) return Target;
-  if (name.includes("proposal") || name.includes("application")) return FileText;
+  if (name.includes("proposal") || name.includes("application"))
+    return FileText;
   if (name.includes("search") || name.includes("seo")) return Search;
   if (name.includes("support") || name.includes("help")) return MessageSquare;
   if (name.includes("analytics") || name.includes("insight")) return BarChart3;
@@ -43,7 +46,13 @@ const getFeatureIcon = (featureName: string) => {
 };
 
 // Enhanced Skeleton Components
-const SkeletonBox = ({ className = "", delay = 0 }: { className?: string; delay?: number }) => (
+const SkeletonBox = ({
+  className = "",
+  delay = 0,
+}: {
+  className?: string;
+  delay?: number;
+}) => (
   <motion.div
     className={`bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 bg-[length:200%_100%] rounded-xl ${className}`}
     initial={{ opacity: 0, scale: 0.95 }}
@@ -109,65 +118,81 @@ const PricingSkeleton = () => {
           className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto"
           variants={containerVariants}
         >
-          {[0, 1].map((index) => (
+          {[0, 1].map(index => (
             <motion.div
               key={index}
-              className={`${index === 1
-                ? "bg-slate-900 shadow-2xl ring-1 ring-slate-800"
-                : "bg-white/80 shadow-lg ring-1 ring-slate-200"
-                } rounded-3xl p-8 sm:p-10`}
+              className={`${
+                index === 1
+                  ? "bg-slate-900 shadow-2xl ring-1 ring-slate-800"
+                  : "bg-white/80 shadow-lg ring-1 ring-slate-200"
+              } rounded-3xl p-8 sm:p-10`}
               variants={cardVariants}
             >
               <div className="space-y-6">
                 {/* Plan Name */}
                 <SkeletonBox
-                  className={`h-7 w-32 ${index === 1 ? "bg-gradient-to-r from-slate-600 via-slate-500 to-slate-600" : ""
-                    }`}
+                  className={`h-7 w-32 ${
+                    index === 1
+                      ? "bg-gradient-to-r from-slate-400 via-slate-400 to-slate-400"
+                      : ""
+                  }`}
                   delay={0.2 + index * 0.1}
                 />
 
                 {/* Price */}
                 <div className="flex items-center gap-x-2">
                   <SkeletonBox
-                    className={`h-16 w-28 ${index === 1
-                      ? "bg-gradient-to-r from-slate-600 via-slate-500 to-slate-600"
-                      : ""
-                      }`}
+                    className={`h-16 w-28 ${
+                      index === 1
+                        ? "bg-gradient-to-r from-slate-500 via-slate-500 to-slate-500"
+                        : ""
+                    }`}
                     delay={0.3 + index * 0.1}
                   />
                   <SkeletonBox
-                    className={`h-8 w-16 ${index === 1
-                      ? "bg-gradient-to-r from-slate-700 via-slate-600 to-slate-700"
-                      : ""
-                      }`}
+                    className={`h-8 w-16 ${
+                      index === 1
+                        ? "bg-gradient-to-r from-slate-500 via-slate-500 to-slate-500"
+                        : ""
+                    }`}
                     delay={0.35 + index * 0.1}
                   />
                 </div>
 
                 {/* Description */}
                 <SkeletonBox
-                  className={`h-5 w-full ${index === 1 ? "bg-gradient-to-r from-slate-600 via-slate-500 to-slate-600" : ""
-                    }`}
+                  className={`h-5 w-full ${
+                    index === 1
+                      ? "bg-gradient-to-r from-slate-400 via-slate-400 to-slate-400"
+                      : ""
+                  }`}
                   delay={0.4 + index * 0.1}
                 />
 
                 {/* Features List */}
                 <div className="space-y-4 pt-4">
-                  {[0, 1, 2, 3, 4].map((featureIndex) => (
+                  {[0, 1, 2, 3, 4].map(featureIndex => (
                     <div key={featureIndex} className="flex items-center gap-3">
                       <SkeletonBox
-                        className={`h-5 w-5 rounded-full ${index === 1
-                          ? "bg-gradient-to-r from-blue-400 via-indigo-300 to-indigo-400"
-                          : "bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500"
-                          }`}
+                        className={`h-5 w-5 rounded-full ${
+                          index === 1
+                            ? "bg-gradient-to-r from-slate-400 via-slate-300 to-slate-400"
+                            : "bg-gradient-to-r from-slate-400 via-slate-400 to-slate-400"
+                        }`}
                         delay={0.5 + index * 0.1 + featureIndex * 0.05}
                       />
                       <SkeletonBox
-                        className={`h-4 ${featureIndex % 3 === 0 ? "w-40" : featureIndex % 3 === 1 ? "w-32" : "w-36"
-                          } ${index === 1
-                            ? "bg-gradient-to-r from-slate-600 via-slate-500 to-slate-600"
+                        className={`h-4 ${
+                          featureIndex % 3 === 0
+                            ? "w-40"
+                            : featureIndex % 3 === 1
+                              ? "w-32"
+                              : "w-36"
+                        } ${
+                          index === 1
+                            ? "bg-gradient-to-r from-slate-400 via-slate-400 to-slate-400"
                             : ""
-                          }`}
+                        }`}
                         delay={0.52 + index * 0.1 + featureIndex * 0.05}
                       />
                     </div>
@@ -176,10 +201,11 @@ const PricingSkeleton = () => {
 
                 {/* CTA Button */}
                 <SkeletonBox
-                  className={`h-12 w-full mt-8 ${index === 1
-                    ? "bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500"
-                    : "bg-gradient-to-r from-slate-300 via-slate-200 to-slate-300"
-                    }`}
+                  className={`h-12 w-full mt-8 ${
+                    index === 1
+                      ? "bg-gradient-to-r from-slate-400 via-slate-400 to-slate-400"
+                      : "bg-gradient-to-r from-slate-300 via-slate-200 to-slate-300"
+                  }`}
                   delay={0.7 + index * 0.1}
                 />
               </div>
@@ -217,13 +243,49 @@ export default function Pricing() {
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     retry: 3,
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
-  const displayTiers = useMemo(() => (tiers ? tiers.map(transformTierForUI) : []), [tiers]);
   const { user } = useSession();
+
+  // Set initial billing period based on user's current plan
+  // If user has plusAnnual, default to annual tab
+  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "annual">(
+    user?.tierId === "plusAnnual" ? "annual" : "monthly"
+  );
+
+  // const displayTiers = useMemo(() => (tiers ? tiers.map(transformTierForUI) : []), [tiers]);
+  const displayTiers = useMemo(() => {
+    if (!tiers) return [];
+
+    // Group tiers by their name (base product)
+    const tierGroups = tiers.reduce((acc: Record<string, any[]>, tier: any) => {
+      const baseName = tier.name; // use name directly since it's consistent
+      if (!acc[baseName]) acc[baseName] = [];
+      acc[baseName].push(tier);
+      return acc;
+    }, {});
+
+    // Pick tier based on billing period using recurringInterval
+    return Object.values(tierGroups).map((group: any[]) => {
+      const selectedTier =
+        group.find(t =>
+          billingPeriod === "monthly"
+            ? t.recurringInterval === "monthly"
+            : t.recurringInterval === "yearly"
+        ) || group[0];
+
+      return transformTierForUI(selectedTier);
+    });
+  }, [tiers, billingPeriod]);
+
+  // console.log('All tiers from backend:', tiers);
+  // console.log('Display tiers:', displayTiers);
+
+  // user already defined above
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [subscriptionError, setSubscriptionError] = useState("");
+  // const [billingPeriod, setBillingPeriod] = useState<"monthly" | "annual">("monthly");
 
   const checkout = async (polarRefId: string) => {
     setCheckoutLoading(true);
@@ -235,6 +297,24 @@ export default function Pricing() {
       console.error("Subscription error:", error);
       setSubscriptionError(
         "An error occurred during subscription. Please try again, if persists, contact support."
+      );
+    } finally {
+      setCheckoutLoading(false);
+    }
+  };
+
+  const handleDowngrade = async () => {
+    if (!user?.polarId) {
+      setSubscriptionError("No subscription found. Please contact support.");
+      return;
+    }
+    setCheckoutLoading(true);
+    try {
+      const url = await getCustomerPortalUrl(user);
+      if (url) window.location.href = url;
+    } catch (e) {
+      setSubscriptionError(
+        e instanceof Error ? e.message : "Unable to open subscription portal."
       );
     } finally {
       setCheckoutLoading(false);
@@ -319,13 +399,54 @@ export default function Pricing() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1 }}
       >
-        <h2 className="text-3xl font-medium mb-3 text-center gap-3"
-        >
+        <h2 className="text-3xl font-medium mb-3 text-center gap-3">
           Upgrade your plan
         </h2>
         <p className="text-gray-400">
           Need more capabilities for your Freelance business?
         </p>
+
+        {/* Billing Period Toggle */}
+        <motion.div
+          className="mt-8 flex justify-center"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+        >
+          <div className="relative flex bg-slate-100 rounded-full p-1">
+            <motion.div
+              className="absolute top-1 bottom-1 bg-white rounded-full shadow-sm"
+              animate={{
+                left: billingPeriod === "monthly" ? "0.25rem" : "50%",
+                right: billingPeriod === "monthly" ? "50%" : "0.25rem",
+              }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            />
+            <button
+              onClick={() => setBillingPeriod("monthly")}
+              className={classNames(
+                "relative z-10 px-6 py-2 text-sm font-normal rounded-full transition-colors duration-200",
+                billingPeriod === "monthly"
+                  ? "text-gray-600"
+                  : "text-gray-600 hover:text-gray-900"
+              )}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setBillingPeriod("annual")}
+              className={classNames(
+                "relative z-10 px-6 py-2 text-sm font-normal rounded-full transition-colors duration-200",
+                billingPeriod === "annual"
+                  ? "text-gray-600"
+                  : "text-gray-600 hover:text-gray-900"
+              )}
+            >
+              Annually
+            </button>
+          </div>
+        </motion.div>
+
         <AnimatePresence>
           {subscriptionError && (
             <motion.div
@@ -335,7 +456,9 @@ export default function Pricing() {
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.3 }}
             >
-              <span className="text-red-600 font-bold text-lg">{subscriptionError}</span>
+              <span className="text-red-600 font-bold text-lg">
+                {subscriptionError}
+              </span>
             </motion.div>
           )}
         </AnimatePresence>
@@ -355,8 +478,12 @@ export default function Pricing() {
           let newFeatures: PricingFeature[] = tier.features;
           if (tierIdx > 0) {
             const prevTier = displayTiers[tierIdx - 1];
-            const prevSlugs = new Set(prevTier.features.map((f: PricingFeature) => f.slug));
-            newFeatures = tier.features.filter((f: PricingFeature) => !prevSlugs.has(f.slug));
+            const prevSlugs = new Set(
+              prevTier.features.map((f: PricingFeature) => f.slug)
+            );
+            newFeatures = tier.features.filter(
+              (f: PricingFeature) => !prevSlugs.has(f.slug)
+            );
             inherited = prevTier.name;
           }
 
@@ -364,7 +491,9 @@ export default function Pricing() {
             <motion.div
               key={tier.id}
               className={classNames(
-                tier.featured ? "relative bg-gray-900 shadow-2xl" : "bg-white/60 sm:mx-8 lg:mx-0",
+                tier.featured
+                  ? "relative bg-gray-900 shadow-2xl"
+                  : "bg-white/60 sm:mx-8 lg:mx-0",
                 tier.featured
                   ? ""
                   : tierIdx === 0
@@ -384,6 +513,23 @@ export default function Pricing() {
                 transition: { duration: 0.2, ease: "easeOut" },
               }}
             >
+              {/* Best Offer Badge */}
+              <AnimatePresence>
+                {tier.featured && billingPeriod === "annual" && (
+                  <motion.div
+                    className="absolute -top-3.5 right-10 -translate-x-1/2"
+                    initial={{ opacity: 0, y: 10, scale: 0.8 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.8 }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                  >
+                    <span className="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white px-4 py-1.5 rounded-full text-xs font-semibold shadow-lg flex items-center gap-1.5">
+                      <Crown className="h-3 w-3" />
+                      Save 10%
+                    </span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
               <div className="flex items-center gap-3 mb-4">
                 <div
                   className={classNames(
@@ -391,7 +537,7 @@ export default function Pricing() {
                     "p-2 rounded-lg"
                   )}
                 >
-                  {typeof IconComponent === 'function' ? (
+                  {typeof IconComponent === "function" ? (
                     <IconComponent
                       className={classNames(
                         tier.featured ? "text-indigo-200" : "text-primary",
@@ -399,7 +545,7 @@ export default function Pricing() {
                       )}
                     />
                   ) : (
-                    <Star
+                    <Asterisk
                       className={classNames(
                         tier.featured ? "text-indigo-200" : "text-primary",
                         "h-5 w-5"
@@ -429,10 +575,10 @@ export default function Pricing() {
                 <span
                   className={classNames(
                     tier.featured ? "text-gray-400" : "text-gray-500",
-                    "text-xs leading-none"
+                    "text-xs leading-none capitalize"
                   )}
                 >
-                  USD /<br /> month
+                  USD /<br /> {billingPeriod === "monthly" ? "month" : "year"}
                 </span>
               </p>
 
@@ -460,7 +606,7 @@ export default function Pricing() {
                         "p-1 rounded-md"
                       )}
                     >
-                      <Star
+                      <Check
                         className={classNames(
                           tier.featured ? "text-gray-100" : "text-primary",
                           "h-3 w-3"
@@ -490,7 +636,7 @@ export default function Pricing() {
                           "p-1 rounded-md"
                         )}
                       >
-                        {typeof FeatureIcon === 'function' ? (
+                        {typeof FeatureIcon === "function" ? (
                           <FeatureIcon
                             className={classNames(
                               tier.featured ? "text-gray-100" : "text-primary",
@@ -498,7 +644,7 @@ export default function Pricing() {
                             )}
                           />
                         ) : (
-                          <Star
+                          <Check
                             className={classNames(
                               tier.featured ? "text-gray-100" : "text-primary",
                               "h-3 w-3"
@@ -531,7 +677,10 @@ export default function Pricing() {
                       Current plan
                     </motion.span>
                   ) : null
-                ) : user?.tierId === tier.id ? (
+                ) : user?.tierId === tier.id ||
+                  (user?.tierId === "plusAnnual" &&
+                    tier.name === "Plus" &&
+                    billingPeriod === "annual") ? (
                   <motion.span
                     className={classNames(
                       tier.featured
@@ -547,7 +696,18 @@ export default function Pricing() {
                   </motion.span>
                 ) : (
                   <motion.button
-                    onClick={() => checkout(tier.polarRefId)}
+                    onClick={() => {
+                      // Check if this is a downgrade action
+                      const isDowngrade =
+                        user?.tierId === "plusAnnual" &&
+                        tier.name === "Plus" &&
+                        billingPeriod === "monthly";
+                      if (isDowngrade) {
+                        handleDowngrade();
+                      } else {
+                        checkout(tier.polarRefId);
+                      }
+                    }}
                     className={classNames(
                       tier.featured
                         ? "bg-indigo-500 text-white shadow-xs hover:bg-indigo-400 focus-visible:outline-indigo-500"
@@ -562,8 +722,15 @@ export default function Pricing() {
                     whileTap={{ scale: 0.98 }}
                   >
                     <span className="flex items-center justify-center gap-2">
-                      {checkoutLoading ? <Loader2 className="animate-spin h-4 w-4" /> : null}
-                      Get Plus 
+                      {checkoutLoading ? (
+                        <Loader2 className="animate-spin h-4 w-4" />
+                      ) : null}
+                      {/* Show "Downgrade" if user has plusAnnual and viewing Plus monthly plan */}
+                      {user?.tierId === "plusAnnual" &&
+                      tier.name === "Plus" &&
+                      billingPeriod === "monthly"
+                        ? "Downgrade"
+                        : "Upgrade Plan"}
                     </span>
                   </motion.button>
                 )}
@@ -571,8 +738,6 @@ export default function Pricing() {
             </motion.div>
           );
         })}
-
-        {/* <svg width="21" height="20" viewBox="0 0 21 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M10.2441 10.7759C12.7597 10.8965 14.8838 12.8648 14.8838 15.0601C14.8838 15.4273 14.586 15.7251 14.2188 15.7251H5.78125C5.41399 15.7251 5.11623 15.4273 5.11621 15.0601C5.11621 12.7959 7.37906 10.77 10 10.77L10.2441 10.7759Z"></path><path d="M0 14.436C0 11.5616 3.13043 10.5652 5.2998 11.4478C4.37179 12.4185 3.78619 13.6736 3.78613 15.0601L3.78809 15.1011H0.665039C0.298096 15.1011 0.000527744 14.8029 0 14.436Z"></path><path d="M14.7988 11.5532C16.969 10.4969 20.3301 11.4561 20.3301 14.436C20.3295 14.8029 20.032 15.1011 19.665 15.1011H16.2119L16.2139 15.0601C16.2138 13.7223 15.6689 12.5079 14.7988 11.5532Z"></path><path d="M3.4248 5.00146C4.85516 5.00146 6.01454 6.16098 6.01465 7.59131C6.01454 9.02164 4.85516 10.1812 3.4248 10.1812C1.99454 10.181 0.835068 9.02157 0.834961 7.59131C0.835066 6.16105 1.99454 5.00157 3.4248 5.00146Z"></path><path d="M16.5703 5.00146C18.0006 5.00157 19.1601 6.16105 19.1602 7.59131C19.16 9.02157 18.0006 10.181 16.5703 10.1812C15.14 10.1812 13.9806 9.02164 13.9805 7.59131C13.9806 6.16098 15.14 5.00146 16.5703 5.00146Z"></path><path d="M10 4.27002C11.6099 4.27002 12.915 5.57515 12.915 7.18506C12.915 8.79497 11.6099 10.1001 10 10.1001C8.39009 10.1001 7.08496 8.79497 7.08496 7.18506C7.08496 5.57515 8.39009 4.27002 10 4.27002Z"></path></svg> */}
       </motion.div>
     </motion.div>
   );

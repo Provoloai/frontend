@@ -29,6 +29,7 @@ export default function Signup() {
   // Signup hook
   const {
     signUpWithEmail,
+    signUpWithGoogle,
     isLoading,
     error,
     validationErrors,
@@ -98,6 +99,7 @@ export default function Signup() {
         onBlur={handleBlur}
         onSubmit={handleSubmit}
         onErrorClose={clearError}
+        onGoogleSignup={signUpWithGoogle}
       />
       <p className="mt-10 text-center text-xs text-gray-500">
         {SIGNUP_CONFIG.consentText}

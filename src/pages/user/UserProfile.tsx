@@ -3,14 +3,14 @@ import useSession from "@/hooks/useSession";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import UserProfileHeader from "@/components/user/UserProfileHeader";
 import UserProfileInfo from "@/components/user/UserProfileInfo";
-import UserProfileCard from "@/components/user/UserProfileCard";
+// import UserProfileCard from "@/components/user/UserProfileCard";
 import UserProfileSnackbar from "@/components/user/UserProfileSnackbar";
+// import AccountLinkingSection from "@/components/user/AccountLinkingSection";
 import { USER_PROFILE_ANIMATIONS } from "@/constants/userProfile";
-import Banner from "@/components/dashboard/Banner";
+// import Banner from "@/components/dashboard/Banner";
 
 export default function UserProfile() {
   const { user, loading: loadingUserData } = useSession();
-
 
   const {
     displayName,
@@ -38,7 +38,7 @@ export default function UserProfile() {
       variants={USER_PROFILE_ANIMATIONS.container}
     >
       <div className="space-y-10 m-auto max-w-3xl w-full lg:p-10 pt-10">
-        <Banner />
+        {/* <Banner /> */}
 
         <UserProfileHeader
           displayName={displayName}
@@ -60,7 +60,9 @@ export default function UserProfile() {
           onUpdateProfile={handleUpdateProfile}
         />
 
-        <UserProfileCard />
+        {/* <UserProfileCard /> */}
+
+        {/* <AccountLinkingSection user={user} /> */}
       </div>
 
       <UserProfileSnackbar

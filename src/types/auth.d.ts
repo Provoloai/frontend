@@ -68,6 +68,7 @@ export interface LoginFormProps {
   onBlur: (field: keyof LoginTouchedFields) => void;
   onSubmit: (e: React.FormEvent) => void;
   onErrorClose: () => void;
+  onGoogleSignIn: () => void;
 }
 
 export interface AuthLayoutProps {

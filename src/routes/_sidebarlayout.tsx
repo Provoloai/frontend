@@ -7,14 +7,19 @@ import UserName from "../pages/auth/UserName";
 import EmailVerification from "../pages/auth/EmailVerification";
 import VerifyingAuth from "../Reusables/VerifyingAuth";
 import useSession from "../hooks/useSession";
+import Notifications from "@/components/sidebar/Notifications";
+import UnderMaintenance from "../pages/UnderMaintenance";
 
 export const Route = createFileRoute("/_sidebarlayout")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const [operatingSystem, setOperatingSystem] = useState<"android" | "ios" | "tablet" | "unknown" | null>(null);
+  const [operatingSystem, setOperatingSystem] = useState<
+    "android" | "ios" | "tablet" | "unknown" | null
+  >(null);
   const { user, loading, isFetching } = useSession();
+  const isUnderMaintenance = import.meta.env.VITE_UNDER_MAINTENANCE === "true";
 
   useEffect(() => {
     setOperatingSystem(detectSystem());
@@ -29,6 +34,9 @@ function RouteComponent() {
   if (loading || isFetching) return <VerifyingAuth />;
   if (!user) return null;
 
+  // Show maintenance page even for authenticated users
+  if (isUnderMaintenance) return <UnderMaintenance />;
+
   const isMobile = operatingSystem === "android" || operatingSystem === "ios";
   const hasDisplayName = user.displayName && user.displayName.trim() !== "";
   const isEmailVerified = user.emailVerified === true;
@@ -41,7 +49,8 @@ function RouteComponent() {
 
   return (
     <div className="flex h-screen bg-gray-50 ">
-      <Sidebar /> 
+      <Sidebar />
+      <Notifications />
       <Outlet />
     </div>
   );

@@ -15,6 +15,7 @@ export interface User {
   portfolioLink?: string;
   professionalTitle?: string;
   emailVerified?: boolean;
+  providers?: string[];
 }
 
 export interface ProposalData {

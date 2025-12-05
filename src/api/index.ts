@@ -1,15 +1,20 @@
 import { apiGet } from "@/utils/api.util";
 import { useQuery } from "@tanstack/react-query";
 
-// API base configuration
-// const API_BASE_URL = import.meta.env.VITE_SERVER_URL;
-
 // Generic API request function
 const apiRequest = async <T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> => {
-  const url = `/api/${endpoint}`;
+  const NODE_ENV = (import.meta.env.VITE_NODE_ENV as string) || "";
+  const SERVER_URL = (import.meta.env.VITE_SERVER_URL as string) || "";
+
+  const apiBase =
+    NODE_ENV === "development" && SERVER_URL
+      ? SERVER_URL.replace(/\/$/, "")
+      : "/api";
+
+  const url = `${apiBase}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
 
   const defaultOptions: RequestInit = {
     headers: {
@@ -144,6 +149,15 @@ export const authApi = {
       }
     );
   },
+  updateProviders: async (providers: string[], idToken?: string) => {
+    return apiRequest<{ success: boolean; message?: string }>(
+      "/auth/update-providers",
+      {
+        method: "PUT",
+        body: JSON.stringify({ providers, idToken }),
+      }
+    );
+  },
 };
 
 export const useGetProposalList = (page: number = 1, limit: number = 10) => {
@@ -157,6 +171,21 @@ export const useGetProposal = (id: string) => {
   return useQuery({
     queryKey: ["proposal-history", id],
     queryFn: () => apiGet(`/ai/proposal-history/${id}`),
+    enabled: !!id, // Only run query if id exists
+  });
+};
+
+export const useGetOptimizerList = (page: number = 1, limit: number = 10) => {
+  return useQuery({
+    queryKey: ["optimizer-history", page, limit],
+    queryFn: () => apiGet(`/ai/optimizer-history`),
+  });
+};
+
+export const useGetOptimizer = (id: string) => {
+  return useQuery({
+    queryKey: ["optimizer-history", id],
+    queryFn: () => apiGet(`/ai/optimizer-history/${id}`),
     enabled: !!id, // Only run query if id exists
   });
 };
@@ -184,6 +213,106 @@ export const useGetQuota = (quotaSlug: string) => {
     queryKey: ["quota", quotaSlug],
     queryFn: () => quotaApi.getQuota(quotaSlug),
     enabled: !!quotaSlug,
+  });
+};
+
+// Notification API types
+export enum NotificationCategory {
+  SYSTEM = "system",
+  USER = "user",
+  PROMOTION = "promotion",
+  ADMIN = "admin",
+  OTHER = "other",
+  PROFILE = "profile",
+  PROPOSAL = "proposal",
+  KNOWLEDGE = "knowledge",
+  COMMUNITY = "community",
+  ACHIEVEMENT = "achievement",
+  SUBSCRIPTION = "subscription",
+  RESEARCH = "research",
+}
+
+export interface FirebaseTimestamp {
+  _seconds: number;
+  _nanoseconds: number;
+}
+
+export interface BackendNotification {
+  id: string;
+  recipient: string;
+  title: string;
+  message: string;
+  read: boolean;
+  category: NotificationCategory;
+  createdAt: string | FirebaseTimestamp;
+}
+
+export interface NotificationsResponse {
+  title: string;
+  message: string;
+  status: string;
+  data: {
+    notifications: BackendNotification[];
+    lastVisibleId: string;
+    totalCount: number;
+    pageSize: number;
+    currentPage: number;
+    totalPages: number;
+    remainingPages: number;
+  };
+}
+
+// Notification API functions
+export const notificationApi = {
+  getNotifications: async (limit: number = 20, startAfter?: string) => {
+    const queryParams = new URLSearchParams({
+      limit: limit.toString(),
+    });
+
+    if (startAfter) {
+      queryParams.append("startAfter", startAfter);
+    }
+
+    return apiRequest<NotificationsResponse>(
+      `/notifications?${queryParams.toString()}`,
+      {
+        method: "GET",
+      }
+    );
+  },
+
+  markNotificationAsRead: async (id: string) => {
+    return apiRequest<{
+      title: string;
+      message: string;
+      status: string;
+      data: null;
+    }>(`/notifications/${id}/read`, {
+      method: "PATCH",
+    });
+  },
+
+  markAllNotificationsAsRead: async () => {
+    return apiRequest<{
+      title: string;
+      message: string;
+      status: string;
+      data: {
+        count: number;
+      };
+    }>("/notifications/read-all", {
+      method: "PATCH",
+    });
+  },
+};
+
+export const useGetNotifications = (
+  limit: number = 20,
+  startAfter?: string
+) => {
+  return useQuery({
+    queryKey: ["notifications", limit, startAfter],
+    queryFn: () => notificationApi.getNotifications(limit, startAfter),
   });
 };
 

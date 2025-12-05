@@ -9,7 +9,7 @@ export const FAQs: FAQ[] = [
   },
   {
     id: 2,
-    question: "Can it help me write proposals for Upwork jobs?",
+    question: "Can Provolo help me write proposals for Upwork jobs?",
     answer:
       "Yes! Provolo includes an AI-powered proposal generator that helps you craft personalized, confident, and high-converting proposals tailored to each job post. You can also customize tone and structure before sending.",
   },

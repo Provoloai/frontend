@@ -1,5 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { motion } from "motion/react";
+import { ArrowUp } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import useSession from "../hooks/useSession";
 import { optimizerApi, useGetQuota } from "@/api";
@@ -29,6 +30,7 @@ const PortfolioOptimizer = () => {
     [user]
   );
 
+  const queryClient = useQueryClient()
   // Memoize accordion sections
   const accordionSections: AccordionSection[] = useMemo(
     () => [
@@ -40,6 +42,31 @@ const PortfolioOptimizer = () => {
     ],
     [results]
   );
+
+  // Refs for scroll functionality
+  const formRef = useRef<HTMLDivElement>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to results when they become available
+  useEffect(() => {
+    if (results && resultsRef.current) {
+      // Small delay to ensure the results are rendered
+      setTimeout(() => {
+        resultsRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+      }, 300);
+    }
+  }, [results]);
+
+  // Scroll back to form
+  const scrollToForm = () => {
+    formRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
+  };
 
   // Handle form submission - React Hook Form handles validation
   const handleSubmit = async (data: PortfolioFormData) => {
@@ -93,34 +120,63 @@ const PortfolioOptimizer = () => {
   };
 
   return (
-    <div className="flex-1 flex flex-col overflow-y-auto py-20">
+    <div className="flex-1 flex flex-col overflow-y-auto snap-y snap-mandatory">
+      {/* Header and Form Section - Constrained Width, Full Screen */}
       <motion.div
-        className="p-6 sm:p-10 max-w-3xl m-auto w-full"
+        ref={formRef}
+        className="p-6 sm:p-10 max-w-3xl m-auto w-full min-h-screen flex flex-col justify-center snap-start snap-always"
         initial="hidden"
         animate="visible"
         variants={optimizerContainerVariants}
       >
-        <div>
-          <motion.h2 className="text-3xl mb-3 text-center" variants={optimizerItemVariants}>
-            Let's Get to Know Your Profile, {displayName}
-          </motion.h2>
+        <motion.h2 className="text-3xl mb-3 text-center" variants={optimizerItemVariants}>
+          Let's Optimize Your Profile, {displayName}
+        </motion.h2>
+ 
+        {/* Input Section */}
+        <OptimizerForm
+          isLoading={isLoading}
+          error={error}
+          onSubmit={handleSubmit}
+          onErrorClose={handleErrorClose}
+        />
+      </motion.div>
 
-          {/* Input Section */}
-          <OptimizerForm
-            isLoading={isLoading}
-            error={error}
-            onSubmit={handleSubmit}
-            onErrorClose={handleErrorClose}
-          />
-
-          {/* Output Section */}
+      {/* Output Section - Full Width, Full Screen */}
+      {results && (
+        <div ref={resultsRef} className="w-full min-h-screen flex flex-col snap-start snap-always relative overflow-y-auto">
           <OptimizerResultsComponent
             sections={accordionSections}
             hasResults={!!results}
             quotaData={quotaData?.data || null}
+            scrollButton={
+              <motion.button
+                onClick={scrollToForm}
+                className="flex items-center gap-2 px-4 py-2 text-gray-700 rounded-full border-gray-200 hover:bg-gray-50 transition-all duration-200 text-sm font-medium"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.5 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <ArrowUp size={16} />
+                Scroll
+              </motion.button>
+            }
           />
         </div>
-      </motion.div>
+      )}
+
+      {/* Empty state when no results - No snap behavior */}
+      {!results && (
+        <div className="w-full">
+          <OptimizerResultsComponent
+            sections={accordionSections}
+            hasResults={false}
+            quotaData={quotaData?.data || null}
+          />
+        </div>
+      )}
     </div>
   );
 };

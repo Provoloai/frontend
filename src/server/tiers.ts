@@ -44,18 +44,19 @@ interface APIResponse<T = any> {
 
 // API function to fetch tiers
 export const fetchTiers = async (): Promise<Tier[]> => {
-  const serverUrl = import.meta.env.VITE_SERVER_URL as string;
+  const NODE_ENV = (import.meta.env.VITE_NODE_ENV as string) || "";
+  const SERVER_URL = (import.meta.env.VITE_SERVER_URL as string) || "";
 
-  if (!serverUrl) {
-    console.error("VITE_SERVER_URL not configured in environment variables");
-    throw new Error("Service temporarily unavailable. Please try again later.");
-  }
+  const apiBase =
+    NODE_ENV === "development" && SERVER_URL
+      ? SERVER_URL.replace(/\/$/, "")
+      : "/api";
 
   try {
-    const response = await fetch(`/api/payment/tiers`, {
+    const response = await fetch(`${apiBase}/payment/tiers`, {
       method: "GET",
       headers: {
-        "Content-Type": "application/json",
+        Accept: "application/json",
       },
     });
 

@@ -18,3 +18,12 @@ export interface ProposalHistoryItem {
   jobTitle: string;
 }
 
+export interface OptimizerHistoryItem {
+  id: string;
+  originalInput: {
+    professionalTitle: string;
+    fullName: string;
+    content: string;
+  };
+}
+
