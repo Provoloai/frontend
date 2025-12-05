@@ -134,7 +134,6 @@ const SignupForm: React.FC<
             <p className="text-black text-sm">Sign up with Google</p>
           </span>
         </CustomButton> */}
-      </form>
 
       <p className="mt-5 text-center text-xs text-gray-500">
         {SIGNUP_CONFIG.signInText}{" "}
