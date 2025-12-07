@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface DocumentIllustrationProps {
   width?: number;
@@ -6,10 +6,10 @@ interface DocumentIllustrationProps {
   className?: string;
 }
 
-const DocumentIllustration: React.FC<DocumentIllustrationProps> = ({ 
-  width = 140, 
-  height = 118, 
-  className = "" 
+const DocumentIllustration: React.FC<DocumentIllustrationProps> = ({
+  width = 140,
+  height = 118,
+  className = "",
 }) => {
   return (
     <svg

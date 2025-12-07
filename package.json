@@ -5,14 +5,16 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "cross-env GENERATE_SOURCEMAP=false vite build",
+    "build": "node scripts/generate-sitemap.js && cross-env GENERATE_SOURCEMAP=false vite build",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
     "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix",
     "type-check": "tsc --noEmit",
     "format": "prettier --write .",
     "test": "echo \"No tests specified\" && exit 0",
     "preview": "vite preview",
-    "prepare": "husky"
+    "prepare": "husky",
+    "sitemap": "node scripts/generate-sitemap.js",
+    "seo-check": "node scripts/seo-check.js"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

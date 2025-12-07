@@ -5,8 +5,11 @@ import { LEARN_CONFIG, VIEWPORT_CONFIG } from "@/constants/learn";
 import type { LearnImageProps } from "@/types/learn";
 import LearnHeader from "@/components/learn/LearnHeader";
 import LearnContent from "@/components/learn/LearnContent";
+import { useSEO, SEO_CONFIGS } from "@/hooks/useSEO";
 
 export default function Learn() {
+  useSEO(SEO_CONFIGS.learn);
+
   // Image props for the content component
   const imageProps: LearnImageProps = {
     src: learn,
