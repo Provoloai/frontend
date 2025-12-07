@@ -3,6 +3,7 @@ import VerificationDialog from "@/components/auth/VerificationDialog";
 import VerificationForm from "@/components/auth/VerificationForm";
 import CustomSnackbar from "@/Reusables/CustomSnackbar";
 import { authApi } from "@/api";
+import { auth } from "@/lib/firebase";
 import { useQueryClient } from "@tanstack/react-query";
 
 const EmailVerification: React.FC = () => {
@@ -96,6 +97,12 @@ const EmailVerification: React.FC = () => {
 
     try {
       await authApi.verify(otpCode);
+
+      // Force reload to sync emailVerified status from backend if it updated it
+      await auth.currentUser?.reload();
+      // Optionally refresh token to get new claims
+      await auth.currentUser?.getIdToken(true);
+
       setSnackbar({
         open: true,
         message: "Email verified successfully!",
