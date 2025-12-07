@@ -28,15 +28,18 @@ import {
 } from "@/constants/animations";
 import type { ProposalData, ImprovementOption } from "@/types";
 import { useQueryClient } from "@tanstack/react-query";
+import { useSEO, SEO_CONFIGS } from "@/hooks/useSEO";
 // import Banner from "@/components/dashboard/Banner";
 import { Link } from "@tanstack/react-router";
 import {
-  proposalFormSchema, 
+  proposalFormSchema,
   type ProposalFormData,
 } from "@/schemas/proposalSchema";
 import SidebarBadge from "@/components/sidebar/SidebarBadge";
 
 const PortfolioOptimizer: React.FC = () => {
+  useSEO(SEO_CONFIGS.proposal);
+
   const [error, setError] = useState<string>("");
   const [copyState, setCopyState] = useState<"idle" | "copied">("idle");
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -289,8 +292,9 @@ const PortfolioOptimizer: React.FC = () => {
         <motion.div
           // className="grid lg:grid-cols-2 md:grid-cols-1 sm:grid-cols-1 gap-x-5 gap-y-5"
           // className="grid 2xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-1 sm:grid-cols-1 gap-x-5 gap-y-5"
-          className={`grid lg:grid-cols-2 md:grid-cols-1 sm:grid-cols-1 gap-x-5 gap-y-5 ${generatedProposal ? "min-[1920px]:grid-cols-3" : ""
-            }`}
+          className={`grid lg:grid-cols-2 md:grid-cols-1 sm:grid-cols-1 gap-x-5 gap-y-5 ${
+            generatedProposal ? "min-[1920px]:grid-cols-3" : ""
+          }`}
           variants={proposalContainerVariants}
         >
           {/* Form Inputs Section */}
@@ -333,16 +337,17 @@ const PortfolioOptimizer: React.FC = () => {
                       </label>
                       <MenuButton
                         id="proposal-tone-selector"
-                        className={`capitalize inline-flex w-full gap-x-1.5 rounded-md px-3 py-4 text-sm text-gray-900 shadow-xs ring-1 duration-200 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${errors.proposalTone
+                        className={`capitalize inline-flex w-full gap-x-1.5 rounded-md px-3 py-4 text-sm text-gray-900 shadow-xs ring-1 duration-200 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                          errors.proposalTone
                             ? "ring-red-600/10 ring-inset bg-red-50 hover:bg-red-100"
                             : "ring-gray-300 ring-inset bg-gray-50 hover:bg-gray-100"
-                          }`}
+                        }`}
                         aria-label="Select proposal tone"
                       >
                         {field.value
                           ? proposalToneOptions.find(
-                            t => t.value === field.value
-                          )?.label
+                              t => t.value === field.value
+                            )?.label
                           : "Select Option"}
                         <ChevronDownIcon
                           aria-hidden="true"
@@ -410,10 +415,11 @@ const PortfolioOptimizer: React.FC = () => {
                     <textarea
                       id="jobSummary"
                       name={field.name}
-                      className={`w-full p-3 border rounded-md transition duration-150 ease-in-out bg-gray-50 placeholder:text-sm ${errors.jobSummary
+                      className={`w-full p-3 border rounded-md transition duration-150 ease-in-out bg-gray-50 placeholder:text-sm ${
+                        errors.jobSummary
                           ? "ring-1 ring-red-600/10 ring-inset focus:ring-red-500 bg-red-50 placeholder-red-700"
                           : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                        }`}
+                      }`}
                       rows={8}
                       style={{ maxHeight: "28em", resize: "vertical" }}
                       placeholder="Paste Job Summary here..."
@@ -434,12 +440,13 @@ const PortfolioOptimizer: React.FC = () => {
                         {characterCount === 1 ? "character" : "characters"}
                       </div>
                       <div
-                        className={`text-xs ${characterCount < minChars
+                        className={`text-xs ${
+                          characterCount < minChars
                             ? "text-black"
                             : characterCount > maxChars
                               ? "text-red-600"
                               : "text-gray-500"
-                          }`}
+                        }`}
                       >
                         {characterCount} / {maxChars} characters
                         {characterCount < minChars && ` (min: ${minChars})`}
@@ -720,10 +727,11 @@ const PortfolioOptimizer: React.FC = () => {
                               : option.value
                           );
                         }}
-                        className={`p-5 rounded-2xl transition-all duration-200 ${option.bgColor} ${option.hoverColor} ${selectedImprovement === option.value
+                        className={`p-5 rounded-2xl transition-all duration-200 ${option.bgColor} ${option.hoverColor} ${
+                          selectedImprovement === option.value
                             ? "ring-2 ring-blue-600"
                             : ""
-                          } py-[24px] px-5 block w-full text-left`}
+                        } py-[24px] px-5 block w-full text-left`}
                       >
                         <span className="flex items-center align-middle gap-2 mb-3">
                           <option.icon size={16} />
@@ -751,8 +759,8 @@ const PortfolioOptimizer: React.FC = () => {
                       <MenuButton className="capitalize inline-flex w-full gap-x-1.5 rounded-md px-3 py-4 text-sm text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset bg-gray-50 duration-200 transition-all hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                         {field.value
                           ? proposalToneOptions.find(
-                            t => t.value === field.value
-                          )?.label
+                              t => t.value === field.value
+                            )?.label
                           : "Select Option"}
                         <ChevronDownIcon
                           aria-hidden="true"

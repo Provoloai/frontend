@@ -1,16 +1,19 @@
-import React from 'react'
-import Header from './Header'
-import FaqMain from '../faq/FaqMain'
-import Footer from './Footer'
+import React from "react";
+import Header from "./Header";
+import FaqMain from "../faq/FaqMain";
+import Footer from "./Footer";
+import { useSEO, SEO_CONFIGS } from "@/hooks/useSEO";
 
 const Faqs = () => {
-    return (
-        <>
-            <Header />
-            <FaqMain />
-            <Footer />
-        </>
-    )
-}
+  useSEO(SEO_CONFIGS.faq);
 
-export default Faqs
+  return (
+    <>
+      <Header />
+      <FaqMain />
+      <Footer />
+    </>
+  );
+};
+
+export default Faqs;
