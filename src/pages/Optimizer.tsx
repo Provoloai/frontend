@@ -4,13 +4,19 @@ import { ArrowUp } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import useSession from "../hooks/useSession";
 import { optimizerApi, useGetQuota } from "@/api";
-import { optimizerContainerVariants, optimizerItemVariants } from "@/constants/animations";
+import {
+  optimizerContainerVariants,
+  optimizerItemVariants,
+} from "@/constants/animations";
 import type { OptimizerResults, AccordionSection } from "@/types/optimizer";
 import type { PortfolioFormData } from "@/schemas/portfolioSchema";
 import OptimizerForm from "@/components/optimizer/OptimizerForm";
 import OptimizerResultsComponent from "@/components/optimizer/OptimizerResults";
+import { useSEO, SEO_CONFIGS } from "@/hooks/useSEO";
 
 const PortfolioOptimizer = () => {
+  useSEO(SEO_CONFIGS.optimizer);
+
   // Get user from backend session
   const { user } = useSession();
 
@@ -30,15 +36,30 @@ const PortfolioOptimizer = () => {
     [user]
   );
 
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   // Memoize accordion sections
   const accordionSections: AccordionSection[] = useMemo(
     () => [
-      { title: "Weaknesses and Optimization Ideas", content: results?.weaknessesAndOptimization || "" },
-      { title: "Optimized Profile Overview", content: results?.optimizedProfileOverview || "" },
-      { title: "Suggested Project Titles and Layouts", content: results?.suggestedProjectTitles || "" },
-      { title: "Recommended Visuals/Layout Hierarchies", content: results?.recommendedVisuals || "" },
-      { title: "Before and After Comparison", content: results?.beforeAfterComparison || "" },
+      {
+        title: "Weaknesses and Optimization Ideas",
+        content: results?.weaknessesAndOptimization || "",
+      },
+      {
+        title: "Optimized Profile Overview",
+        content: results?.optimizedProfileOverview || "",
+      },
+      {
+        title: "Suggested Project Titles and Layouts",
+        content: results?.suggestedProjectTitles || "",
+      },
+      {
+        title: "Recommended Visuals/Layout Hierarchies",
+        content: results?.recommendedVisuals || "",
+      },
+      {
+        title: "Before and After Comparison",
+        content: results?.beforeAfterComparison || "",
+      },
     ],
     [results]
   );
@@ -53,8 +74,8 @@ const PortfolioOptimizer = () => {
       // Small delay to ensure the results are rendered
       setTimeout(() => {
         resultsRef.current?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start',
+          behavior: "smooth",
+          block: "start",
         });
       }, 300);
     }
@@ -63,8 +84,8 @@ const PortfolioOptimizer = () => {
   // Scroll back to form
   const scrollToForm = () => {
     formRef.current?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start',
+      behavior: "smooth",
+      block: "start",
     });
   };
 
@@ -87,8 +108,10 @@ const PortfolioOptimizer = () => {
 
       // Set the analysis results from backend response
       setResults({
-        fullAnalysis: result.data.fullAnalysis || "Analysis completed successfully",
-        weaknessesAndOptimization: result.data.weaknessesAndOptimization || "N/A",
+        fullAnalysis:
+          result.data.fullAnalysis || "Analysis completed successfully",
+        weaknessesAndOptimization:
+          result.data.weaknessesAndOptimization || "N/A",
         optimizedProfileOverview: result.data.optimizedProfileOverview || "N/A",
         suggestedProjectTitles: result.data.suggestedProjectTitles || "N/A",
         recommendedVisuals: result.data.recommendedVisuals || "N/A",
@@ -106,7 +129,9 @@ const PortfolioOptimizer = () => {
       } else if (error.message.includes("401")) {
         setError("Authentication required. Please log in again.");
       } else if (error.message.includes("429")) {
-        setError("You have reached your daily prompt limit. Please try again tomorrow.");
+        setError(
+          "You have reached your daily prompt limit. Please try again tomorrow."
+        );
       } else {
         setError(error.message || "Something went wrong. Please try again.");
       }
@@ -129,10 +154,13 @@ const PortfolioOptimizer = () => {
         animate="visible"
         variants={optimizerContainerVariants}
       >
-        <motion.h2 className="text-3xl mb-3 text-center" variants={optimizerItemVariants}>
+        <motion.h2
+          className="text-3xl mb-3 text-center"
+          variants={optimizerItemVariants}
+        >
           Let's Optimize Your Profile, {displayName}
         </motion.h2>
- 
+
         {/* Input Section */}
         <OptimizerForm
           isLoading={isLoading}
@@ -144,7 +172,10 @@ const PortfolioOptimizer = () => {
 
       {/* Output Section - Full Width, Full Screen */}
       {results && (
-        <div ref={resultsRef} className="w-full min-h-screen flex flex-col snap-start snap-always relative overflow-y-auto">
+        <div
+          ref={resultsRef}
+          className="w-full min-h-screen flex flex-col snap-start snap-always relative overflow-y-auto"
+        >
           <OptimizerResultsComponent
             sections={accordionSections}
             hasResults={!!results}

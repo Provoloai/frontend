@@ -22,6 +22,7 @@ import {
   Check,
 } from "lucide-react";
 import type { PricingTier, PricingFeature } from "@/types/pricing";
+import { useSEO, SEO_CONFIGS } from "@/hooks/useSEO";
 
 // Icon mapping for different feature types
 const getFeatureIcon = (featureName: string) => {
@@ -231,6 +232,8 @@ function classNames(...classes: (string | undefined | null | false)[]): string {
 }
 
 export default function Pricing() {
+  useSEO(SEO_CONFIGS.pricing);
+
   const {
     data: tiers,
     isLoading,

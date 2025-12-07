@@ -12,16 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ErrorRouteImport } from './routes/error'
-import { Route as DevSecretBackdoorRouteImport } from './routes/dev-secret-backdoor'
 import { Route as SidebarlayoutRouteImport } from './routes/_sidebarlayout'
 import { Route as LayoutRouteImport } from './routes/_layout'
-import { Route as DevSecretBackdoorIndexRouteImport } from './routes/dev-secret-backdoor/index'
 import { Route as LayoutIndexRouteImport } from './routes/_layout.index'
-import { Route as DevSecretBackdoorSignupRouteImport } from './routes/dev-secret-backdoor/signup'
-import { Route as DevSecretBackdoorProposalRouteImport } from './routes/dev-secret-backdoor/proposal'
-import { Route as DevSecretBackdoorOptimizerRouteImport } from './routes/dev-secret-backdoor/optimizer'
-import { Route as DevSecretBackdoorLoginRouteImport } from './routes/dev-secret-backdoor/login'
-import { Route as DevSecretBackdoorLearnRouteImport } from './routes/dev-secret-backdoor/learn'
 import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-password'
 import { Route as AuthForgotPasswordRouteImport } from './routes/_auth/forgot-password'
 import { Route as AuthProtectRouteImport } from './routes/_auth/_protect'
@@ -53,11 +46,6 @@ const ErrorRoute = ErrorRouteImport.update({
   path: '/error',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DevSecretBackdoorRoute = DevSecretBackdoorRouteImport.update({
-  id: '/dev-secret-backdoor',
-  path: '/dev-secret-backdoor',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SidebarlayoutRoute = SidebarlayoutRouteImport.update({
   id: '/_sidebarlayout',
   getParentRoute: () => rootRouteImport,
@@ -66,42 +54,10 @@ const LayoutRoute = LayoutRouteImport.update({
   id: '/_layout',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DevSecretBackdoorIndexRoute = DevSecretBackdoorIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => DevSecretBackdoorRoute,
-} as any)
 const LayoutIndexRoute = LayoutIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => LayoutRoute,
-} as any)
-const DevSecretBackdoorSignupRoute = DevSecretBackdoorSignupRouteImport.update({
-  id: '/signup',
-  path: '/signup',
-  getParentRoute: () => DevSecretBackdoorRoute,
-} as any)
-const DevSecretBackdoorProposalRoute =
-  DevSecretBackdoorProposalRouteImport.update({
-    id: '/proposal',
-    path: '/proposal',
-    getParentRoute: () => DevSecretBackdoorRoute,
-  } as any)
-const DevSecretBackdoorOptimizerRoute =
-  DevSecretBackdoorOptimizerRouteImport.update({
-    id: '/optimizer',
-    path: '/optimizer',
-    getParentRoute: () => DevSecretBackdoorRoute,
-  } as any)
-const DevSecretBackdoorLoginRoute = DevSecretBackdoorLoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => DevSecretBackdoorRoute,
-} as any)
-const DevSecretBackdoorLearnRoute = DevSecretBackdoorLearnRouteImport.update({
-  id: '/learn',
-  path: '/learn',
-  getParentRoute: () => DevSecretBackdoorRoute,
 } as any)
 const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
   id: '/_auth/reset-password',
@@ -189,19 +145,12 @@ const SidebarlayoutProtectedOptimizerHistoryOptimizerIdRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/dev-secret-backdoor': typeof DevSecretBackdoorRouteWithChildren
   '/error': typeof ErrorRoute
   '/faq': typeof FaqRoute
   '/welcome': typeof WelcomeRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/reset-password': typeof AuthResetPasswordRoute
-  '/dev-secret-backdoor/learn': typeof DevSecretBackdoorLearnRoute
-  '/dev-secret-backdoor/login': typeof DevSecretBackdoorLoginRoute
-  '/dev-secret-backdoor/optimizer': typeof DevSecretBackdoorOptimizerRoute
-  '/dev-secret-backdoor/proposal': typeof DevSecretBackdoorProposalRoute
-  '/dev-secret-backdoor/signup': typeof DevSecretBackdoorSignupRoute
   '/': typeof LayoutIndexRoute
-  '/dev-secret-backdoor/': typeof DevSecretBackdoorIndexRoute
   '/login': typeof AuthProtectLoginRoute
   '/signup': typeof AuthProtectSignupRoute
   '/example': typeof SidebarlayoutProtectedExampleRoute
@@ -221,13 +170,7 @@ export interface FileRoutesByTo {
   '/welcome': typeof WelcomeRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/reset-password': typeof AuthResetPasswordRoute
-  '/dev-secret-backdoor/learn': typeof DevSecretBackdoorLearnRoute
-  '/dev-secret-backdoor/login': typeof DevSecretBackdoorLoginRoute
-  '/dev-secret-backdoor/optimizer': typeof DevSecretBackdoorOptimizerRoute
-  '/dev-secret-backdoor/proposal': typeof DevSecretBackdoorProposalRoute
-  '/dev-secret-backdoor/signup': typeof DevSecretBackdoorSignupRoute
   '/': typeof LayoutIndexRoute
-  '/dev-secret-backdoor': typeof DevSecretBackdoorIndexRoute
   '/login': typeof AuthProtectLoginRoute
   '/signup': typeof AuthProtectSignupRoute
   '/example': typeof SidebarlayoutProtectedExampleRoute
@@ -245,20 +188,13 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_layout': typeof LayoutRouteWithChildren
   '/_sidebarlayout': typeof SidebarlayoutRouteWithChildren
-  '/dev-secret-backdoor': typeof DevSecretBackdoorRouteWithChildren
   '/error': typeof ErrorRoute
   '/faq': typeof FaqRoute
   '/welcome': typeof WelcomeRoute
   '/_auth/_protect': typeof AuthProtectRouteWithChildren
   '/_auth/forgot-password': typeof AuthForgotPasswordRoute
   '/_auth/reset-password': typeof AuthResetPasswordRoute
-  '/dev-secret-backdoor/learn': typeof DevSecretBackdoorLearnRoute
-  '/dev-secret-backdoor/login': typeof DevSecretBackdoorLoginRoute
-  '/dev-secret-backdoor/optimizer': typeof DevSecretBackdoorOptimizerRoute
-  '/dev-secret-backdoor/proposal': typeof DevSecretBackdoorProposalRoute
-  '/dev-secret-backdoor/signup': typeof DevSecretBackdoorSignupRoute
   '/_layout/': typeof LayoutIndexRoute
-  '/dev-secret-backdoor/': typeof DevSecretBackdoorIndexRoute
   '/_auth/_protect/login': typeof AuthProtectLoginRoute
   '/_auth/_protect/signup': typeof AuthProtectSignupRoute
   '/_sidebarlayout/_protected/example': typeof SidebarlayoutProtectedExampleRoute
@@ -275,19 +211,12 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/dev-secret-backdoor'
     | '/error'
     | '/faq'
     | '/welcome'
     | '/forgot-password'
     | '/reset-password'
-    | '/dev-secret-backdoor/learn'
-    | '/dev-secret-backdoor/login'
-    | '/dev-secret-backdoor/optimizer'
-    | '/dev-secret-backdoor/proposal'
-    | '/dev-secret-backdoor/signup'
     | '/'
-    | '/dev-secret-backdoor/'
     | '/login'
     | '/signup'
     | '/example'
@@ -307,13 +236,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/forgot-password'
     | '/reset-password'
-    | '/dev-secret-backdoor/learn'
-    | '/dev-secret-backdoor/login'
-    | '/dev-secret-backdoor/optimizer'
-    | '/dev-secret-backdoor/proposal'
-    | '/dev-secret-backdoor/signup'
     | '/'
-    | '/dev-secret-backdoor'
     | '/login'
     | '/signup'
     | '/example'
@@ -330,20 +253,13 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_layout'
     | '/_sidebarlayout'
-    | '/dev-secret-backdoor'
     | '/error'
     | '/faq'
     | '/welcome'
     | '/_auth/_protect'
     | '/_auth/forgot-password'
     | '/_auth/reset-password'
-    | '/dev-secret-backdoor/learn'
-    | '/dev-secret-backdoor/login'
-    | '/dev-secret-backdoor/optimizer'
-    | '/dev-secret-backdoor/proposal'
-    | '/dev-secret-backdoor/signup'
     | '/_layout/'
-    | '/dev-secret-backdoor/'
     | '/_auth/_protect/login'
     | '/_auth/_protect/signup'
     | '/_sidebarlayout/_protected/example'
@@ -361,7 +277,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   LayoutRoute: typeof LayoutRouteWithChildren
   SidebarlayoutRoute: typeof SidebarlayoutRouteWithChildren
-  DevSecretBackdoorRoute: typeof DevSecretBackdoorRouteWithChildren
   ErrorRoute: typeof ErrorRoute
   FaqRoute: typeof FaqRoute
   WelcomeRoute: typeof WelcomeRoute
@@ -393,13 +308,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ErrorRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dev-secret-backdoor': {
-      id: '/dev-secret-backdoor'
-      path: '/dev-secret-backdoor'
-      fullPath: '/dev-secret-backdoor'
-      preLoaderRoute: typeof DevSecretBackdoorRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_sidebarlayout': {
       id: '/_sidebarlayout'
       path: ''
@@ -414,54 +322,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dev-secret-backdoor/': {
-      id: '/dev-secret-backdoor/'
-      path: '/'
-      fullPath: '/dev-secret-backdoor/'
-      preLoaderRoute: typeof DevSecretBackdoorIndexRouteImport
-      parentRoute: typeof DevSecretBackdoorRoute
-    }
     '/_layout/': {
       id: '/_layout/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof LayoutIndexRouteImport
       parentRoute: typeof LayoutRoute
-    }
-    '/dev-secret-backdoor/signup': {
-      id: '/dev-secret-backdoor/signup'
-      path: '/signup'
-      fullPath: '/dev-secret-backdoor/signup'
-      preLoaderRoute: typeof DevSecretBackdoorSignupRouteImport
-      parentRoute: typeof DevSecretBackdoorRoute
-    }
-    '/dev-secret-backdoor/proposal': {
-      id: '/dev-secret-backdoor/proposal'
-      path: '/proposal'
-      fullPath: '/dev-secret-backdoor/proposal'
-      preLoaderRoute: typeof DevSecretBackdoorProposalRouteImport
-      parentRoute: typeof DevSecretBackdoorRoute
-    }
-    '/dev-secret-backdoor/optimizer': {
-      id: '/dev-secret-backdoor/optimizer'
-      path: '/optimizer'
-      fullPath: '/dev-secret-backdoor/optimizer'
-      preLoaderRoute: typeof DevSecretBackdoorOptimizerRouteImport
-      parentRoute: typeof DevSecretBackdoorRoute
-    }
-    '/dev-secret-backdoor/login': {
-      id: '/dev-secret-backdoor/login'
-      path: '/login'
-      fullPath: '/dev-secret-backdoor/login'
-      preLoaderRoute: typeof DevSecretBackdoorLoginRouteImport
-      parentRoute: typeof DevSecretBackdoorRoute
-    }
-    '/dev-secret-backdoor/learn': {
-      id: '/dev-secret-backdoor/learn'
-      path: '/learn'
-      fullPath: '/dev-secret-backdoor/learn'
-      preLoaderRoute: typeof DevSecretBackdoorLearnRouteImport
-      parentRoute: typeof DevSecretBackdoorRoute
     }
     '/_auth/reset-password': {
       id: '/_auth/reset-password'
@@ -616,27 +482,6 @@ const SidebarlayoutRouteWithChildren = SidebarlayoutRoute._addFileChildren(
   SidebarlayoutRouteChildren,
 )
 
-interface DevSecretBackdoorRouteChildren {
-  DevSecretBackdoorLearnRoute: typeof DevSecretBackdoorLearnRoute
-  DevSecretBackdoorLoginRoute: typeof DevSecretBackdoorLoginRoute
-  DevSecretBackdoorOptimizerRoute: typeof DevSecretBackdoorOptimizerRoute
-  DevSecretBackdoorProposalRoute: typeof DevSecretBackdoorProposalRoute
-  DevSecretBackdoorSignupRoute: typeof DevSecretBackdoorSignupRoute
-  DevSecretBackdoorIndexRoute: typeof DevSecretBackdoorIndexRoute
-}
-
-const DevSecretBackdoorRouteChildren: DevSecretBackdoorRouteChildren = {
-  DevSecretBackdoorLearnRoute: DevSecretBackdoorLearnRoute,
-  DevSecretBackdoorLoginRoute: DevSecretBackdoorLoginRoute,
-  DevSecretBackdoorOptimizerRoute: DevSecretBackdoorOptimizerRoute,
-  DevSecretBackdoorProposalRoute: DevSecretBackdoorProposalRoute,
-  DevSecretBackdoorSignupRoute: DevSecretBackdoorSignupRoute,
-  DevSecretBackdoorIndexRoute: DevSecretBackdoorIndexRoute,
-}
-
-const DevSecretBackdoorRouteWithChildren =
-  DevSecretBackdoorRoute._addFileChildren(DevSecretBackdoorRouteChildren)
-
 interface AuthProtectRouteChildren {
   AuthProtectLoginRoute: typeof AuthProtectLoginRoute
   AuthProtectSignupRoute: typeof AuthProtectSignupRoute
@@ -654,7 +499,6 @@ const AuthProtectRouteWithChildren = AuthProtectRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   LayoutRoute: LayoutRouteWithChildren,
   SidebarlayoutRoute: SidebarlayoutRouteWithChildren,
-  DevSecretBackdoorRoute: DevSecretBackdoorRouteWithChildren,
   ErrorRoute: ErrorRoute,
   FaqRoute: FaqRoute,
   WelcomeRoute: WelcomeRoute,

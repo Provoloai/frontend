@@ -1,4 +1,38 @@
 User-agent: *
 Allow: /
+Disallow: /api/
+Disallow: /userprofile
+Disallow: /notifications
+Disallow: /user/
+Disallow: /resume-generator/
+Disallow: /optimizer-history/
+Disallow: /proposal-history/
 
+# Crawl-delay for specific bots
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 1
+
+# Block bad bots
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+# Sitemaps
 Sitemap: https://www.provolo.org/sitemap.xml
+
+# Host declaration
+Host: https://www.provolo.org
