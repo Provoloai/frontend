@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { motion } from "motion/react";
-import { ArrowUp } from "lucide-react";
+import { ArrowUp, ArrowDown } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import useSession from "../hooks/useSession";
 import { optimizerApi, useGetQuota } from "@/api";
@@ -68,6 +68,31 @@ const PortfolioOptimizer = () => {
   const formRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
 
+  // Track which section is currently visible
+  const [isOnFormSection, setIsOnFormSection] = useState(true);
+
+  // Monitor scroll position to determine which section is visible
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!resultsRef.current || !formRef.current) return;
+
+      const resultsTop = resultsRef.current.getBoundingClientRect().top;
+      const viewportHeight = window.innerHeight;
+
+      // If results section is in the upper half of viewport, user is on results
+      setIsOnFormSection(resultsTop > viewportHeight / 2);
+    };
+
+    const scrollContainer = document.querySelector('.snap-y');
+    scrollContainer?.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      scrollContainer?.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [results]);
+
   // Auto-scroll to results when they become available
   useEffect(() => {
     if (results && resultsRef.current) {
@@ -84,6 +109,14 @@ const PortfolioOptimizer = () => {
   // Scroll back to form
   const scrollToForm = () => {
     formRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
+
+  // Scroll to results
+  const scrollToResults = () => {
+    resultsRef.current?.scrollIntoView({
       behavior: "smooth",
       block: "start",
     });
@@ -145,7 +178,7 @@ const PortfolioOptimizer = () => {
   };
 
   return (
-    <div className="flex-1 flex flex-col overflow-y-auto snap-y snap-mandatory">
+    <div className="flex-1 flex flex-col overflow-y-auto snap-y snap-mandatory relative">
       {/* Header and Form Section - Constrained Width, Full Screen */}
       <motion.div
         ref={formRef}
@@ -180,20 +213,6 @@ const PortfolioOptimizer = () => {
             sections={accordionSections}
             hasResults={!!results}
             quotaData={quotaData?.data || null}
-            scrollButton={
-              <motion.button
-                onClick={scrollToForm}
-                className="flex items-center gap-2 px-4 py-2 text-gray-700 rounded-full border-gray-200 hover:bg-gray-50 transition-all duration-200 text-sm font-medium"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.5 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <ArrowUp size={16} />
-                Scroll
-              </motion.button>
-            }
           />
         </div>
       )}
@@ -207,6 +226,39 @@ const PortfolioOptimizer = () => {
             quotaData={quotaData?.data || null}
           />
         </div>
+      )}
+
+      {/* Global Dynamic Scroll Button */}
+      {results && (
+        <motion.div
+          className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 bg-white border shadow-md hover:shadow-lg transition-all duration-300 rounded-full"
+          animate={{
+            y: [0, -20, 0],
+            scale: [1, 1.05, 1],
+          }}
+          transition={{
+            duration: 1.2,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        >
+          <motion.button
+            onClick={isOnFormSection ? scrollToResults : scrollToForm}
+            className="flex items-center gap-2 px-4 py-2 text-gray-700 rounded-full border-gray-200 hover:bg-gray-50 transition-all duration-200 text-sm font-medium"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.5 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            {isOnFormSection ? (
+              <ArrowDown size={16} />
+            ) : (
+              <ArrowUp size={16} />
+            )}
+            {isOnFormSection ? "Results" : "Optimize"}
+          </motion.button>
+        </motion.div>
       )}
     </div>
   );

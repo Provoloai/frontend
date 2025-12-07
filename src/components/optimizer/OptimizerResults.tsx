@@ -13,14 +13,12 @@ interface OptimizerResultsProps {
     limit: string | number;
     remaining: string | number;
   } | null;
-  scrollButton?: React.ReactNode;
 }
 
 const OptimizerResults: React.FC<OptimizerResultsProps> = ({
   sections,
   hasResults,
   quotaData,
-  scrollButton,
 }) => {
   if (!hasResults) {
     return (
@@ -61,7 +59,7 @@ const OptimizerResults: React.FC<OptimizerResultsProps> = ({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
       >
-        <ResultsAccordion sections={sections} scrollButton={scrollButton} />
+        <ResultsAccordion sections={sections} />
       </motion.div>
     </>
   );
