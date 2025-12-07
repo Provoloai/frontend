@@ -51,9 +51,16 @@ export const useAuth = () => {
       const provider = new GoogleAuthProvider();
       const userCredential = await signInWithPopup(auth, provider);
       const user = userCredential.user;
+
+      // Reload to ensure we have the latest provider data from Firebase
+      await user.reload();
       const idToken = await getIdToken(user, true);
 
       await authApi.login(idToken);
+
+      // Sync providers to backend to ensure they are merged, not replaced
+      const updatedProviders = user.providerData.map(p => p.providerId);
+      await authApi.updateProviders(updatedProviders, idToken);
 
       navigate({ to: "/optimizer", replace: true });
     } catch (err: unknown) {
