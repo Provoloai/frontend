@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { motion } from "motion/react";
-import { ArrowUp, ArrowDown } from "lucide-react";
+import { ArrowUp, ArrowDown, Infinity as InfinityIcon } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import useSession from "../hooks/useSession";
 import { optimizerApi, useGetQuota } from "@/api";
@@ -201,6 +201,29 @@ const PortfolioOptimizer = () => {
           onSubmit={handleSubmit}
           onErrorClose={handleErrorClose}
         />
+
+        {/* Quota Counter */}
+        <motion.div
+          className="text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          {quotaData?.data && (
+            <div className="flex items-center justify-center gap-1.5 text-xs text-gray-500">
+              <span>{quotaData.data.count}</span>
+              <span>/</span>
+              {quotaData.data.limit === -1 || quotaData.data.limit === "unlimited" ? (
+                <>
+                  <InfinityIcon size={20} className="text-gray-500" />
+                  <span>Optimizations</span>
+                </>
+              ) : (
+                <span>{quotaData.data.limit} optimizations</span>
+              )}
+            </div>
+          )}
+        </motion.div>
       </motion.div>
 
       {/* Output Section - Full Width, Full Screen */}
@@ -212,7 +235,6 @@ const PortfolioOptimizer = () => {
           <OptimizerResultsComponent
             sections={accordionSections}
             hasResults={!!results}
-            quotaData={quotaData?.data || null}
           />
         </div>
       )}
@@ -223,7 +245,6 @@ const PortfolioOptimizer = () => {
           <OptimizerResultsComponent
             sections={accordionSections}
             hasResults={false}
-            quotaData={quotaData?.data || null}
           />
         </div>
       )}
