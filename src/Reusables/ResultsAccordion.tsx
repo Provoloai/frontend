@@ -66,10 +66,9 @@ interface Section {
 
 interface ResultsAccordionProps {
   sections: Section[];
-  scrollButton?: React.ReactNode;
 }
 
-const ResultsAccordion: React.FC<ResultsAccordionProps> = ({ sections, scrollButton }) => {
+const ResultsAccordion: React.FC<ResultsAccordionProps> = ({ sections }) => {
   const [activeTab, setActiveTab] = useState(0);
   const [copyState, setCopyState] = useState<"idle" | "copied">("idle");
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -116,12 +115,9 @@ const ResultsAccordion: React.FC<ResultsAccordionProps> = ({ sections, scrollBut
 
   return (
     <div className="mt-10 p-6 sm:p-10 mx-auto w-4xl w-full">
-      <div className="mb-8 flex items-center justify-between gap-3 w-full">
-        <h2 className="font-medium text-center text-2xl">
-          Optimization Insights ✦︎
-        </h2>
-        {scrollButton}
-      </div>
+      <h2 className="font-medium text-2xl mb-8 ">
+        Optimization Insights ✦︎
+      </h2>
 
       {/* Modern Tab Navigation */}
       <div className="mb-8 overflow-x-auto pb-2 -mx-6 px-6 sm:mx-0 sm:px-0 scrollbar-hide">
@@ -235,3 +231,4 @@ const ResultsAccordion: React.FC<ResultsAccordionProps> = ({ sections, scrollBut
 };
 
 export default ResultsAccordion;
+
