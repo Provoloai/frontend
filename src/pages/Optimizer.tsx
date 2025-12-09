@@ -155,6 +155,10 @@ const PortfolioOptimizer = () => {
       await queryClient.invalidateQueries({
         queryKey: ["quota", "upwork_profile_optimizer"],
       });
+
+       await queryClient.invalidateQueries({
+        queryKey: ["proposal-history"],
+      });
     } catch (err: unknown) {
       const error = err as Error;
       if (error.name === "TypeError" && error.message.includes("fetch")) {

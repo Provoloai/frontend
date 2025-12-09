@@ -29,6 +29,7 @@ export const HEADER_CONFIG: HeaderConfig = {
     { name: "Features", href: "#features", isExternal: false },
     { name: "FAQs", href: "/faq", isExternal: false },
     { name: "Blogs", href: "https://provoloai.substack.com/", isExternal: true },
+    // { name: "Blogs", href: "/blog", isExternal: false },
   ],
 };
 
