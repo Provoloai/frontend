@@ -306,7 +306,7 @@ export default function Pricing() {
     }
   };
 
-  const handleDowngrade = async () => {
+  const handleManageSubscription = async () => {
     if (!user?.polarId) {
       setSubscriptionError("No subscription found. Please contact support.");
       return;
@@ -700,13 +700,14 @@ export default function Pricing() {
                 ) : (
                   <motion.button
                     onClick={() => {
-                      // Check if this is a downgrade action
-                      const isDowngrade =
-                        user?.tierId === "plusAnnual" &&
-                        tier.name === "Plus" &&
-                        billingPeriod === "monthly";
-                      if (isDowngrade) {
-                        handleDowngrade();
+                      // Check if this is a management action (upgrade or downgrade for existing pro users)
+                      const isManageSubscription =
+                        (user?.tierId === "plusAnnual" ||
+                          user?.tierId === "plus") &&
+                        tier.name === "Plus";
+
+                      if (isManageSubscription) {
+                        handleManageSubscription();
                       } else {
                         checkout(tier.polarRefId);
                       }
