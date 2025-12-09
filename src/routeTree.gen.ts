@@ -12,9 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ErrorRouteImport } from './routes/error'
+import { Route as BlogRouteImport } from './routes/blog'
 import { Route as SidebarlayoutRouteImport } from './routes/_sidebarlayout'
 import { Route as LayoutRouteImport } from './routes/_layout'
 import { Route as LayoutIndexRouteImport } from './routes/_layout.index'
+import { Route as BlogPostBlogpostIdRouteImport } from './routes/blogPost/$blogpostId'
 import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-password'
 import { Route as AuthForgotPasswordRouteImport } from './routes/_auth/forgot-password'
 import { Route as AuthProtectRouteImport } from './routes/_auth/_protect'
@@ -46,6 +48,11 @@ const ErrorRoute = ErrorRouteImport.update({
   path: '/error',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BlogRoute = BlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SidebarlayoutRoute = SidebarlayoutRouteImport.update({
   id: '/_sidebarlayout',
   getParentRoute: () => rootRouteImport,
@@ -58,6 +65,11 @@ const LayoutIndexRoute = LayoutIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => LayoutRoute,
+} as any)
+const BlogPostBlogpostIdRoute = BlogPostBlogpostIdRouteImport.update({
+  id: '/blogPost/$blogpostId',
+  path: '/blogPost/$blogpostId',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
   id: '/_auth/reset-password',
@@ -145,11 +157,13 @@ const SidebarlayoutProtectedOptimizerHistoryOptimizerIdRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
+  '/blog': typeof BlogRoute
   '/error': typeof ErrorRoute
   '/faq': typeof FaqRoute
   '/welcome': typeof WelcomeRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/reset-password': typeof AuthResetPasswordRoute
+  '/blogPost/$blogpostId': typeof BlogPostBlogpostIdRoute
   '/': typeof LayoutIndexRoute
   '/login': typeof AuthProtectLoginRoute
   '/signup': typeof AuthProtectSignupRoute
@@ -165,11 +179,13 @@ export interface FileRoutesByFullPath {
   '/proposalHistory/$proposalId': typeof SidebarlayoutProtectedProposalHistoryProposalIdRoute
 }
 export interface FileRoutesByTo {
+  '/blog': typeof BlogRoute
   '/error': typeof ErrorRoute
   '/faq': typeof FaqRoute
   '/welcome': typeof WelcomeRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/reset-password': typeof AuthResetPasswordRoute
+  '/blogPost/$blogpostId': typeof BlogPostBlogpostIdRoute
   '/': typeof LayoutIndexRoute
   '/login': typeof AuthProtectLoginRoute
   '/signup': typeof AuthProtectSignupRoute
@@ -188,12 +204,14 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_layout': typeof LayoutRouteWithChildren
   '/_sidebarlayout': typeof SidebarlayoutRouteWithChildren
+  '/blog': typeof BlogRoute
   '/error': typeof ErrorRoute
   '/faq': typeof FaqRoute
   '/welcome': typeof WelcomeRoute
   '/_auth/_protect': typeof AuthProtectRouteWithChildren
   '/_auth/forgot-password': typeof AuthForgotPasswordRoute
   '/_auth/reset-password': typeof AuthResetPasswordRoute
+  '/blogPost/$blogpostId': typeof BlogPostBlogpostIdRoute
   '/_layout/': typeof LayoutIndexRoute
   '/_auth/_protect/login': typeof AuthProtectLoginRoute
   '/_auth/_protect/signup': typeof AuthProtectSignupRoute
@@ -211,11 +229,13 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/blog'
     | '/error'
     | '/faq'
     | '/welcome'
     | '/forgot-password'
     | '/reset-password'
+    | '/blogPost/$blogpostId'
     | '/'
     | '/login'
     | '/signup'
@@ -231,11 +251,13 @@ export interface FileRouteTypes {
     | '/proposalHistory/$proposalId'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/blog'
     | '/error'
     | '/faq'
     | '/welcome'
     | '/forgot-password'
     | '/reset-password'
+    | '/blogPost/$blogpostId'
     | '/'
     | '/login'
     | '/signup'
@@ -253,12 +275,14 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_layout'
     | '/_sidebarlayout'
+    | '/blog'
     | '/error'
     | '/faq'
     | '/welcome'
     | '/_auth/_protect'
     | '/_auth/forgot-password'
     | '/_auth/reset-password'
+    | '/blogPost/$blogpostId'
     | '/_layout/'
     | '/_auth/_protect/login'
     | '/_auth/_protect/signup'
@@ -277,12 +301,14 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   LayoutRoute: typeof LayoutRouteWithChildren
   SidebarlayoutRoute: typeof SidebarlayoutRouteWithChildren
+  BlogRoute: typeof BlogRoute
   ErrorRoute: typeof ErrorRoute
   FaqRoute: typeof FaqRoute
   WelcomeRoute: typeof WelcomeRoute
   AuthProtectRoute: typeof AuthProtectRouteWithChildren
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthResetPasswordRoute: typeof AuthResetPasswordRoute
+  BlogPostBlogpostIdRoute: typeof BlogPostBlogpostIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -308,6 +334,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ErrorRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/blog': {
+      id: '/blog'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof BlogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_sidebarlayout': {
       id: '/_sidebarlayout'
       path: ''
@@ -328,6 +361,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof LayoutIndexRouteImport
       parentRoute: typeof LayoutRoute
+    }
+    '/blogPost/$blogpostId': {
+      id: '/blogPost/$blogpostId'
+      path: '/blogPost/$blogpostId'
+      fullPath: '/blogPost/$blogpostId'
+      preLoaderRoute: typeof BlogPostBlogpostIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_auth/reset-password': {
       id: '/_auth/reset-password'
@@ -499,12 +539,14 @@ const AuthProtectRouteWithChildren = AuthProtectRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   LayoutRoute: LayoutRouteWithChildren,
   SidebarlayoutRoute: SidebarlayoutRouteWithChildren,
+  BlogRoute: BlogRoute,
   ErrorRoute: ErrorRoute,
   FaqRoute: FaqRoute,
   WelcomeRoute: WelcomeRoute,
   AuthProtectRoute: AuthProtectRouteWithChildren,
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthResetPasswordRoute: AuthResetPasswordRoute,
+  BlogPostBlogpostIdRoute: BlogPostBlogpostIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
