@@ -1,13 +1,12 @@
 import { useState } from "react";
 import {
   Laptop,
-  Phone,
   Tablet,
   Globe,
   Trash2,
-  Shield,
   Clock,
   Info,
+  Smartphone,
 } from "lucide-react";
 import { deviceApi, useGetDevices } from "@/api";
 import { motion, AnimatePresence } from "motion/react";
@@ -73,7 +72,7 @@ export default function LoginHistory() {
       o.includes("ios") ||
       o.includes("android")
     ) {
-      return <Phone className="h-5 w-5" />;
+      return <Smartphone className="h-5 w-5" />;
     }
     if (d.includes("tablet") || d.includes("ipad")) {
       return <Tablet className="h-5 w-5" />;
