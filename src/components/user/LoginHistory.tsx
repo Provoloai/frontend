@@ -20,12 +20,22 @@ export default function LoginHistory() {
 
   const cleanDeviceName = (deviceName: string) => {
     if (!deviceName) return "";
-    // Remove IPv4 (e.g., 192.168.1.1) or IPv6 (e.g., ::1 or 2001:...) followed by space/dash
     return deviceName
       .replace(
         /^((?:\d{1,3}\.){3}\d{1,3}|(?:[a-fA-F0-9]{1,4}:){1,7}:?|::1)\s*[-:]?\s*/,
         ""
       )
+      .trim();
+  };
+
+  const cleanBrowserName = (browserName: string) => {
+    if (!browserName) return "";
+    return browserName
+      .replace(
+        /^(::1|::ffff:\d+\.\d+\.\d+\.\d+|(?:\d{1,3}\.){3}\d{1,3}|(?:[0-9a-fA-F]{0,4}:){2,7}[0-9a-fA-F]{0,4})\s*[-:,|]?\s*/,
+        ""
+      )
+      .replace(/\s+\d+(\.\d+)*$/, "")
       .trim();
   };
 
@@ -120,7 +130,6 @@ export default function LoginHistory() {
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
-            <Shield className="h-5 w-5 text-indigo-600" />
             Login History
           </h3>
           <p className="text-sm text-gray-500 mt-1">
@@ -172,7 +181,8 @@ export default function LoginHistory() {
                         {cleanDeviceName(session.device) ||
                           session.os ||
                           "Unknown Device"}{" "}
-                        • {session.browser || "Unknown Browser"}
+                        •{" "}
+                        {cleanBrowserName(session.browser) || "Unknown Browser"}
                       </p>
                       {session.isCurrent && (
                         <span className="px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 text-[10px] font-bold uppercase tracking-wide">
@@ -217,7 +227,7 @@ export default function LoginHistory() {
 
       <div className="bg-gray-50 rounded-lg p-3 text-xs text-gray-500 flex gap-2 items-start">
         <Info className="h-4 w-4 shrink-0 mt-0.5 text-gray-400" />
-        <p>
+        <p className="text-xs">
           For security, logging in on a new device will automatically log you
           out of other sessions. Removing an entry here deletes it from your
           history record.
