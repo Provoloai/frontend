@@ -28,6 +28,22 @@ const apiRequest = async <T>(
     const response = await fetch(url, defaultOptions);
 
     if (!response.ok) {
+      if (response.status === 401) {
+        // Redirect to login on 401, but only if not already on a public auth route
+        const publicAuthRoutes = [
+          "/login",
+          "/signup",
+          "/forgot-password",
+          "/reset-password",
+        ];
+        const isOnPublicAuthRoute = publicAuthRoutes.some(route =>
+          window.location.pathname.startsWith(route)
+        );
+        if (!isOnPublicAuthRoute) {
+          window.location.href = "/login?reason=session_expired";
+        }
+      }
+
       const errorData = await response.json();
       throw new Error(
         errorData.message || `HTTP error! status: ${response.status}`
@@ -39,6 +55,44 @@ const apiRequest = async <T>(
     console.error(`API request failed for ${endpoint}:`, error);
     throw error;
   }
+};
+
+// Device Tracking API
+export interface DeviceSession {
+  id: string;
+  device: string;
+  browser: string;
+  os: string;
+  ip: string;
+  userAgent?: string;
+  timestamp: string; // ISO Date from backend
+  isCurrent?: boolean;
+}
+
+export const deviceApi = {
+  getDevices: async () => {
+    return apiRequest<{
+      success: boolean;
+      data: DeviceSession[];
+    }>("/auth/devices", {
+      method: "GET",
+    });
+  },
+  revokeDevice: async (id: string) => {
+    return apiRequest<{ success: boolean; message: string }>(
+      `/auth/devices/${id}`,
+      {
+        method: "DELETE",
+      }
+    );
+  },
+};
+
+export const useGetDevices = () => {
+  return useQuery({
+    queryKey: ["devices"],
+    queryFn: () => deviceApi.getDevices(),
+  });
 };
 
 // Proposal API functions
