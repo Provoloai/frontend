@@ -51,16 +51,16 @@ export default function FaqMain() {
 
   return (
     <div className="min-h-screen bg- px-6 py-16 sm:pt-52">
-      <div className="mx-auto max-w-4xl">
+      <div className="mx-auto max-w-7xl">
         <motion.h1
-          className="text-4xl sm:text-5xl font-bold text-gray-900 mb-16"
+          className="text-4xl sm:text-5xl font-bold text-gray-900 mb-16 "
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
           <Link
             to="/"
-            className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 mb-4 transition-colors"
+            className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 mb-4 transition-colors pt-0 mt-0"
           >
             <ArrowLeft size={16} />
             Go Back Home
