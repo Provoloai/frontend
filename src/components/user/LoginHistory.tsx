@@ -130,7 +130,6 @@ export default function LoginHistory() {
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
-            <Shield className="h-5 w-5 text-indigo-600" />
             Login History
           </h3>
           <p className="text-sm text-gray-500 mt-1">
@@ -228,7 +227,7 @@ export default function LoginHistory() {
 
       <div className="bg-gray-50 rounded-lg p-3 text-xs text-gray-500 flex gap-2 items-start">
         <Info className="h-4 w-4 shrink-0 mt-0.5 text-gray-400" />
-        <p>
+        <p className="text-xs">
           For security, logging in on a new device will automatically log you
           out of other sessions. Removing an entry here deletes it from your
           history record.
