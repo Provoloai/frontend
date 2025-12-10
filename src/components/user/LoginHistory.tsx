@@ -20,12 +20,22 @@ export default function LoginHistory() {
 
   const cleanDeviceName = (deviceName: string) => {
     if (!deviceName) return "";
-    // Remove IPv4 (e.g., 192.168.1.1) or IPv6 (e.g., ::1 or 2001:...) followed by space/dash
     return deviceName
       .replace(
         /^((?:\d{1,3}\.){3}\d{1,3}|(?:[a-fA-F0-9]{1,4}:){1,7}:?|::1)\s*[-:]?\s*/,
         ""
       )
+      .trim();
+  };
+
+  const cleanBrowserName = (browserName: string) => {
+    if (!browserName) return "";
+    return browserName
+      .replace(
+        /^(::1|::ffff:\d+\.\d+\.\d+\.\d+|(?:\d{1,3}\.){3}\d{1,3}|(?:[0-9a-fA-F]{0,4}:){2,7}[0-9a-fA-F]{0,4})\s*[-:,|]?\s*/,
+        ""
+      )
+      .replace(/\s+\d+(\.\d+)*$/, "")
       .trim();
   };
 
@@ -172,7 +182,8 @@ export default function LoginHistory() {
                         {cleanDeviceName(session.device) ||
                           session.os ||
                           "Unknown Device"}{" "}
-                        • {session.browser || "Unknown Browser"}
+                        •{" "}
+                        {cleanBrowserName(session.browser) || "Unknown Browser"}
                       </p>
                       {session.isCurrent && (
                         <span className="px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 text-[10px] font-bold uppercase tracking-wide">
