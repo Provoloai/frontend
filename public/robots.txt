@@ -21,15 +21,9 @@ User-agent: Slurp
 Allow: /
 Crawl-delay: 1
 
-# Block bad bots
 User-agent: SemrushBot
-Disallow: /
-
-User-agent: AhrefsBot
-Disallow: /
-
-User-agent: DotBot
-Disallow: /
+Allow: /
+Crawl-delay: 1
 
 # Sitemaps
 Sitemap: https://www.provolo.org/sitemap.xml
