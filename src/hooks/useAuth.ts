@@ -57,15 +57,7 @@ export const useAuth = () => {
       const idToken = await getIdToken(user, true);
 
       // Ensure user is signed up in backend
-      try {
-        await authApi.signup(idToken);
-      } catch (err) {
-        console.log(
-          "Signup check skipped or failed (user might already exist), proceeding to login"
-        );
-      }
-
-      await authApi.login(idToken);
+      await authApi.signup(idToken);
 
       // Sync providers to backend to ensure they are merged, not replaced
       const updatedProviders = user.providerData.map(p => p.providerId);
