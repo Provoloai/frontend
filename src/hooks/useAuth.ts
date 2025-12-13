@@ -56,7 +56,8 @@ export const useAuth = () => {
       await user.reload();
       const idToken = await getIdToken(user, true);
 
-      await authApi.login(idToken);
+      // Ensure user is signed up in backend
+      await authApi.signup(idToken);
 
       // Sync providers to backend to ensure they are merged, not replaced
       const updatedProviders = user.providerData.map(p => p.providerId);
