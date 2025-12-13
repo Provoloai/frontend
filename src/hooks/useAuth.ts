@@ -56,6 +56,15 @@ export const useAuth = () => {
       await user.reload();
       const idToken = await getIdToken(user, true);
 
+      // Ensure user is signed up in backend
+      try {
+        await authApi.signup(idToken);
+      } catch (err) {
+        console.log(
+          "Signup check skipped or failed (user might already exist), proceeding to login"
+        );
+      }
+
       await authApi.login(idToken);
 
       // Sync providers to backend to ensure they are merged, not replaced
