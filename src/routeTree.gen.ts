@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WelcomeRouteImport } from './routes/welcome'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ErrorRouteImport } from './routes/error'
 import { Route as BlogRouteImport } from './routes/blog'
@@ -36,6 +37,11 @@ import { Route as SidebarlayoutProtectedOptimizerHistoryOptimizerIdRouteImport }
 const WelcomeRoute = WelcomeRouteImport.update({
   id: '/welcome',
   path: '/welcome',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FaqRoute = FaqRouteImport.update({
@@ -160,6 +166,7 @@ export interface FileRoutesByFullPath {
   '/blog': typeof BlogRoute
   '/error': typeof ErrorRoute
   '/faq': typeof FaqRoute
+  '/privacy': typeof PrivacyRoute
   '/welcome': typeof WelcomeRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/reset-password': typeof AuthResetPasswordRoute
@@ -182,6 +189,7 @@ export interface FileRoutesByTo {
   '/blog': typeof BlogRoute
   '/error': typeof ErrorRoute
   '/faq': typeof FaqRoute
+  '/privacy': typeof PrivacyRoute
   '/welcome': typeof WelcomeRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/reset-password': typeof AuthResetPasswordRoute
@@ -207,6 +215,7 @@ export interface FileRoutesById {
   '/blog': typeof BlogRoute
   '/error': typeof ErrorRoute
   '/faq': typeof FaqRoute
+  '/privacy': typeof PrivacyRoute
   '/welcome': typeof WelcomeRoute
   '/_auth/_protect': typeof AuthProtectRouteWithChildren
   '/_auth/forgot-password': typeof AuthForgotPasswordRoute
@@ -232,6 +241,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/error'
     | '/faq'
+    | '/privacy'
     | '/welcome'
     | '/forgot-password'
     | '/reset-password'
@@ -254,6 +264,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/error'
     | '/faq'
+    | '/privacy'
     | '/welcome'
     | '/forgot-password'
     | '/reset-password'
@@ -278,6 +289,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/error'
     | '/faq'
+    | '/privacy'
     | '/welcome'
     | '/_auth/_protect'
     | '/_auth/forgot-password'
@@ -304,6 +316,7 @@ export interface RootRouteChildren {
   BlogRoute: typeof BlogRoute
   ErrorRoute: typeof ErrorRoute
   FaqRoute: typeof FaqRoute
+  PrivacyRoute: typeof PrivacyRoute
   WelcomeRoute: typeof WelcomeRoute
   AuthProtectRoute: typeof AuthProtectRouteWithChildren
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
@@ -318,6 +331,13 @@ declare module '@tanstack/react-router' {
       path: '/welcome'
       fullPath: '/welcome'
       preLoaderRoute: typeof WelcomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/faq': {
@@ -542,6 +562,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlogRoute: BlogRoute,
   ErrorRoute: ErrorRoute,
   FaqRoute: FaqRoute,
+  PrivacyRoute: PrivacyRoute,
   WelcomeRoute: WelcomeRoute,
   AuthProtectRoute: AuthProtectRouteWithChildren,
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
