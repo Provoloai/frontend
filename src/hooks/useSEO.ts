@@ -128,21 +128,20 @@ export const useSEO = ({
  */
 export const SEO_CONFIGS = {
   home: {
-    title:
-      "Provolo AI - Upwork Profile & Proposal Optimizer | Win More Freelance Jobs",
+    title: "Upwork Profile Optimization Tool For Freelancers | Provolo",
     description:
-      "Provolo AI optimizes your Upwork profile and proposals with AI-powered copywriting. Improve your Upwork profile visibility, write winning Upwork proposals, and get more client interviews. Try free Upwork profile analysis and proposal generator.",
+      "Optimize your Upwork profile with Provolo. An AI tool that rewrites your bio, strengthens your niche positioning, and improves upwork proposal success.",
     keywords:
-      "provolo ai, upwork profile optimizer, upwork proposal generator, upwork profiles, AI proposal writer, freelance profile tools, get more upwork clients, upwork job invites",
+      "Upwork profile optimization, provolo ai, provolo, upwork profile optimizer, upwork proposal generator, upwork profile, upwork profiles, upwork proposal, upwork analytics, optimize upwork profile, upwork copywriting, AI proposal writer, freelance profile tools, get more upwork clients, upwork job invites, upwork profile tips, AI for freelancers",
     canonicalUrl: "https://www.provolo.org/",
   },
   optimizer: {
     title:
       "Upwork Profile Optimizer - AI-Powered Profile Analysis | Provolo AI",
     description:
-      "Get instant AI-powered analysis of your Upwork profile. Improve your overview, skills, portfolio, and copywriting to rank higher in Upwork search and attract more clients. Free profile optimization tool.",
+      "Provolo is the AI Upwork profile optimizer that rewrites your bio, strengthens your niche positioning, and boosts client conversions. Stand out and get hired.",
     keywords:
-      "upwork profile optimizer, optimize upwork profile, upwork profile analysis, upwork profile tips, upwork copywriting, improve upwork profile, upwork profile ranking",
+      "Upwork Profile Optimizer, upwork profile optimizer, optimize upwork profile, upwork profile analysis, upwork profile tips, upwork copywriting, improve upwork profile, upwork profile ranking",
     canonicalUrl: "https://www.provolo.org/optimizer",
   },
   proposal: {
@@ -157,7 +156,7 @@ export const SEO_CONFIGS = {
   learn: {
     title: "Upwork Tips & Tutorials - Learn to Win More Jobs | Provolo Learn",
     description:
-      "Free Upwork tutorials, guides, and best practices. Learn how to optimize your profile, write better proposals, improve your JSS score, and get more client invitations on Upwork.",
+      "Expert Upwork tips and tutorials on Provolo Learn. Improve your profile, proposals, and client strategy to win more jobs and improve your JSS score.",
     keywords:
       "upwork tips, upwork tutorials, upwork best practices, upwork guide, freelance tips, upwork success, upwork help, upwork advice",
     canonicalUrl: "https://www.provolo.org/learn",
@@ -165,7 +164,7 @@ export const SEO_CONFIGS = {
   pricing: {
     title: "Provolo AI Pricing - Free Profile Analysis & Affordable Plans",
     description:
-      "Start free with Provolo AI. Get unlimited profile optimizations, proposal generation, and AI copywriting assistance. Transparent pricing, no hidden fees, cancel anytime.",
+      "See Provolo AI’s pricing, including free profile analysis and affordable plans. Improve your Upwork profile and proposals with AI-powered tools.",
     keywords:
       "provolo pricing, upwork optimizer cost, free upwork tools, affordable freelance tools, provolo plans",
     canonicalUrl: "https://www.provolo.org/pricing",
