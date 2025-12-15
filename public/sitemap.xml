@@ -30,6 +30,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://www.provolo.org/privacy</loc>
+    <lastmod>2025-12-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://www.provolo.org/pricing</loc>
     <lastmod>2025-12-14</lastmod>
     <changefreq>weekly</changefreq>
