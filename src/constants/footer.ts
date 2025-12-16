@@ -12,14 +12,8 @@ export const FOOTER_CONFIG: FooterConfig = {
   footer: {
     copyright: "Provolo '25",
     links: [
-      {
-        label: "Careers",
-        href: "https://buildsbyesuoladaniel.hashnode.space/provolo/open-collaborations",
-      },
-      {
-        label: "Terms & Conditions",
-        href: "https://buildsbyesuoladaniel.hashnode.space/provolo/terms-and-conditions",
-      },
+      { label: "Careers", href: "https://buildsbyesuoladaniel.hashnode.space/provolo/open-collaborations" },
+      { label: "Terms & Conditions", href: "/terms" },
       { label: "Privacy Policy", href: "/privacy" },
       {
         label: "Help Center",
