@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import hero from "@/assets/img/terms-of-service-page.jpeg";
+import { motion } from "motion/react";
 
 interface Section {
   id: string;
