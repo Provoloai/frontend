@@ -10,17 +10,32 @@ const FooterLinks: React.FC<FooterLinksProps> = ({ config }) => {
       variants={{ visible: { transition: { staggerChildren: 0.02 } } }}
       aria-label="Footer navigation"
     >
-      {config.footer.links.map(({ label, href }) => (
-        <motion.div 
-          key={label} 
-          variants={FOOTER_ANIMATIONS.footerItem} 
-          whileHover={FOOTER_ANIMATIONS.linkHover}
-        >
-          <Link target="_blank" to={href} className={FOOTER_STYLES.linkBase} rel="noopener noreferrer">
-            {label}
-          </Link>
-        </motion.div>
-      ))}
+      {config.footer.links.map(({ label, href }) => {
+        const isExternal = href.startsWith("http");
+
+        return (
+          <motion.div
+            key={label}
+            variants={FOOTER_ANIMATIONS.footerItem}
+            whileHover={FOOTER_ANIMATIONS.linkHover}
+          >
+            {isExternal ? (
+              <a
+                href={href}
+                className={FOOTER_STYLES.linkBase}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {label}
+              </a>
+            ) : (
+              <Link to={href} className={FOOTER_STYLES.linkBase}>
+                {label}
+              </Link>
+            )}
+          </motion.div>
+        );
+      })}
     </motion.nav>
   );
 };

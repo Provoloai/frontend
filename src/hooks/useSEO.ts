@@ -177,4 +177,12 @@ export const SEO_CONFIGS = {
       "provolo faq, upwork optimizer help, provolo questions, upwork help, freelance tools faq",
     canonicalUrl: "https://www.provolo.org/faq",
   },
+  privacy: {
+    title: "Privacy Policy - Provolo AI",
+    description:
+      "Read our Privacy Policy to understand how Provolo AI collects, uses, and protects your personal data. Your privacy and data security are our top priorities.",
+    keywords:
+      "privacy policy, data protection, data security, provolo privacy, user data, provolo ai",
+    canonicalUrl: "https://www.provolo.org/privacy",
+  },
 } as const;
