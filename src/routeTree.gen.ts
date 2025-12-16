@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WelcomeRouteImport } from './routes/welcome'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ErrorRouteImport } from './routes/error'
@@ -37,6 +38,11 @@ import { Route as SidebarlayoutProtectedOptimizerHistoryOptimizerIdRouteImport }
 const WelcomeRoute = WelcomeRouteImport.update({
   id: '/welcome',
   path: '/welcome',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -167,6 +173,7 @@ export interface FileRoutesByFullPath {
   '/error': typeof ErrorRoute
   '/faq': typeof FaqRoute
   '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
   '/welcome': typeof WelcomeRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/reset-password': typeof AuthResetPasswordRoute
@@ -190,6 +197,7 @@ export interface FileRoutesByTo {
   '/error': typeof ErrorRoute
   '/faq': typeof FaqRoute
   '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
   '/welcome': typeof WelcomeRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/reset-password': typeof AuthResetPasswordRoute
@@ -216,6 +224,7 @@ export interface FileRoutesById {
   '/error': typeof ErrorRoute
   '/faq': typeof FaqRoute
   '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
   '/welcome': typeof WelcomeRoute
   '/_auth/_protect': typeof AuthProtectRouteWithChildren
   '/_auth/forgot-password': typeof AuthForgotPasswordRoute
@@ -242,6 +251,7 @@ export interface FileRouteTypes {
     | '/error'
     | '/faq'
     | '/privacy'
+    | '/terms'
     | '/welcome'
     | '/forgot-password'
     | '/reset-password'
@@ -265,6 +275,7 @@ export interface FileRouteTypes {
     | '/error'
     | '/faq'
     | '/privacy'
+    | '/terms'
     | '/welcome'
     | '/forgot-password'
     | '/reset-password'
@@ -290,6 +301,7 @@ export interface FileRouteTypes {
     | '/error'
     | '/faq'
     | '/privacy'
+    | '/terms'
     | '/welcome'
     | '/_auth/_protect'
     | '/_auth/forgot-password'
@@ -317,6 +329,7 @@ export interface RootRouteChildren {
   ErrorRoute: typeof ErrorRoute
   FaqRoute: typeof FaqRoute
   PrivacyRoute: typeof PrivacyRoute
+  TermsRoute: typeof TermsRoute
   WelcomeRoute: typeof WelcomeRoute
   AuthProtectRoute: typeof AuthProtectRouteWithChildren
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
@@ -331,6 +344,13 @@ declare module '@tanstack/react-router' {
       path: '/welcome'
       fullPath: '/welcome'
       preLoaderRoute: typeof WelcomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -563,6 +583,7 @@ const rootRouteChildren: RootRouteChildren = {
   ErrorRoute: ErrorRoute,
   FaqRoute: FaqRoute,
   PrivacyRoute: PrivacyRoute,
+  TermsRoute: TermsRoute,
   WelcomeRoute: WelcomeRoute,
   AuthProtectRoute: AuthProtectRouteWithChildren,
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
