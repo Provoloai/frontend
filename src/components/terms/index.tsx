@@ -30,6 +30,15 @@ const sections: Section[] = [
         </h1>
         <p className="text-lg text-gray-600">Effective Date: 31st July 2025</p>
 
+        {/* Hero Image */}
+        <div className="">
+          <img
+            src={hero}
+            alt="hero image for privacy page"
+            className="w-full h-full object-cover rounded-lg"
+          />
+        </div>
+
         <p className="text-lg text-gray-700 leading-relaxed">
           By using <strong className="text-gray-900">Provolo</strong>, you agree
           to these Terms & Conditions.
@@ -41,23 +50,23 @@ const sections: Section[] = [
     id: "use-of-service",
     title: "1. Use of Service",
     content: (
-      <>
-        <h2 className="text-2xl font-bold mb-6 text-gray-900">
+      <div className="space-y-4">
+        <h2 className="text-lg font-bold text-gray-900">
           1. Use of Service
         </h2>
         <p className="text-gray-700 leading-relaxed text-lg">
           This tool is provided "as-is" for informational and improvement
           purposes. It does not guarantee job success on Upwork.
         </p>
-      </>
+      </div>
     ),
   },
   {
     id: "intellectual-property",
     title: "2. Intellectual Property",
     content: (
-      <>
-        <h2 className="text-2xl font-bold mb-6 text-gray-900">
+      <div className="space-y-4">
+        <h2 className="text-lg font-bold text-gray-900">
           2. Intellectual Property
         </h2>
         <p className="text-gray-700 leading-relaxed text-lg">
@@ -65,15 +74,15 @@ const sections: Section[] = [
           interface, and AI prompt engineering remain the property of{" "}
           <strong className="text-gray-900">Seventhstreet Studio</strong>.
         </p>
-      </>
+     </div>
     ),
   },
   {
     id: "no-guarantees",
     title: "3. No Guarantees",
     content: (
-      <>
-        <h2 className="text-2xl font-bold mb-6 text-gray-900">
+      <div className="space-y-4">
+        <h2 className="text-lg font-bold text-gray-900">
           3. No Guarantees
         </h2>
         <p className="text-gray-700 leading-relaxed text-lg">
@@ -81,43 +90,43 @@ const sections: Section[] = [
           perfect. You are responsible for reviewing and editing final outputs
           before using them publicly.
         </p>
-      </>
+      </div>
     ),
   },
   {
     id: "limitation-of-liability",
     title: "4. Limitation of Liability",
     content: (
-      <>
-        <h2 className="text-2xl font-bold mb-6 text-gray-900">
+      <div className="space-y-4">
+        <h2 className="text-lg font-bold text-gray-900">
           4. Limitation of Liability
         </h2>
         <p className="text-gray-700 leading-relaxed text-lg">
           We are not liable for any damages, loss of jobs, or profile issues
           resulting from use of this service.
         </p>
-      </>
+      </div>
     ),
   },
   {
     id: "modifications",
     title: "5. Modifications",
     content: (
-      <>
-        <h2 className="text-2xl font-bold mb-6 text-gray-900">
+      <div className="space-y-4">
+        <h2 className="text-lg font-bold text-gray-900">
           5. Modifications
         </h2>
-        <p className="text-gray-700 leading-relaxed mb-8 text-lg">
+        <p className="text-gray-700 leading-relaxed">
           We may update these terms from time to time. Continued use of the
           platform constitutes agreement to the latest version.
         </p>
 
-        <div className="mt-16 pt-8 border-t border-gray-200">
+        <div className=" pt-8 border-t border-gray-200">
           <p className="text-sm text-gray-500">
             Updated on November 25, 2025, 10:37 AM UTC
           </p>
         </div>
-      </>
+      </div>
     ),
   },
 ];
@@ -199,7 +208,11 @@ const TermsConditions: React.FC = () => {
                 whileInView="visible"
                 viewport={{ once: true, margin: "-100px" }}
                 variants={fadeInUp}
-                className={index < sections.length - 1 ? "pb-16" : "mb-16"}
+                className={
+                  index < sections.length - 1
+                    ? "p-4 border-b border-gray-200"
+                    : "p-4"
+                }
               >
                 {section.content}
               </motion.section>

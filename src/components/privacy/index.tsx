@@ -30,6 +30,15 @@ const sections: Section[] = [
         </h1>
         <p className="text-lg text-gray-600">Effective Date: 31st July 2025</p>
 
+        {/* Hero Image */}
+        <div className="">
+          <img
+            src={hero}
+            alt="hero image for privacy page"
+            className="w-full h-full object-cover  rounded-lg"
+          />
+        </div>
+
         <p className="text-lg text-gray-700 leading-relaxed">
           This Privacy Policy explains how Provolo ("we," "our," or "us")
           collects, uses, and protects your personal information when you use
@@ -304,7 +313,7 @@ const sections: Section[] = [
           </a>
         </p>
 
-        <div className="mt-16 pt-8 border-t border-gray-200">
+        <div className="mt-8 pt-8 border-t border-gray-200">
           <p className="text-sm text-gray-500">
             Updated on November 25, 2025, 10:37 AM UTC
           </p>
@@ -393,8 +402,8 @@ const PrivacyPolicy: React.FC = () => {
                 variants={fadeInUp}
                 className={
                   index < sections.length - 1
-                    ? "mb-16 pb-16 border-b border-gray-200"
-                    : "mb-16"
+                    ? "p-4 border-b border-gray-200"
+                    : "p-4"
                 }
               >
                 {section.content}
