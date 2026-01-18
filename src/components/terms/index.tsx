@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import hero from "@/assets/img/terms-of-service-page.jpeg";
 import { motion } from "motion/react";
 
 interface Section {
@@ -55,7 +54,7 @@ const sections: Section[] = [
         <h2 className="text-lg font-bold text-gray-900">
           1. Use of Service
         </h2>
-        <p className="text-gray-700 leading-relaxed">
+        <p className="text-gray-700 leading-relaxed text-lg">
           This tool is provided "as-is" for informational and improvement
           purposes. It does not guarantee job success on Upwork.
         </p>
@@ -70,7 +69,7 @@ const sections: Section[] = [
         <h2 className="text-lg font-bold text-gray-900">
           2. Intellectual Property
         </h2>
-        <p className="text-gray-700 leading-relaxed">
+        <p className="text-gray-700 leading-relaxed text-lg">
           All content generated using this tool is yours. However, the platform,
           interface, and AI prompt engineering remain the property of{" "}
           <strong className="text-gray-900">Seventhstreet Studio</strong>.
@@ -86,7 +85,7 @@ const sections: Section[] = [
         <h2 className="text-lg font-bold text-gray-900">
           3. No Guarantees
         </h2>
-        <p className="text-gray-700 leading-relaxed">
+        <p className="text-gray-700 leading-relaxed text-lg">
           We strive for accuracy, but results from the AI are not always
           perfect. You are responsible for reviewing and editing final outputs
           before using them publicly.
@@ -102,7 +101,7 @@ const sections: Section[] = [
         <h2 className="text-lg font-bold text-gray-900">
           4. Limitation of Liability
         </h2>
-        <p className="text-gray-700 leading-relaxed">
+        <p className="text-gray-700 leading-relaxed text-lg">
           We are not liable for any damages, loss of jobs, or profile issues
           resulting from use of this service.
         </p>
@@ -180,15 +179,13 @@ const TermsConditions: React.FC = () => {
           {/* Left Sidebar - Table of Contents */}
           <aside className="hidden lg:block w-72 flex-shrink-0">
             <div className="sticky top-32">
-              <h3 className="text-sm font-semibold text-gray-500 mb-4">
-                On this page
-              </h3>
+              <h3 className="font-semibold text-gray-500 mb-4">On this page</h3>
               <nav className="space-y-2">
                 {navigationItems.map(item => (
                   <button
                     key={item.id}
                     onClick={() => scrollToSection(item.id)}
-                    className={`block w-full text-left px-4 py-2 text-sm transition-all ${
+                    className={`block w-full text-left px-4 py-2 transition-all ${
                       activeSection === item.id
                         ? "text-blue-600 border-l-2 border-blue-600 bg-blue-50"
                         : "text-gray-600 hover:text-gray-900 border-l-2 border-transparent hover:border-gray-300"

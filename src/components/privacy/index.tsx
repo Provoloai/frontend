@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import hero from "@/assets/img/privacy-page.webp";
 import { motion } from "motion/react";
 
 interface Section {
@@ -54,10 +53,10 @@ const sections: Section[] = [
     title: "1. Information We Collect",
     content: (
       <>
-        <h2 className="text-lg font-bold mb-6 text-gray-900">
+        <h2 className="text-2xl font-bold mb-4 text-gray-900">
           1. Information We Collect
         </h2>
-        <p className="text-gray-700 mb-6 leading-relaxed">
+        <p className="text-gray-700 mb-6 leading-relaxed text-lg">
           When you use our services, we may collect the following types of
           information:
         </p>
@@ -69,17 +68,21 @@ const sections: Section[] = [
             </h3>
             <ul className="space-y-4 ml-6">
               <li className="text-gray-700 leading-relaxed">
-                <strong className="text-gray-900">Contact Information:</strong>{" "}
+                <strong className="text-gray-900 text-lg">
+                  Contact Information:
+                </strong>{" "}
                 Your name and email address when you sign up for our newsletter
                 or contact us.
               </li>
               <li className="text-gray-700 leading-relaxed">
-                <strong className="text-gray-900">Upwork Profile Data:</strong>{" "}
+                <strong className="text-gray-900 text-lg">
+                  Upwork Profile Data:
+                </strong>{" "}
                 The content of your Upwork profile, including your bio, skills,
                 project titles, and other details you provide to our tool for
                 optimization. We do{" "}
-                <strong className="text-gray-900">not</strong> collect or store
-                your Upwork password or login credentials.
+                <strong className="text-gray-900 text-lg">not</strong> collect
+                or store your Upwork password or login credentials.
               </li>
             </ul>
           </div>
@@ -89,12 +92,12 @@ const sections: Section[] = [
               Automatically Collected Information:
             </h3>
             <ul className="space-y-4 ml-6">
-              <li className="text-gray-700 leading-relaxed">
+              <li className="text-gray-700 leading-relaxed text-lg">
                 <strong className="text-gray-900">Technical Data:</strong>{" "}
                 Information about your device, browser type, IP address, and
                 operating system.
               </li>
-              <li className="text-gray-700 leading-relaxed">
+              <li className="text-gray-700 leading-relaxed text-lg">
                 <strong className="text-gray-900">Usage Data:</strong> Details
                 on how you interact with our website, such as the pages you
                 visit, the features you use, and the duration of your session.
@@ -111,32 +114,32 @@ const sections: Section[] = [
     title: "2. How We Use Your Information",
     content: (
       <>
-        <h2 className="text-lg font-bold mb-6 text-gray-900">
+        <h2 className="text-2xl font-bold mb-4 text-gray-900">
           2. How We Use Your Information
         </h2>
-        <p className="text-gray-700 mb-6 leading-relaxed">
+        <p className="text-gray-700 mb-6 leading-relaxed text-lg">
           We use the information we collect for the following purposes:
         </p>
 
         <ul className="space-y-4 ml-6">
-          <li className="text-gray-700 leading-relaxed">
+          <li className="text-gray-700 leading-relaxed text-lg">
             <strong className="text-gray-900">To Provide Our Services:</strong>{" "}
             We use your Upwork profile data to generate AI-optimized suggestions
             for your bio, skills, and project titles.
           </li>
-          <li className="text-gray-700 leading-relaxed">
+          <li className="text-gray-700 leading-relaxed text-lg">
             <strong className="text-gray-900">To Improve Our Product:</strong>{" "}
             We use aggregated usage data to understand user behavior, identify
             popular features, and make improvements to the functionality and
             user experience of Provolo.
           </li>
-          <li className="text-gray-700 leading-relaxed">
+          <li className="text-gray-700 leading-relaxed text-lg">
             <strong className="text-gray-900">To Communicate with You:</strong>{" "}
             We use your email address to send you updates about our product, new
             features, and other relevant information. You can opt out of these
             communications at any time.
           </li>
-          <li className="text-gray-700 leading-relaxed">
+          <li className="text-gray-700 leading-relaxed text-lg">
             <strong className="text-gray-900">To Ensure Security:</strong> We
             use technical data to help maintain the security and integrity of
             our services, including detecting and preventing fraud.
@@ -150,52 +153,54 @@ const sections: Section[] = [
     title: "3. How We Share and Disclose Inf...",
     content: (
       <>
-        <h2 className="text-lg font-bold mb-6 text-gray-900">
+        <h2 className="text-2xl font-bold mb-6 text-gray-900">
           3. How We Share and Disclose Information
         </h2>
-        <p className="text-gray-700 mb-6 leading-relaxed">
+        <p className="text-gray-700 mb-6 leading-relaxed text-lg">
           We do not sell, rent, or trade your personal information. We may share
           your information only in the following limited circumstances:
         </p>
 
         <ul className="space-y-6 ml-6">
-          <li className="text-gray-700 leading-relaxed">
+          <li className="text-gray-700 leading-relaxed text-lg">
             <strong className="text-gray-900">With Your Consent:</strong> We may
             share your information with third parties when you give us explicit
             permission to do so.
           </li>
-          <li>
-            <strong className="text-gray-900 block mb-3">
+          <li className="text-lg">
+            <strong className="text-gray-900 block mb-3 text-lg">
               With Third-Party Service Providers:
             </strong>
-            <p className="text-gray-700 mb-3 leading-relaxed">
+            <p className="text-gray-700 mb-3 leading-relaxed text-lg">
               We use third-party services to help us operate our business. These
               providers only have access to the information necessary to perform
               their specific tasks and are contractually obligated to protect
               your data. These services include:
             </p>
             <ul className="space-y-2 ml-6">
-              <li className="text-gray-700">
+              <li className="text-gray-700 text-lg">
                 <strong className="text-gray-900">Gemini AI (Google):</strong>{" "}
                 For AI-powered text optimization.
               </li>
-              <li className="text-gray-700">
+              <li className="text-gray-700 text-lg">
                 <strong className="text-gray-900">
                   Firebase & Firestore (Google):
                 </strong>{" "}
                 For secure backend services and temporary data storage.
               </li>
-              <li className="text-gray-700">
+              <li className="text-gray-700 text-lg">
                 <strong className="text-gray-900">Vite & TailwindCSS:</strong>{" "}
                 For frontend user interface design.
               </li>
             </ul>
           </li>
-          <li className="text-gray-700 leading-relaxed">
-            <strong className="text-gray-900">For Legal Reasons:</strong> We may
-            disclose your information if required by law, such as to comply with
-            a subpoena or other legal process, or to protect our rights, your
-            safety, or the safety of others.
+          <li className="text-gray-700 leading-relaxed text-lg">
+            <strong className="text-gray-900 text-lg">
+              For Legal Reasons:
+            </strong>{" "}
+            We may disclose your information if required by law, such as to
+            comply with a subpoena or other legal process, or to protect our
+            rights, your safety, or the safety of others.
           </li>
         </ul>
       </>
@@ -206,18 +211,18 @@ const sections: Section[] = [
     title: "4. Data Storage, Security, and Ret...",
     content: (
       <>
-        <h2 className="text-lg font-bold mb-6 text-gray-900">
+        <h2 className="text-2xl font-bold mb-6 text-gray-900 ">
           4. Data Storage, Security, and Retention
         </h2>
 
         <ul className="space-y-6 ml-6">
-          <li className="text-gray-700 leading-relaxed">
+          <li className="text-gray-700 leading-relaxed text-lg">
             <strong className="text-gray-900">Security:</strong> We use a
             combination of administrative, technical, and physical safeguards to
             protect your information from unauthorized access, use, or
             disclosure.
           </li>
-          <li className="text-gray-700 leading-relaxed">
+          <li className="text-gray-700 leading-relaxed text-lg">
             <strong className="text-gray-900">Data Retention:</strong> We only
             retain your personal information for as long as necessary to provide
             our services and fulfill the purposes outlined in this policy.
@@ -233,29 +238,31 @@ const sections: Section[] = [
     title: "5. Your Rights",
     content: (
       <>
-        <h2 className="text-lg font-bold mb-6 text-gray-900">5. Your Rights</h2>
-        <p className="text-gray-700 mb-6 leading-relaxed">
+        <h2 className="text-2xl font-bold mb-6 text-gray-900">
+          5. Your Rights
+        </h2>
+        <p className="text-gray-700 mb-6 leading-relaxed text-lg">
           You have the following rights regarding your personal data:
         </p>
 
         <ul className="space-y-4 ml-6">
-          <li className="text-gray-700 leading-relaxed">
+          <li className="text-gray-700 leading-relaxed text-lg">
             <strong className="text-gray-900">Access and Correction:</strong>{" "}
             You can request a copy of the personal information we hold about you
             and ask for any inaccuracies to be corrected.
           </li>
-          <li className="text-gray-700 leading-relaxed">
+          <li className="text-gray-700 leading-relaxed text-lg">
             <strong className="text-gray-900">Deletion:</strong> You can request
             the deletion of your personal data.
           </li>
-          <li className="text-gray-700 leading-relaxed">
+          <li className="text-gray-700 leading-relaxed text-lg">
             <strong className="text-gray-900">Opt-Out:</strong> You can
             unsubscribe from our marketing emails at any time by following the
             link at the bottom of the email.
           </li>
         </ul>
 
-        <p className="text-gray-700 mt-6 leading-relaxed">
+        <p className="text-gray-700 mt-6 leading-relaxed text-lg">
           To exercise any of these rights, please contact us at{" "}
           <a
             href="mailto:Heyprovolo@gmail.com"
@@ -273,10 +280,10 @@ const sections: Section[] = [
     title: "6. Changes to This Privacy Policy",
     content: (
       <>
-        <h2 className="text-lg font-bold mb-6 text-gray-900">
+        <h2 className="text-2xl font-bold mb-6 text-gray-900">
           6. Changes to This Privacy Policy
         </h2>
-        <p className="text-gray-700 leading-relaxed">
+        <p className="text-gray-700 leading-relaxed text-lg">
           We may update this Privacy Policy from time to time to reflect changes
           in our practices or for legal reasons. We will notify you of any
           significant changes by posting the new policy on our website. Your
@@ -291,12 +298,12 @@ const sections: Section[] = [
     title: "7. Contact Us",
     content: (
       <>
-        <h2 className="text-lg font-bold mb-6 text-gray-900">7. Contact Us</h2>
-        <p className="text-gray-700 mb-6 leading-relaxed">
+        <h2 className="text-2xl font-bold mb-6 text-gray-900">7. Contact Us</h2>
+        <p className="text-gray-700 mb-6 leading-relaxed text-lg">
           If you have any questions or concerns about this Privacy Policy or our
           data practices, please contact us at:
         </p>
-        <p className="text-gray-700 leading-relaxed">
+        <p className="text-gray-700 leading-relaxed text-lg">
           <strong className="text-gray-900">Email:</strong>{" "}
           <a
             href="mailto:Heyprovolo@gmail.com"
@@ -364,15 +371,13 @@ const PrivacyPolicy: React.FC = () => {
           {/* Left Sidebar - Table of Contents */}
           <aside className="hidden lg:block w-72 flex-shrink-0">
             <div className="sticky top-32">
-              <h3 className="text-sm font-semibold text-gray-500 mb-4">
-                On this page
-              </h3>
+              <h3 className="font-semibold text-gray-500 mb-4">On this page</h3>
               <nav className="space-y-2">
                 {navigationItems.map(item => (
                   <button
                     key={item.id}
                     onClick={() => scrollToSection(item.id)}
-                    className={`block w-full text-left px-4 py-2 text-sm transition-all ${
+                    className={`block w-full text-left px-4 py-2 transition-all ${
                       activeSection === item.id
                         ? "text-blue-600 border-l-2 border-blue-600 bg-blue-50"
                         : "text-gray-600 hover:text-gray-900 border-l-2 border-transparent hover:border-gray-300"
