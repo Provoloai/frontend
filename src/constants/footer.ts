@@ -4,7 +4,8 @@ import type { FooterConfig } from "@/types/footer";
 export const FOOTER_CONFIG: FooterConfig = {
   hero: {
     title: "Stop Guessing. Start Winning More Jobs on Upwork.",
-    description: "Your skills deserve to be seen and paid. Provolo helps you attract clients, rank higher, and turn views into interviews. Make every word work for you.",
+    description:
+      "Your skills deserve to be seen and paid. Provolo helps you attract clients, rank higher, and turn views into interviews. Make every word work for you.",
     ctaText: "Get Started",
     ctaLink: "/signup",
   },
@@ -12,9 +13,12 @@ export const FOOTER_CONFIG: FooterConfig = {
     copyright: "Provolo '25",
     links: [
       { label: "Careers", href: "https://buildsbyesuoladaniel.hashnode.space/provolo/open-collaborations" },
-      { label: "Terms & Conditions", href: "https://buildsbyesuoladaniel.hashnode.space/provolo/terms-and-conditions" },
+      { label: "Terms & Conditions", href: "/terms" },
       { label: "Privacy Policy", href: "/privacy" },
-      { label: "Help Center", href: "https://buildsbyesuoladaniel.hashnode.space/provolo/provoloai-project-documentation" },
+      {
+        label: "Help Center",
+        href: "https://buildsbyesuoladaniel.hashnode.space/provolo/provoloai-project-documentation",
+      },
     ],
     social: [
       { href: "https://x.com/provoloai", icon: Twitter },
@@ -45,12 +49,21 @@ export const FOOTER_ANIMATIONS = {
     animate: {
       y: [-3, 3, -3] as number[],
       rotate: [-0.5, 0.5, -0.5] as number[],
-      transition: { duration: 6, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" as const },
+      transition: {
+        duration: 6,
+        ease: "easeInOut",
+        repeat: Infinity,
+        repeatType: "reverse" as const,
+      },
     },
   },
   vector: {
     hidden: { opacity: 0, scale: 0.98 },
-    visible: { opacity: 0.5, scale: 1, transition: { duration: 0.5, ease: "easeOut" } },
+    visible: {
+      opacity: 0.5,
+      scale: 1,
+      transition: { duration: 0.5, ease: "easeOut" },
+    },
   },
   footer: {
     hidden: { opacity: 0, y: 8 },
@@ -62,7 +75,11 @@ export const FOOTER_ANIMATIONS = {
   },
   footerItem: {
     hidden: { opacity: 0, y: 4 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.25, ease: "easeOut" } },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.25, ease: "easeOut" },
+    },
   },
   socialHover: {
     scale: 1.05,
@@ -85,5 +102,6 @@ export const FOOTER_ANIMATIONS = {
 } as const;
 
 export const FOOTER_STYLES = {
-  linkBase: "p-3 flex items-center gap-3 rounded text-gray-500 hover:text-primary transition-all duration-200 text-sm",
+  linkBase:
+    "p-3 flex items-center gap-3 rounded text-gray-500 hover:text-primary transition-all duration-200 text-sm",
 } as const;
