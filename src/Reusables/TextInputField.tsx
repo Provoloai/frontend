@@ -10,7 +10,7 @@ interface TextInputFieldProps {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
   touched?: boolean;
-  type?: "text" | "password" | "email" | "number";
+  type?: "text" | "password" | "email" | "number" | "date";
   iconStart?: React.ReactNode;
   required?: boolean;
   error?: string;
