@@ -24,7 +24,8 @@ export const NAV_ITEMS: NavigationItem[] = [
   {
     to: "/resume",
     icon: <FileUser size={20} />,
-    label: "Resume Generator",
+    label: "Resume",
+    badge: { text: "New", color: "green" },
   },
 ];
 

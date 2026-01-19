@@ -1,5 +1,5 @@
 import { Controller } from "react-hook-form";
-import { User, Mail, Phone, MapPin, Briefcase, Linkedin } from "lucide-react";
+import { User, Mail, Phone, MapPin, Briefcase, Linkedin, Lightbulb } from "lucide-react";
 import { motion } from "motion/react";
 import TextInputField from "@/Reusables/TextInputField";
 
@@ -20,15 +20,15 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ control }) =
 
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       transition: { duration: 0.3 }
     }
   };
 
   return (
-    <motion.div 
+    <motion.div
       className="space-y-6"
       variants={containerVariants}
       initial="hidden"
@@ -93,7 +93,7 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ control }) =
           <div className="w-1 h-4 bg-blue-600 rounded-full"></div>
           Contact Information
         </h3>
-        
+
         <Controller
           name="personalInfo.email"
           control={control}
@@ -130,7 +130,7 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ control }) =
           <div className="w-1 h-4 bg-blue-600 rounded-full"></div>
           Location
         </h3>
-        
+
         <div className="grid grid-cols-2 gap-4">
           <Controller
             name="personalInfo.city"
@@ -167,7 +167,7 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ control }) =
           <div className="w-1 h-4 bg-blue-600 rounded-full"></div>
           Professional Links
         </h3>
-        
+
         <Controller
           name="personalInfo.linkedinUrl"
           control={control}
@@ -185,12 +185,18 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ control }) =
       </motion.div>
 
       {/* Helper Text */}
-      <motion.div 
-        variants={itemVariants}
-        className="bg-blue-50 border border-blue-200 rounded-lg p-4"
+      <motion.div
+        initial={{ opacity: 0, y: 5 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="bg-blue-50/80 border border-blue-100 rounded-xl p-4 flex items-start gap-3 shadow-sm"
       >
-        <p className="text-xs text-blue-800">
-          <span className="font-semibold">Tip:</span> Fill in all required fields marked with * to create a complete resume.
+        <div className="bg-blue-500 text-white p-1 rounded-full shrink-0 shadow-sm">
+          <Lightbulb className="w-3 h-3 fill-current" />
+        </div>
+        <p className="text-[11px] leading-relaxed text-blue-800">
+          <span className="font-bold underline decoration-blue-200 underline-offset-2">PRO TIP:</span>{" "}
+          Fill in all required fields marked with * to create a complete resume. Recruiters often verify these details first!
         </p>
       </motion.div>
     </motion.div>

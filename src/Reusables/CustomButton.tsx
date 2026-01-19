@@ -26,10 +26,10 @@ const CustomButton: React.FC<CustomButtonProps> = ({
       {isLoading ? (
         <>
           <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-          <span>{loadingText}</span>
+          <span className="text-xs">{loadingText}</span>
         </>
       ) : (
-        <span>{children}</span>
+        <span className="text-xs">{children}</span>
       )}
     </button>
   );
