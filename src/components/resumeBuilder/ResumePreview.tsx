@@ -1,5 +1,6 @@
 import CustomButton from "@/Reusables/CustomButton";
 import React from "react";
+import DOMPurify from "dompurify";
 
 interface ResumePreviewProps {
   formData: any;
@@ -21,8 +22,17 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ formData, sectionO
     alert("Download feature requires a PDF generation library. This is a demo placeholder.");
   };
 
+  const renderRichText = (html: string) => {
+    return (
+      <div
+        className="prose prose-sm max-w-none text-gray-700"
+        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(html) }}
+      />
+    );
+  };
+
   const renderSection = (sectionId: string) => {
-    switch(sectionId) {
+    switch (sectionId) {
       case 'personal':
         return (
           <div className="mb-8 text-center">
@@ -53,7 +63,7 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ formData, sectionO
             <h2 className="font-semibold uppercase text-xs tracking-wider text-gray-700 mb-2">
               Professional Summary
             </h2>
-            <p className="text-sm text-justify">{formData.summary}</p>
+            {renderRichText(formData.summary)}
           </section>
         );
 
@@ -85,7 +95,9 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ formData, sectionO
                   </span>
                 </div>
                 {exp.description && (
-                  <p className="mt-2 text-gray-700 text-sm whitespace-pre-wrap">{exp.description}</p>
+                  <div className="mt-2">
+                    {renderRichText(exp.description)}
+                  </div>
                 )}
               </div>
             ))}
@@ -120,9 +132,9 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ formData, sectionO
                   </span>
                 </div>
                 {edu.description && (
-                  <p className="mt-2 whitespace-pre-wrap text-gray-700 text-sm">
-                    {edu.description}
-                  </p>
+                  <div className="mt-2">
+                    {renderRichText(edu.description)}
+                  </div>
                 )}
               </div>
             ))}
@@ -164,7 +176,9 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ formData, sectionO
                   <p className="text-gray-500 text-xs">{formatDate(course.completionDate)}</p>
                 )}
                 {course.description && (
-                  <p className="mt-1 text-gray-700 text-sm">{course.description}</p>
+                  <div className="mt-1">
+                    {renderRichText(course.description)}
+                  </div>
                 )}
               </div>
             ))}
@@ -190,7 +204,9 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ formData, sectionO
                   </span>
                 </div>
                 {internship.description && (
-                  <p className="mt-2 text-gray-700 text-sm whitespace-pre-wrap">{internship.description}</p>
+                  <div className="mt-2">
+                    {renderRichText(internship.description)}
+                  </div>
                 )}
               </div>
             ))}

@@ -5,7 +5,7 @@ import { ExperienceForm } from "./ExperienceForm";
 import EducationForm from "./EducationForm";
 import SkillsForm from "./SkillsForm";
 import CustomButton from "@/Reusables/CustomButton";
-import { AdditionalSectionsForm } from "./AditionalSectionForm";
+import { AdditionalSectionsForm } from "./AdditionalSectionForm";
 import { CoursesForm } from "./CoursesForm";
 import { HobbiesForm } from "./HobbiesForm";
 import { InternshipsForm } from "./InternshipsForm";
@@ -133,16 +133,15 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({
         </AnimatePresence>
       </div>
 
-     <div className="flex justify-between items-center pt-6 border-t border-gray-200">
+      <div className="flex justify-between items-center pt-6 border-t border-gray-200">
         <div className="w-fit flex justify-end">
           <CustomButton
             onClick={handlePrevious}
             disabled={currentIndex === 0}
-            className={`btn-primary ${
-              currentIndex === 0
+            className={`btn-primary ${currentIndex === 0
                 ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                 : " text-gray-700"
-            }`}
+              }`}
           >
             Previous
           </CustomButton>
@@ -152,13 +151,12 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({
           {sections.map((section, index) => (
             <motion.div
               key={section.id}
-              className={`h-1.5 rounded-full transition-all ${
-                index === currentIndex
+              className={`h-1.5 rounded-full transition-all ${index === currentIndex
                   ? "w-8 bg-blue-600"
                   : index < currentIndex
                     ? "w-1.5 bg-blue-600"
                     : "w-1.5 bg-gray-300"
-              }`}
+                }`}
             />
           ))}
         </div>
@@ -176,6 +174,6 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({
           </CustomButton>
         </div>
       </div>
-      </>
+    </>
   );
 };
