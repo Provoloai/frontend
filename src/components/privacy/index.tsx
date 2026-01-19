@@ -357,8 +357,7 @@ const PrivacyPolicy: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg- px-6 py-16 sm:pt-52">
-    <div className="min-h-screen bg- px-6 py-16 sm:pt-52">
+    <div className="min-h-screen bg-white px-6 py-16 sm:pt-52">
       <div className="mx-auto max-w-7xl">
         <div className="flex gap-12">
           {/* Left Sidebar - Table of Contents */}

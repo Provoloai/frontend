@@ -19,7 +19,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   return (
     <button
       onClick={onClick}
-      className={`w-full py-3 px-6 text-white  rounded-lg flex items-center justify-center space-x-2 transition duration-150 ease-in-out ${className}`}
+      className={`w-full py-3 px-6 text-white  rounded-lg flex items-center justify-center space-x-2 transition duration-150 ease-in-out text-xs ${className}`}
       disabled={isLoading}
       {...props}
     >

@@ -31,13 +31,13 @@ const sections: Section[] = [
         <p className="text-lg text-gray-600">Effective Date: 31st July 2025</p>
 
         {/* Hero Image */}
-        <div className="">
+        {/* <div className="">
           <img
             src={hero}
             alt="hero image for privacy page"
             className="w-full h-full object-cover rounded-lg"
           />
-        </div>
+        </div> */}
 
         <p className="text-lg text-gray-700 leading-relaxed">
           By using <strong className="text-gray-900">Provolo</strong>, you agree
