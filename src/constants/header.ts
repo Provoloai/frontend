@@ -11,7 +11,7 @@ export const HEADER_CONFIG: HeaderConfig = {
     {
       name: "Provolo Learn",
       description: "A space to level up your online presence, land more gigs, and grow your career.",
-      href: "https://x.com/i/communities/1971577100684431600",
+      href: "https://x.company/i/communities/1971577100684431600",
       icon: ChartPieIcon,
     },
     {
@@ -28,7 +28,7 @@ export const HEADER_CONFIG: HeaderConfig = {
   navigation: [
     { name: "Features", href: "#features", isExternal: false },
     { name: "FAQs", href: "/faq", isExternal: false },
-    { name: "Blogs", href: "https://provoloai.substack.com/", isExternal: true },
+    { name: "Blog", href: "/blog", isExternal: false },
     // { name: "Blogs", href: "/blog", isExternal: false },
   ],
 };

@@ -30,11 +30,12 @@ const sections: Section[] = [
         </h1>
         <p className="text-lg text-gray-600">Effective Date: 31st July 2025</p>
 
+
+        {/* Hero Image */}
+        {/* <img src={hero} alt='hero image for privacy page' /> */}
+
         <p className="text-lg text-gray-700 leading-relaxed">
-          This Privacy Policy explains how Provolo ("we," "our," or "us")
-          collects, uses, and protects your personal information when you use
-          our website and services. By using Provolo, you agree to the terms
-          outlined in this policy.
+          This Privacy Policy explains how Provolo (“we,” “our,” or “us”) collects, uses, and protects your information when you use our website and services. By using Provolo, you agree to the practices described below.
         </p>
       </div>
     ),
@@ -256,10 +257,10 @@ const sections: Section[] = [
         <p className="text-gray-700 mt-6 leading-relaxed text-lg">
           To exercise any of these rights, please contact us at{" "}
           <a
-            href="mailto:Heyprovolo@gmail.com"
+            href="mailto:support@provolo.org"
             className="text-blue-600 hover:text-blue-700 underline"
           >
-            Heyprovolo@gmail.com
+            Support@provolo.org
           </a>
           .
         </p>
@@ -297,14 +298,14 @@ const sections: Section[] = [
         <p className="text-gray-700 leading-relaxed text-lg">
           <strong className="text-gray-900">Email:</strong>{" "}
           <a
-            href="mailto:Heyprovolo@gmail.com"
+            href="mailto:support@provolo.org"
             className="text-blue-600 hover:text-blue-700 underline"
           >
-            Heyprovolo@gmail.com
+            Support@provolo.org
           </a>
         </p>
 
-        <div className="mt-16 pt-8 border-t border-gray-200">
+        <div className="mt-8 pt-8 border-t border-gray-200">
           <p className="text-sm text-gray-500">
             Updated on November 25, 2025, 10:37 AM UTC
           </p>
@@ -356,7 +357,7 @@ const PrivacyPolicy: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg- px-6 py-16 sm:pt-52">
+    <div className="min-h-screen bg-white px-6 py-16 sm:pt-52">
       <div className="mx-auto max-w-7xl">
         <div className="flex gap-12">
           {/* Left Sidebar - Table of Contents */}
@@ -368,11 +369,10 @@ const PrivacyPolicy: React.FC = () => {
                   <button
                     key={item.id}
                     onClick={() => scrollToSection(item.id)}
-                    className={`block w-full text-left px-4 py-2 transition-all ${
-                      activeSection === item.id
-                        ? "text-blue-600 border-l-2 border-blue-600 bg-blue-50"
-                        : "text-gray-600 hover:text-gray-900 border-l-2 border-transparent hover:border-gray-300"
-                    }`}
+                    className={`block w-full text-left px-4 py-2 text-sm transition-all ${activeSection === item.id
+                      ? 'text-blue-600 border-l-2 border-blue-600 bg-blue-50'
+                      : 'text-gray-600 hover:text-gray-900 border-l-2 border-transparent hover:border-gray-300'
+                      }`}
                   >
                     {item.title}
                   </button>
@@ -393,8 +393,8 @@ const PrivacyPolicy: React.FC = () => {
                 variants={fadeInUp}
                 className={
                   index < sections.length - 1
-                    ? "mb-16 pb-16 border-b border-gray-200"
-                    : "mb-16"
+                    ? "p-4 border-b border-gray-200"
+                    : "p-4"
                 }
               >
                 {section.content}

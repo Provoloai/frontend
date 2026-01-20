@@ -174,7 +174,7 @@ export default function Notifications() {
 
                                             {/* Expanded Content */}
                                             {isExpanded && (
-                                                <div className="px-6  animate-in fade-in slide-in-from-top-1 duration-200">
+                                                <div className="px-6  animate-in fade-in slide-in-from-top-1 duration-200 pb-3">
                                                     <div className="ml-[52px] p-4 bg-gray-50 rounded-lg border border-gray-200">
                                                         <p className="text-sm text-gray-700 leading-relaxed">
                                                             {notification.fullContent}

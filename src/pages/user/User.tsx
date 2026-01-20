@@ -75,7 +75,7 @@ export default function User({ open }: any) {
   return (
     <Menu as="div" className="rounded-lg z-10 mt-3 w-full">
       <div className="flex">
-        <MenuButton className="relative flex pl-3 w-full items-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-opacity duration-200 hover:opacity-80">
+        <MenuButton className="relative flex pl-3 w-full items-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-opacity duration-200 hover:opacity-80 text-start">
           <span className="absolute" aria-hidden="true" />
 
           {
