@@ -1,5 +1,5 @@
 import { Controller } from "react-hook-form";
-import { Trash2, Briefcase, Calendar, MapPin, Building2, ChevronDown, ChevronUp, GripVertical, Lightbulb } from "lucide-react";
+import { Trash2, Briefcase, Calendar, MapPin, Building2, ChevronDown, ChevronUp, GripVertical } from "lucide-react";
 import { motion, AnimatePresence, Reorder, useDragControls } from "motion/react";
 import React, { useState } from "react";
 import CustomButton from "@/Reusables/CustomButton";
@@ -251,7 +251,6 @@ export const InternshipsForm: React.FC<InternshipsFormProps> = ({ control, watch
   const addInternship = () => {
     const newId = Date.now().toString();
     setValue('internships', [
-      ...internships,
       {
         id: newId,
         position: '',
@@ -261,7 +260,8 @@ export const InternshipsForm: React.FC<InternshipsFormProps> = ({ control, watch
         startDate: '',
         endDate: '',
         description: '',
-      }
+      },
+      ...internships, // Add existing items after the new one
     ]);
     setExpandedId(newId);
   };

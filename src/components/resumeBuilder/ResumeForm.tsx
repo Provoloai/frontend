@@ -126,7 +126,11 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({
               <AdditionalSectionsForm
                 availableSections={availableSections}
                 addedSections={additionalSections}
-                onAddSection={addAdditionalSection}
+                onAddSection={(sectionId) => {
+                  addAdditionalSection(sectionId);
+                  // Immediately navigate to the newly added section
+                  setActiveSection(sectionId);
+                }}
               />
             )}
           </motion.div>
@@ -151,10 +155,11 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({
           {sections.map((section, index) => (
             <motion.div
               key={section.id}
-              className={`h-1.5 rounded-full transition-all ${index === currentIndex
-                  ? "w-8 bg-blue-600"
+              className={`h-1.5 rounded-full transition-all ${
+                index === currentIndex
+                  ? "w-8 bg-primary"
                   : index < currentIndex
-                    ? "w-1.5 bg-blue-600"
+                    ? "w-1.5 bg-primary"
                     : "w-1.5 bg-gray-300"
                 }`}
             />

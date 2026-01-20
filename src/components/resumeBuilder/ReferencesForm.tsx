@@ -216,7 +216,6 @@ export const ReferencesForm: React.FC<ReferencesFormProps> = ({ control, watch, 
   const addReference = () => {
     const newId = Date.now().toString();
     setValue('references', [
-      ...references,
       {
         id: newId,
         name: '',
@@ -224,7 +223,8 @@ export const ReferencesForm: React.FC<ReferencesFormProps> = ({ control, watch, 
         company: '',
         email: '',
         phone: '',
-      }
+      },
+      ...references, // Add existing items after the new one
     ]);
     setExpandedId(newId);
   };

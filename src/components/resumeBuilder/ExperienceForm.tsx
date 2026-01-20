@@ -1,5 +1,5 @@
 import { Controller } from "react-hook-form";
-import { Trash2, Briefcase, Calendar, MapPin, Building2, ChevronDown, ChevronUp, GripVertical, Lightbulb } from "lucide-react";
+import { Trash2, Briefcase, Calendar, MapPin, Building2, ChevronDown, ChevronUp, GripVertical } from "lucide-react";
 import { motion, AnimatePresence, Reorder, useDragControls } from "motion/react";
 import React, { useState } from "react";
 import CustomButton from "@/Reusables/CustomButton";
@@ -270,7 +270,6 @@ export const ExperienceForm: React.FC<ExperienceFormProps> = ({ control, watch, 
   const addExperience = () => {
     const newId = Date.now().toString();
     setValue('experience', [
-      ...experience,
       {
         id: newId,
         jobTitle: '',
@@ -281,7 +280,8 @@ export const ExperienceForm: React.FC<ExperienceFormProps> = ({ control, watch, 
         endDate: '',
         currentlyWorking: false,
         description: '',
-      }
+      },
+      ...experience, // Add existing items after the new one
     ]);
     setExpandedId(newId);
   };

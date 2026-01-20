@@ -177,12 +177,12 @@ export const LanguagesForm: React.FC<LanguagesFormProps> = ({ control, watch, se
   const addLanguage = () => {
     const newId = Date.now().toString();
     setValue('languages', [
-      ...languages,
       {
         id: newId,
         name: '',
         proficiency: 'intermediate',
-      }
+      },
+      ...languages, // Add existing items after the new one
     ]);
     setExpandedId(newId);
   };

@@ -62,9 +62,9 @@ export const ResumeEditor: React.FC = () => {
   }
 
   return (
-    <div className="h-[calc(100vh)] bg-gray-50 overflow-hidden w-full pt-12">
-      <div className="h-full flex flex-col p-6">
-        <div className="flex-1 grid grid-cols-2 gap-1 min-h-0">
+    <div className="flex-1 h-screen bg-gray-50 overflow-hidden pt-10">
+      <div className="h-full flex flex-col p-8">
+        <div className="flex-1 grid grid-cols-2 gap-1 min-h-0 overflow-hidden">
           <div className="bg-white rounded-lg shadow-sm p-6 flex flex-col h-full overflow-hidden">
             <ResumeForm
               activeSection={activeSection}
