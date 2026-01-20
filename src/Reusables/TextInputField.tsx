@@ -89,13 +89,13 @@ const MenuBar = ({ editor }: { editor: any }) => {
   ];
 
   return (
-    <div className="flex flex-wrap gap-1 p-2 border-b border-gray-200 bg-gray-50 rounded-t-md">
+    <div className="flex flex-wrap gap-1 p-2 border-b border-gray-100 bg-gray-50/50 rounded-t-xl">
       {buttons.map((btn, i) => (
         <button
           key={i}
           type="button"
           onClick={btn.action}
-          className={`p-1.5 rounded hover:bg-gray-200 transition-colors ${btn.isActive ? "bg-gray-200 text-blue-600" : "text-gray-600"
+          className={`p-1.5 rounded-lg hover:bg-gray-200 transition-colors ${btn.isActive ? "bg-gray-200 text-gray-900" : "text-gray-500"
             }`}
           title={btn.title}
         >
@@ -165,8 +165,8 @@ const RichTextEditorInternal = ({
     >
       <MenuBar editor={editor} />
       <div
-        className={`prose prose-sm max-w-none p-3 min-h-[200px] focus-within:outline-none 
-          ${isInvalid ? "bg-red-50" : ""}
+        className={`prose prose-sm max-w-none p-4 min-h-[200px] focus-within:outline-none 
+          ${isInvalid ? "bg-red-50/50" : ""}
         `}
       >
         <EditorContent editor={editor} />
@@ -220,13 +220,13 @@ const TextInputField = React.forwardRef<
       <div className="w-full">
         <label
           htmlFor={id}
-          className={`block text-sm mb-2 font-medium ${disabled ? "text-gray-400" : "text-gray-700"
+          className={`block text-xs mb-2 font-bold capitalize tracking-wider ${disabled ? "text-gray-400" : "text-gray-900"
             }`}
         >
           {label}
         </label>
         <div
-          className={`relative ${isRichText ? "rounded-md border border-gray-300 overflow-hidden" : ""
+          className={`relative ${isRichText ? "rounded-xl border border-gray-200 overflow-hidden" : ""
             }`}
         >
           {isRichText ? (
@@ -253,15 +253,15 @@ const TextInputField = React.forwardRef<
                   id={id}
                   name={name}
                   rows={rows}
-                  className={`w-full p-3 border rounded-md transition duration-150 ease-in-out placeholder:text-sm
+                  className={`w-full p-3.5 border rounded-xl transition-all duration-200 placeholder:text-gray-400 placeholder:text-sm
                   ${isInvalid
-                      ? "ring-1 ring-red-600/10 ring-inset bg-red-50 placeholder-red-700 border-red-300"
-                      : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      ? "border-red-200 bg-red-50/50 focus:ring-red-100 focus:border-red-300"
+                      : "border-gray-200 bg-gray-50/30 focus:bg-white focus:border-gray-400 focus:ring-4 focus:ring-gray-100"
                     }
-                  ${iconStart ? "pl-10" : ""} 
+                  ${iconStart ? "pl-11" : ""} 
                   ${disabled
-                      ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed focus:ring-0 focus:border-gray-200"
-                      : "bg-gray-50"
+                      ? "bg-gray-100/50 text-gray-400 border-gray-100 cursor-not-allowed focus:ring-0"
+                      : ""
                     }`}
                   placeholder={placeholder}
                   value={inputValue}
@@ -277,16 +277,16 @@ const TextInputField = React.forwardRef<
                   type={currentType ?? "text"}
                   id={id}
                   name={name}
-                  className={`w-full p-3 border rounded-md transition duration-150 ease-in-out placeholder:text-sm
+                  className={`w-full p-3.5 border rounded-xl transition-all duration-200 placeholder:text-gray-400 placeholder:text-sm
                   ${isInvalid
-                      ? "ring-1 ring-red-600/10 ring-inset bg-red-50 placeholder-red-700 border-red-300"
-                      : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      ? "border-red-200 bg-red-50/50 focus:ring-red-100 focus:border-red-300"
+                      : "border-gray-200 bg-gray-50/30 focus:bg-white focus:border-gray-400 focus:ring-4 focus:ring-gray-100"
                     }
-                  ${iconStart ? "pl-10" : ""} 
-                  ${isPassword ? "pr-10" : ""}
+                  ${iconStart ? "pl-11" : ""} 
+                  ${isPassword ? "pr-11" : ""}
                   ${disabled
-                      ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed focus:ring-0 focus:border-gray-200"
-                      : "bg-gray-50"
+                      ? "bg-gray-100/50 text-gray-400 border-gray-100 cursor-not-allowed focus:ring-0"
+                      : ""
                     }`}
                   placeholder={placeholder}
                   value={inputValue}
@@ -314,12 +314,12 @@ const TextInputField = React.forwardRef<
         </div>
 
         {error && error.length > 0 ? (
-          <p className="text-xs text-red-700 mt-1">{error}</p>
+          <p className="text-[11px] font-medium text-red-600 mt-1.5 ml-1">{error}</p>
         ) : (
           isInvalid ? (
-            <p className="text-xs text-red-700 mt-1">Required</p>
+            <p className="text-[11px] font-medium text-red-600 mt-1.5 ml-1">This field is required</p>
           ) : (
-            helperText && <p className="text-xs text-gray-500 mt-1">{helperText}</p>
+            helperText && <p className="text-[11px] text-gray-400 mt-1.5 ml-1">{helperText}</p>
           )
         )}
       </div>

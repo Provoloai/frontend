@@ -1,3 +1,4 @@
+import { motion, AnimatePresence } from "motion/react";
 import { ResumeEditor } from "@/components/resumeBuilder/ResumeEditor";
 import CustomButton from "@/Reusables/CustomButton";
 import { useResumeStore } from "@/stores/resumeStore";
@@ -192,101 +193,117 @@ export const Resume: React.FC = () => {
         </div>
       </div>
 
-      {/* Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between p-5 border-b border-gray-200">
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900">Create New Resume</h2>
-                <p className="text-sm text-gray-600 mt-0.5">Choose how you'd like to get started</p>
-              </div>
-              <button
-                onClick={() => setShowModal(false)}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <X className="w-5 h-5 text-gray-500" />
-              </button>
-            </div>
-
-            {/* Modal Body */}
-            <div className="p-6">
-              <div className="space-y-3">
-                {/* Manual Creation */}
-                <div
-                  onClick={() => handleMethodSelect('manual')}
-                  className="flex items-start gap-4 p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 cursor-pointer transition-all group"
-                >
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-blue-200 transition-colors">
-                    <FileText className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-base font-semibold text-gray-900 mb-1">
-                      Create from Scratch
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      Build your resume manually with our guided step-by-step editor
-                    </p>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0 group-hover:text-blue-600 transition-colors" />
+      {/* Modal Overlay */}
+      <AnimatePresence>
+        {showModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/20 flex items-center justify-center z-50 p-4"
+            onClick={(e: React.MouseEvent) => {
+              if (e.target === e.currentTarget) setShowModal(false);
+            }}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              className="bg-white rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col border border-gray-200"
+              onClick={(e: React.MouseEvent) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div className="flex items-center justify-between p-6 border-b border-gray-100">
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-900">Create New Resume</h2>
+                  <p className="text-xs text-gray-500 mt-0.5">Choose your preferred method</p>
                 </div>
-
-                {/* Upload Resume */}
-                <label className="flex items-start gap-4 p-4 border-2 border-gray-200 rounded-lg hover:border-green-500 hover:bg-green-50 cursor-pointer transition-all group">
-                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-green-200 transition-colors">
-                    <Upload className="w-5 h-5 text-green-600" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-base font-semibold text-gray-900 mb-1">
-                      Upload Existing Resume
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      Import your current resume (PDF) and customize it with our editor
-                    </p>
-                    {uploadError && (
-                      <p className="text-xs text-red-600 mt-2">{uploadError}</p>
-                    )}
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0 group-hover:text-green-600 transition-colors" />
-                  <input
-                    type="file"
-                    accept=".pdf"
-                    onChange={handleFileUpload}
-                    className="hidden"
-                  />
-                </label>
-
-                {/* LinkedIn Import */}
-                <div
-                  onClick={() => handleMethodSelect('linkedin')}
-                  className="flex items-start gap-4 p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 cursor-pointer transition-all group"
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
                 >
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-blue-200 transition-colors">
-                    <Linkedin className="w-5 h-5 text-blue-700" />
+                  <X className="w-4 h-4 text-gray-400" />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-4 overflow-y-auto">
+                <div className="space-y-2">
+                  {/* Manual Creation */}
+                  <div
+                    onClick={() => handleMethodSelect('manual')}
+                    className="flex items-center gap-4 p-4 rounded-lg cursor-pointer transition-colors hover:bg-gray-50 border border-transparent hover:border-gray-200 group"
+                  >
+                    <div className="shrink-0">
+                      <FileText className="w-5 h-5 text-gray-400 group-hover:text-blue-600 transition-colors" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm font-medium text-gray-900">
+                        Create from Scratch
+                      </h3>
+                      <p className="text-xs text-gray-500 mt-0.5">
+                        Build your resume manually with our guide
+                      </p>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-gray-400" />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-base font-semibold text-gray-900 mb-1">
-                      Import from LinkedIn
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      Automatically populate your resume using your LinkedIn profile data
-                    </p>
+
+                  {/* Upload Resume */}
+                  <label className="flex items-center gap-4 p-4 rounded-lg cursor-pointer transition-colors hover:bg-gray-50 border border-transparent hover:border-gray-200 group">
+                    <div className="shrink-0">
+                      <Upload className="w-5 h-5 text-gray-400 group-hover:text-green-600 transition-colors" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm font-medium text-gray-900">
+                        Upload Existing PDF
+                      </h3>
+                      <p className="text-xs text-gray-500 mt-0.5">
+                        Import and edit your current resume
+                      </p>
+                      {uploadError && (
+                        <p className="text-xs text-red-500 mt-1">{uploadError}</p>
+                      )}
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-gray-400" />
+                    <input
+                      type="file"
+                      accept=".pdf"
+                      onChange={handleFileUpload}
+                      className="hidden"
+                    />
+                  </label>
+
+                  {/* LinkedIn Import */}
+                  <div
+                    onClick={() => handleMethodSelect('linkedin')}
+                    className="flex items-center gap-4 p-4 rounded-lg cursor-pointer transition-colors hover:bg-gray-50 border border-transparent hover:border-gray-200 group"
+                  >
+                    <div className="shrink-0">
+                      <Linkedin className="w-5 h-5 text-gray-400 group-hover:text-blue-700 transition-colors" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm font-medium text-gray-900">
+                        Import from LinkedIn
+                      </h3>
+                      <p className="text-xs text-gray-500 mt-0.5">
+                        Quickly sync your profile data
+                      </p>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-gray-400" />
                   </div>
-                  <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0 group-hover:text-blue-600 transition-colors" />
                 </div>
               </div>
-            </div>
 
-            {/* Modal Footer */}
-            <div className="p-5 border-t border-gray-200 bg-gray-50 rounded-b-xl">
-              <p className="text-xs text-gray-500 text-center">
-                You can edit and customize your resume after creation
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+              {/* Modal Footer */}
+              <div className="p-4 border-t border-gray-100 bg-gray-50/30">
+                <p className="text-[10px] text-gray-400 text-center">
+                  You can further customize your resume later
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
