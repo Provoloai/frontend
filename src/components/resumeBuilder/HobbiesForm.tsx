@@ -173,12 +173,12 @@ export const HobbiesForm: React.FC<HobbiesFormProps> = ({ control, watch, setVal
   const addHobby = () => {
     const newId = Date.now().toString();
     setValue('hobbies', [
-      ...hobbies,
       {
         id: newId,
         name: '',
         description: '',
-      }
+      },
+      ...hobbies, // Add existing items after the new one
     ]);
     setExpandedId(newId);
   };

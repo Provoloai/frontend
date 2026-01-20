@@ -270,7 +270,6 @@ const EducationForm: React.FC<EducationFormProps> = ({ control, watch, setValue 
   const addEducation = () => {
     const newId = Date.now().toString();
     setValue('education', [
-      ...education,
       {
         id: newId,
         degree: '',
@@ -281,7 +280,8 @@ const EducationForm: React.FC<EducationFormProps> = ({ control, watch, setValue 
         endDate: '',
         currentlyStudying: false,
         description: '',
-      }
+      },
+      ...education, // Add existing items after the new one
     ]);
     setExpandedId(newId);
   };

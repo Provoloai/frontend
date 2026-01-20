@@ -126,7 +126,11 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({
               <AdditionalSectionsForm
                 availableSections={availableSections}
                 addedSections={additionalSections}
-                onAddSection={addAdditionalSection}
+                onAddSection={(sectionId) => {
+                  addAdditionalSection(sectionId);
+                  // Immediately navigate to the newly added section
+                  setActiveSection(sectionId);
+                }}
               />
             )}
           </motion.div>

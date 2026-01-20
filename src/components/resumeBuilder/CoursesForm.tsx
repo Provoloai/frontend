@@ -204,14 +204,14 @@ export const CoursesForm: React.FC<CoursesFormProps> = ({ control, watch, setVal
   const addCourse = () => {
     const newId = Date.now().toString();
     setValue('courses', [
-      ...courses,
       {
         id: newId,
         name: '',
         institution: '',
         completionDate: '',
         description: '',
-      }
+      },
+      ...courses, // Add existing items after the new one
     ]);
     setExpandedId(newId);
   };
