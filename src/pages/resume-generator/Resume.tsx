@@ -42,7 +42,7 @@ export const Resume: React.FC = () => {
   }
 
   return (
-    <div className="bg-gray-50 py-8 px-4 flex flex-col overflow-y-auto relative w-full">
+    <div className="flex-1 bg-gray-50 py-8 px-4 flex flex-col overflow-y-auto relative">
       <div className="mx-auto p-6 sm:p-10 w-full">
         <div className="flex justify-between mb-6 pt-10">
           <div>
