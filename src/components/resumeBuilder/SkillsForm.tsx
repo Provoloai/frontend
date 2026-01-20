@@ -177,8 +177,8 @@ const SkillsForm: React.FC<SkillsFormProps> = ({ control, watch, setValue }) => 
   const addSkill = () => {
     const newId = Date.now().toString();
     setValue('skills', [
-      ...skills,
-      { id: newId, name: '', level: 3 }
+      { id: newId, name: '', level: 3 },
+      ...skills, // Add existing items after the new one
     ]);
     setExpandedId(newId);
   };
