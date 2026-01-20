@@ -2,23 +2,32 @@ import { motion, AnimatePresence } from "motion/react";
 import { ResumeEditor } from "@/components/resumeBuilder/ResumeEditor";
 import CustomButton from "@/Reusables/CustomButton";
 import { useResumeStore } from "@/stores/resumeStore";
-import { FileText, ChevronRight, Upload, Linkedin, X, Plus } from "lucide-react";
+import {
+  FileText,
+  ChevronRight,
+  Upload,
+  Linkedin,
+  X,
+  Plus,
+} from "lucide-react";
 import { useState } from "react";
 
 export const Resume: React.FC = () => {
-  const [step, setStep] = useState<'method' | 'builder'>('method');
+  const [step, setStep] = useState<"method" | "builder">("method");
   const [showModal, setShowModal] = useState(false);
-  const [uploadError, setUploadError] = useState('');
-  const resetResume = useResumeStore((state) => state.resetResume);
-  const loadFromJSON = useResumeStore((state) => state.loadFromJSON);
+  const [uploadError, setUploadError] = useState("");
+  const resetResume = useResumeStore(state => state.resetResume);
+  const loadFromJSON = useResumeStore(state => state.loadFromJSON);
 
   const handleMethodSelect = (method: string) => {
-    if (method === 'manual') {
+    if (method === "manual") {
       resetResume();
       setShowModal(false);
-      setStep('builder');
-    } else if (method === 'linkedin') {
-      alert('LinkedIn integration requires OAuth setup. This is a demo placeholder.');
+      setStep("builder");
+    } else if (method === "linkedin") {
+      alert(
+        "LinkedIn integration requires OAuth setup. This is a demo placeholder."
+      );
       setShowModal(false);
     }
   };
@@ -27,27 +36,39 @@ export const Resume: React.FC = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.type !== 'application/pdf') {
-      setUploadError('Please upload a PDF file');
+    if (file.type !== "application/pdf") {
+      setUploadError("Please upload a PDF file");
       return;
     }
 
-    setUploadError('');
+    setUploadError("");
     setShowModal(false);
-    alert('PDF parsing requires a backend service. This is a demo placeholder.');
+    alert(
+      "PDF parsing requires a backend service. This is a demo placeholder."
+    );
   };
 
-  if (step === 'builder') {
+  if (step === "builder") {
     return <ResumeEditor />;
   }
 
   return (
-    <div className="flex-1 bg-gray-50 py-8 px-4 flex flex-col overflow-y-auto relative">
+    <div className="flex-1 h-screen bg-gray-50 overflow-y-auto pt-10">
       <div className="mx-auto p-6 sm:p-10 w-full">
-        <div className="flex justify-between mb-6 pt-10">
+        <div className="flex justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">My Resumes</h1>
-            <p className="text-sm text-gray-600 mt-1">Create and manage your resumes</p>
+            <p className="text-sm text-gray-600 mt-1">
+              Create and manage your resumes
+            </p>
+          </div>
+          <div className="w-fit flex justify-end">
+            <CustomButton
+              onClick={() => setShowModal(true)}
+              className="btn-primary flex items-center gap-2"
+            >
+              Create New Resume
+            </CustomButton>
           </div>
 
           {/* <button
@@ -172,7 +193,8 @@ export const Resume: React.FC = () => {
 
           <h3 className="text-lg font-semibold text-gray-900 mb-2">No resumes yet</h3>
           <p className="text-sm text-gray-600 mb-6 max-w-md mx-auto">
-            Get started by creating your first resume. Choose from multiple creation methods to get started quickly.
+            Get started by creating your first resume. Choose from multiple
+            creation methods to get started quickly.
           </p>
           {/* <button
             onClick={() => setShowModal(true)}
