@@ -65,9 +65,9 @@ export const Resume: React.FC = () => {
           <div className="w-fit flex justify-end">
             <CustomButton
               onClick={() => setShowModal(true)}
-              className="btn-primary flex items-center gap-2"
+              className="btn-primary flex items-center gap-2 w-fit h-fit my-auto"
             >
-              Create New Resume
+              <Plus size={15} />
             </CustomButton>
           </div>
 
