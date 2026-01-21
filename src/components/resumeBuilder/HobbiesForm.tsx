@@ -3,32 +3,22 @@ import { motion, AnimatePresence } from "motion/react";
 import React, { useState, useMemo } from "react";
 
 const SUGGESTED_HOBBIES = [
-  // Tech & Development
-  "Open Source Contributing", "Hackathons", "System Design", "Cloud Computing", "Technical Writing", "Cybersecurity", "Ethics in AI", "Blockchain Technology",
-  "Raspberry Pi Tinkering", "Mobile App Development", "Game Dev Projects", "Algorithm Challenges", "Competitive Coding", "Frontend Architecture",
-  // UI/UX & Creative Tech
-  "User Research", "Wireframing", "Typography", "Color Theory", "Motion Design", "3D Modeling", "Prototyping", "Design Systems",
-  "Accessibility Advocacy", "Brand Identity", "Photography", "Digital Illustration", "UI Animation", "Interaction Design",
-  // Professional & Non-Technical
-  "Public Speaking", "Mentoring", "Product Management", "Data Analytics", "Stock Market Analysis", "Personal Finance", "Strategic Planning",
-  "Project Management", "Agile Methodologies", "Networking Events", "Community Organizing", "Soft Skills Training", "Content Strategy",
-  // Sports & Fitness
-  "Basketball", "Soccer", "Volleyball", "Running", "Yoga", "Swimming", "Cycling", "Tennis", "Golf", "Martial Arts",
-  "Rock Climbing", "Hiking", "Gym Training", "Pilates", "CrossFit", "Surfing", "Skiing", "Badminton", "Cricket", "Rugby",
-  // Creative Arts
-  "Painting", "Drawing", "Sketching", "Pottery", "Knitting", "Crocheting", "Sewing", "Embroidery", "Calligraphy",
-  "Graphic Design", "Digital Art", "Origami", "Scrapbooking", "Woodworking", "Sculpture", "Interior Design", "Fashion Design",
+  // Adventure & Outdoors
+  "Hiking", "Rock Climbing", "Surfing", "Camping", "Scuba Diving", "Paragliding", "Bungee Jumping", "Urban Exploration", "Sailing", "Backpacking", "Road Trips", "Fishing", "Stargazing",
+  // Creative & Arts
+  "Painting", "Sketching", "Pottery", "Photography", "Street Art", "DJing", "Sculpting", "Creative Writing", "Calligraphy", "Crochet", "Knitting", "Origami", "Woodworking", "Interior Design",
+  // Culinary
+  "Baking", "Gourmet Cooking", "Coffee Roasting", "Wine Tasting", "Mixology", "BBQing", "Gastronomy", "Fermentation", "Tea Ceremony",
   // Games & Strategy
-  "Chess", "Board Games", "Video Games", "Competitive Gaming", "Card Games", "Poker", "Billiards", "Darts", "Magic Tricks", "Tabletop RPGs",
-  // Languages & Learning
-  "Learning Languages", "Reading", "Writing", "Blogging", "Journaling", "History", "Philosophy", "Astronomy", "Science Experiments",
-  "Debate", "Podcasts", "Documentaries",
+  "Chess", "Board Games", "Retro Gaming", "Competitive Gaming (Esports)", "Tabletop RPGs (D&D)", "Billiards", "Darts", "Poker", "Puzzle Solving", "Geocaching",
+  // Fitness & Wellness
+  "Yoga", "Pilates", "Martial Arts", "Padel", "Pickleball", "Marathon Running", "HIIT", "Meditation", "Swimming", "Cycling", "Badminton", "Tennis",
+  // Music & Performance
+  "Playing Guitar", "Playing Piano", "Playing Drums", "Singing", "Songwriting", "Music Production", "Improv Comedy", "Theater Performance", "Salsa Dancing", "Street Dance",
+  // Collection & Discovery
+  "Vinyl Collecting", "Gardening", "Astronomy", "Bird Watching", "Antique Hunting", "Coin Collecting", "Philately", "Watch Collecting",
   // Social & Community
-  "Volunteering", "Mentoring", "Tutoring", "Community Service", "Event Planning", "Networking", "Wine Tasting", "Cooking", "Baking", "Mixology",
-  // Outdoors & Travel
-  "Traveling", "Backpacking", "Camping", "Fishing", "Gardening", "Bird Watching", "Urban Exploration", "Road Trips", "Sailing", "Scuba Diving", "Snorkeling",
-  // Music & Performing Arts
-  "Playing Guitar", "Playing Piano", "Playing Drums", "Singing", "Songwriting", "Music Production", "Dancing", "Acting", "Improv", "Stand-up Comedy", "Theater"
+  "Volunteering", "Animal Fostering", "Book Clubs", "Community Gardening", "Podcasting", "Journaling", "Historical Reenactment"
 ];
 
 interface HobbiesFormProps {
@@ -110,12 +100,12 @@ export const HobbiesForm: React.FC<HobbiesFormProps> = ({ watch, setValue }) => 
       {/* Search Section */}
       <div className="space-y-4">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute left-3 top-[11px] w-4 h-4 text-gray-400" />
           <input
             type="text"
             disabled={hobbies.length >= 10}
             placeholder={hobbies.length >= 10 ? "Limit of 10 hobbies reached" : "Search or add custom hobby..."}
-            className={`w-full pl-10 pr-4 py-2 bg-white border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm ${hobbies.length >= 10 ? "bg-gray-50 border-gray-200 cursor-not-allowed italic" : "border-gray-200"
+            className={`w-full pl-10 pr-4 py-2 bg-white border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors shadow-sm ${hobbies.length >= 10 ? "bg-gray-50 border-gray-200 cursor-not-allowed" : "border-gray-200"
               }`}
             onChange={(e) => setSearchQuery(e.target.value)}
             value={searchQuery}
@@ -125,11 +115,22 @@ export const HobbiesForm: React.FC<HobbiesFormProps> = ({ watch, setValue }) => 
               }
             }}
           />
-          {hobbies.length >= 10 && (
-            <div className="mt-2 text-[10px] text-amber-600 font-medium bg-amber-50 px-3 py-1 rounded-lg border border-amber-100 w-fit">
-              Maximum of 10 hobbies allowed. Remove one to add a new one.
-            </div>
-          )}
+        </div>
+
+        {/* Warning Message Container with fixed height to prevent wobble */}
+        <div className="h-6 mt-1">
+          <AnimatePresence>
+            {hobbies.length >= 10 && (
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -5 }}
+                className="text-[10px] text-amber-600 font-medium bg-amber-50 px-3 py-1 rounded-lg border border-amber-100 w-fit"
+              >
+                Maximum of 10 hobbies allowed. Remove one to add a new one.
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         <div className="max-h-60 overflow-y-auto p-1 no-scrollbar">

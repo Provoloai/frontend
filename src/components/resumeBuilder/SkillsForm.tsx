@@ -1,199 +1,84 @@
-import { Controller } from "react-hook-form";
-import { Trash2, Zap, ChevronDown, ChevronUp, GripVertical, Lightbulb } from "lucide-react";
-import { motion, AnimatePresence, Reorder, useDragControls } from "motion/react";
-import React, { useState } from "react";
-import CustomButton from "@/Reusables/CustomButton";
-import TextInputField from "@/Reusables/TextInputField";
+import { Heart, Lightbulb, Search, X, Zap } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import React, { useState, useMemo } from "react";
+
+const SUGGESTED_SKILLS = [
+  // Programming & Engineering
+  "JavaScript", "TypeScript", "Python", "Java", "C++", "C#", "Go", "Rust", "Swift", "Kotlin", "PHP", "Ruby",
+  "React", "Vue.js", "Angular", "Next.js", "Node.js", "Express", "Django", "Flask", "Spring Boot", "Laravel",
+  "Microservices", "Serverless Architecture", "CLEAN Code", "TDD", "System Design", "API Development",
+  // Cloud & DevOps
+  "AWS", "Azure", "Google Cloud (GCP)", "Docker", "Kubernetes", "CI/CD", "Git", "Terraform", "Ansible",
+  "Monitoring & Alerting", "Linux Server Administration", "Cybersecurity", "Network Security",
+  // Data & AI
+  "SQL", "PostgreSQL", "MongoDB", "Redis", "Elasticsearch", "Machine Learning", "Artificial Intelligence",
+  "Deep Learning", "Natural Language Processing (NLP)", "Large Language Models (LLMs)", "Data Engineering",
+  // Design & UI/UX
+  "Figma", "Adobe Creative Suite", "Design Systems", "User Research", "Wireframing", "Prototyping",
+  "Information Architecture", "Visual Design", "Accessibility (A11y)", "Interaction Design",
+  // Business & Product
+  "Product Management", "Strategic Planning", "Market Research", "Product Roadmap", "Growth Hacking",
+  "Business Analysis", "Stakeholder Management", "Project Management", "Agile Methodologies", "Scrum",
+  // Marketing & Growth
+  "SEO", "SEM", "Content Strategy", "Digital Marketing", "CRM", "Salesforce", "Google Analytics", "Data Visualization",
+  // Core Professional
+  "Leadership", "Team Management", "Communication", "Problem Solving", "Critical Thinking", "Adaptability",
+  "Time Management", "Conflict Resolution", "Public Speaking", "Technical Writing", "Creative Direction"
+];
 
 interface SkillsFormProps {
-  control: any;
   watch: any;
   setValue: any;
 }
 
-interface SkillItemProps {
-  skill: any;
-  index: number;
-  control: any;
-  isExpanded: boolean;
-  onToggle: () => void;
-  onRemove: (id: string) => void;
-}
-
-const SkillItem: React.FC<SkillItemProps> = ({
-  skill,
-  index,
-  control,
-  isExpanded,
-  onToggle,
-  onRemove
-}) => {
-  const controls = useDragControls();
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.3 }
-    },
-    exit: {
-      opacity: 0,
-      scale: 0.95,
-      transition: { duration: 0.2 }
-    }
-  };
-
-  return (
-    <Reorder.Item
-      value={skill}
-      variants={itemVariants}
-      initial="hidden"
-      animate="visible"
-      exit="exit"
-      layout
-      className="relative group"
-      dragListener={false}
-      dragControls={controls}
-    >
-      <div
-        className={`border-2 rounded-xl transition-all duration-200 overflow-hidden ${isExpanded ? "border-blue-300 bg-white shadow-md text-gray-900" : "border-gray-200 bg-gray-50 hover:border-gray-300"
-          }`}
-      >
-        {/* Accordion Header */}
-        <div
-          className="flex items-center justify-between p-4 cursor-pointer select-none"
-          onClick={onToggle}
-        >
-          <div className="flex items-center gap-3 pr-8">
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isExpanded ? "bg-purple-100" : "bg-gray-200"
-              }`}>
-              <Zap className={`w-4 h-4 ${isExpanded ? "text-purple-600" : "text-gray-500"}`} />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-sm font-semibold text-gray-900 line-clamp-1">
-                {skill.name || "Skill Name"}
-              </span>
-              <span className="text-xs text-gray-500 line-clamp-1">
-                Proficiency Level: {skill.level || 3}/5
-              </span>
-            </div>
-          </div>
-          <div className="flex items-center shrink-0">
-            {isExpanded ? (
-              <ChevronUp className="w-5 h-5 text-gray-400" />
-            ) : (
-              <ChevronDown className="w-5 h-5 text-gray-400" />
-            )}
-          </div>
-        </div>
-
-        {/* Accordion Content */}
-        <AnimatePresence>
-          {isExpanded && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
-            >
-              <div className="px-5 pb-5 pt-2 space-y-4 border-t border-gray-100">
-                {/* Skill Name */}
-                <Controller
-                  name={`skills.${index}.name`}
-                  control={control}
-                  render={({ field }: { field: any }) => (
-                    <TextInputField
-                      {...field}
-                      id={`skill-${index}`}
-                      label="Skill Name"
-                      placeholder="e.g. JavaScript, Project Management"
-                      iconStart={<Zap className="w-4 h-4 text-gray-400" />}
-                    />
-                  )}
-                />
-
-                {/* Level (Hidden Field for now, or just showing we can add more here) */}
-                <div className="flex items-center gap-4">
-                  <span className="text-xs font-medium text-gray-600">Level:</span>
-                  <div className="flex gap-1">
-                    {[1, 2, 3, 4, 5].map((lvl) => (
-                      <Controller
-                        key={lvl}
-                        name={`skills.${index}.level`}
-                        control={control}
-                        render={({ field }: { field: any }) => (
-                          <button
-                            type="button"
-                            onClick={() => field.onChange(lvl)}
-                            className={`w-6 h-6 rounded flex items-center justify-center text-xs transition-colors ${field.value >= lvl ? "bg-purple-600 text-white" : "bg-gray-100 text-gray-400 hover:bg-gray-200"
-                              }`}
-                          >
-                            {lvl}
-                          </button>
-                        )}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-
-      {/* Floating Drag Handle */}
-      <div
-        className={`absolute -left-2 -top-2 p-1.5 bg-white border border-gray-200 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-full shadow-md transition-all duration-300 z-10 cursor-grab active:cursor-grabbing ${isExpanded ? "opacity-100 scale-100" : "opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100"
-          }`}
-        title="Drag to reorder"
-        onPointerDown={(e) => controls.start(e)}
-      >
-        <GripVertical className="w-4 h-4" />
-      </div>
-
-      {/* Floating Trash Button */}
-      <motion.button
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-          e.stopPropagation();
-          onRemove(skill.id);
-        }}
-        className={`absolute -right-2 -top-2 p-1.5 bg-white border border-gray-200 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-full shadow-md transition-all duration-300 z-10 ${isExpanded ? "opacity-100 scale-100" : "opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100"
-          }`}
-        title="Remove Skill"
-      >
-        <Trash2 className="w-4 h-4" />
-      </motion.button>
-    </Reorder.Item>
-  );
-};
-
-const SkillsForm: React.FC<SkillsFormProps> = ({ control, watch, setValue }) => {
+export const SkillsForm: React.FC<SkillsFormProps> = ({ watch, setValue }) => {
   const skills = watch('skills') || [];
-  const [expandedId, setExpandedId] = useState<string | null>(skills[0]?.id || null);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const addSkill = () => {
+  const filteredSkills = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    const suggestions = SUGGESTED_SKILLS.filter(skill =>
+      skill.toLowerCase().includes(query)
+    );
+
+    // If query is not empty and doesn't exactly match any suggestion,
+    // add it as a custom option at the beginning
+    const exactMatch = SUGGESTED_SKILLS.find(s => s.toLowerCase() === query);
+    if (query && !exactMatch) {
+      return [searchQuery.trim(), ...suggestions];
+    }
+
+    return suggestions;
+  }, [searchQuery]);
+
+  const addSkill = (name: string) => {
+    if (!name.trim()) return;
+
+    // Check if limit reached
+    if (skills.length >= 10) {
+      setSearchQuery("");
+      return;
+    }
+
     const newId = Date.now().toString();
-    setValue('skills', [
-      { id: newId, name: '', level: 3 },
-      ...skills, // Add existing items after the new one
-    ]);
-    setExpandedId(newId);
+    const newSkill = {
+      id: newId,
+      name: name.trim(),
+      level: 3, // Default level for compatibility
+    };
+
+    // Check if skill already exists
+    if (skills.some((s: any) => s.name.toLowerCase() === name.trim().toLowerCase())) {
+      setSearchQuery("");
+      return;
+    }
+
+    setValue('skills', [...skills, newSkill]);
+    setSearchQuery("");
   };
 
   const removeSkill = (id: string) => {
     setValue('skills', skills.filter((skill: any) => skill.id !== id));
-    if (expandedId === id) setExpandedId(null);
-  };
-
-  const handleReorder = (newOrder: any[]) => {
-    setValue('skills', newOrder, { shouldDirty: true, shouldValidate: true });
-  };
-
-  const toggleExpand = (id: string) => {
-    setExpandedId(expandedId === id ? null : id);
   };
 
   const containerVariants = {
@@ -212,51 +97,122 @@ const SkillsForm: React.FC<SkillsFormProps> = ({ control, watch, setValue }) => 
       animate="visible"
     >
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h3 className="text-base font-semibold text-gray-900">Skills & Expertise</h3>
-          <p className="text-xs text-gray-600 mt-1">Showcase your technical and soft skills</p>
+      <div>
+        <h3 className="text-base font-semibold text-gray-900">Skills & Expertise</h3>
+        <p className="text-xs text-gray-600 mt-1">Select up to 10 skills that highlight your professional expertise</p>
+      </div>
+
+      {/* Search Section */}
+      <div className="space-y-4">
+        <div className="relative">
+          <Search className="absolute left-3 top-[11px] w-4 h-4 text-gray-400" />
+          <input
+            type="text"
+            disabled={skills.length >= 10}
+            placeholder={skills.length >= 10 ? "Limit of 10 skills reached" : "Search or add custom skill..."}
+            className={`w-full pl-10 pr-4 py-2 bg-white border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors shadow-sm ${skills.length >= 10 ? "bg-gray-50 border-gray-200 cursor-not-allowed" : "border-gray-200"
+              }`}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            value={searchQuery}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && searchQuery.trim()) {
+                addSkill(searchQuery);
+              }
+            }}
+          />
         </div>
 
-        <div className="w-fit flex justify-end">
-          <CustomButton onClick={addSkill} className="btn-primary">
-            Add Skill
-          </CustomButton>
+        {/* Warning Message Container with fixed height to prevent wobble */}
+        <div className="h-6 mt-1">
+          <AnimatePresence>
+            {skills.length >= 10 && (
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -5 }}
+                className="text-[10px] text-amber-600 font-medium bg-amber-50 px-3 py-1 rounded-lg border border-amber-100 w-fit"
+              >
+                Maximum of 10 skills allowed. Remove one to add a new one.
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        <div className="max-h-60 overflow-y-auto p-1 no-scrollbar">
+          <div className="flex flex-wrap gap-2">
+            {filteredSkills.slice(0, 50).map((skillName, idx) => {
+              const isSelected = skills.some((s: any) => s.name.toLowerCase() === skillName.toLowerCase());
+              const isCustom = searchQuery.trim() && !SUGGESTED_SKILLS.some(s => s.toLowerCase() === skillName.toLowerCase());
+
+              return (
+                <button
+                  key={`${skillName}-${idx}`}
+                  type="button"
+                  onClick={() => {
+                    if (isSelected) {
+                      const skillToRemove = skills.find((s: any) => s.name.toLowerCase() === skillName.toLowerCase());
+                      if (skillToRemove) removeSkill(skillToRemove.id);
+                    } else {
+                      addSkill(skillName);
+                    }
+                  }}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 border flex items-center gap-1.5 ${isSelected
+                    ? "bg-blue-600 border-blue-600 text-white shadow-sm"
+                    : isCustom
+                      ? "bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100"
+                      : "bg-white border-gray-200 text-gray-600 hover:border-blue-300 hover:bg-blue-50"
+                    }`}
+                >
+                  {isCustom && !isSelected && <span className="text-[10px] uppercase font-bold text-amber-500">Add New:</span>}
+                  {skillName}
+                  {isSelected && <X className="w-3 h-3" />}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
-      {/* Skills List */}
-      <Reorder.Group
-        axis="y"
-        values={skills}
-        onReorder={handleReorder}
-        className="space-y-4 px-2"
-      >
-        <AnimatePresence mode="popLayout" initial={false}>
-          {skills.map((skill: any, index: number) => (
-            <SkillItem
-              key={skill.id}
-              skill={skill}
-              index={index}
-              control={control}
-              isExpanded={expandedId === skill.id}
-              onToggle={() => toggleExpand(skill.id)}
-              onRemove={removeSkill}
-            />
-          ))}
-        </AnimatePresence>
-      </Reorder.Group>
+      {/* Selected Skills Summary */}
+      <div className="space-y-4">
+        {skills.length > 0 && (
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Selected ({skills.length})</span>
+            <div className="h-px flex-1 bg-gray-100"></div>
+          </div>
+        )}
+
+        <div className="flex flex-wrap gap-2">
+          <AnimatePresence mode="popLayout">
+            {skills.map((skill: any) => (
+              <motion.div
+                key={skill.id}
+                layout
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                className="group flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full border border-blue-100 hover:bg-red-50 hover:text-red-700 hover:border-red-100 transition-all cursor-pointer shadow-sm"
+                onClick={() => removeSkill(skill.id)}
+                title="Click to remove"
+              >
+                <span className="text-xs font-semibold">{skill.name}</span>
+                <X className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 transition-opacity" />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+      </div>
 
       {/* Empty State */}
-      {skills.length === 0 && (
+      {skills.length === 0 && searchQuery === "" && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300"
+          className="text-center py-10 bg-gray-50/50 rounded-2xl border-2 border-dashed border-gray-200"
         >
-          <Zap className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-          <p className="text-sm text-gray-600 mb-1">No skills added yet</p>
-          <p className="text-xs text-gray-500">Click "Add Skill" to get started</p>
+          <Zap className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+          <p className="text-sm font-medium text-gray-900">Choose from suggested skills</p>
+          <p className="text-xs text-gray-500 mt-1">Or search to add your own special expertise</p>
         </motion.div>
       )}
 
@@ -278,19 +234,19 @@ const SkillsForm: React.FC<SkillsFormProps> = ({ control, watch, setValue }) => 
           <div className="flex items-start gap-3">
             <div className="w-1 h-1 rounded-full bg-blue-400 mt-1.5 flex-shrink-0"></div>
             <p className="text-[11px] text-blue-800 leading-relaxed">
-              Include both technical and soft skills to show a well-rounded profile
+              Include both **technical** and **soft skills** to show a well-rounded profile
             </p>
           </div>
           <div className="flex items-start gap-3">
             <div className="w-1 h-1 rounded-full bg-blue-400 mt-1.5 flex-shrink-0"></div>
             <p className="text-[11px] text-blue-800 leading-relaxed">
-              Be honest about proficiency levels to set realistic expectations
+              Focus on skills most **relevant** to the target role to stand out
             </p>
           </div>
           <div className="flex items-start gap-3">
             <div className="w-1 h-1 rounded-full bg-blue-400 mt-1.5 flex-shrink-0"></div>
             <p className="text-[11px] text-blue-800 leading-relaxed">
-              Focus on skills most relevant to the target role
+              List specific tools and frameworks you've mastered to show **practical depth**
             </p>
           </div>
         </div>

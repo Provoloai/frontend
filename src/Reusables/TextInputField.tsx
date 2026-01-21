@@ -253,7 +253,7 @@ const TextInputField = React.forwardRef<
                   id={id}
                   name={name}
                   rows={rows}
-                  className={`w-full p-3.5 border rounded-xl transition-all duration-200 placeholder:text-gray-400 placeholder:text-sm
+                  className={`w-full p-3.5 border rounded-xl transition-all duration-200 placeholder:text-gray-400 placeholder:text-xs
                   ${isInvalid
                       ? "border-red-200 bg-red-50/50 focus:ring-red-100 focus:border-red-300"
                       : "border-gray-200 bg-gray-50/30 focus:bg-white focus:border-gray-400 focus:ring-4 focus:ring-gray-100"
@@ -277,7 +277,7 @@ const TextInputField = React.forwardRef<
                   type={currentType ?? "text"}
                   id={id}
                   name={name}
-                  className={`w-full p-3.5 border rounded-xl transition-all duration-200 placeholder:text-gray-400 placeholder:text-sm
+                  className={`w-full p-3.5 border rounded-xl transition-all duration-200 placeholder:text-gray-400 placeholder:text-xs
                   ${isInvalid
                       ? "border-red-200 bg-red-50/50 focus:ring-red-100 focus:border-red-300"
                       : "border-gray-200 bg-gray-50/30 focus:bg-white focus:border-gray-400 focus:ring-4 focus:ring-gray-100"

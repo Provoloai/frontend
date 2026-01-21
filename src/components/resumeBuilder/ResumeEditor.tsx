@@ -105,8 +105,8 @@ export const ResumeEditor: React.FC<ResumeEditorProps> = ({ onBack }) => {
               onClick={onBack}
               className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
             >
-              <ArrowLeft className="w-5 h-5" />
-              <span className="font-medium">Back to My Resumes</span>
+              <ArrowLeft className="w-3 h-3" />
+              <span className="font-medium text-xs">Back to My Resumes</span>
             </button>
           </div>
         )}
