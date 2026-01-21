@@ -15,6 +15,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { useState } from "react";
+import CustomSnackbar from "@/Reusables/CustomSnackbar";
 
 export const Resume: React.FC = () => {
   const [step, setStep] = useState<"method" | "builder">("method");
@@ -22,10 +23,18 @@ export const Resume: React.FC = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [resumeToDeleteId, setResumeToDeleteId] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState("");
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    color: "primary" | "neutral" | "danger" | "success" | "warning";
+  }>({
+    open: false,
+    message: "",
+    color: "success",
+  });
 
   // Get resume management functions
   const resumes = useResumeStore((state) => state.resumes);
-  const currentResumeId = useResumeStore((state) => state.currentResumeId);
   const createNewResume = useResumeStore((state) => state.createNewResume);
   const setCurrentResumeId = useResumeStore((state) => state.setCurrentResumeId);
   const deleteResume = useResumeStore((state) => state.deleteResume);
@@ -35,7 +44,7 @@ export const Resume: React.FC = () => {
 
   const handleMethodSelect = (method: string) => {
     if (method === "manual") {
-      const newId = createNewResume();
+      createNewResume();
       setShowModal(false);
       setStep("builder");
     } else if (method === "linkedin") {
@@ -77,6 +86,11 @@ export const Resume: React.FC = () => {
       deleteResume(resumeToDeleteId);
       setShowDeleteModal(false);
       setResumeToDeleteId(null);
+      setSnackbar({
+        open: true,
+        message: "Resume deleted forever",
+        color: "danger",
+      });
     }
   };
 
@@ -287,6 +301,8 @@ export const Resume: React.FC = () => {
                     <div className="mb-auto">
                       <h3 className="text-sm font-bold text-gray-900 group-hover:text-blue-600 transition-colors truncate leading-tight">
                         {resume.name}
+                        {/* {resume.name || "Untitled Position"} */}
+
                       </h3>
                       <p className="text-[11px] text-gray-500 font-medium truncate mt-1">
                         {resume.jobTitle || "Untitled Position"}
@@ -501,6 +517,13 @@ export const Resume: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <CustomSnackbar
+        open={snackbar.open}
+        snackbarMessage={snackbar.message}
+        snackbarColor={snackbar.color}
+        close={() => setSnackbar({ ...snackbar, open: false })}
+      />
     </div>
   );
 };
