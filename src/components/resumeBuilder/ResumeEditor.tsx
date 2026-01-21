@@ -1,30 +1,44 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { ResumeForm } from "./ResumeForm";
 import { ResumePreview } from "./ResumePreview";
 import { ReviewMode } from "./ReviewMode";
+import { useResumeStore } from "@/stores/resumeStore";
+import { ArrowLeft } from "lucide-react";
 
-export const ResumeEditor: React.FC = () => {
-  const [activeSection, setActiveSection] = useState('personal');
+interface ResumeEditorProps {
+  onBack?: () => void;
+}
+
+export const ResumeEditor: React.FC<ResumeEditorProps> = ({ onBack }) => {
+  const [activeSection, setActiveSection] = useState("personal");
   const [additionalSections, setAdditionalSections] = useState<string[]>([]);
   const [isReviewMode, setIsReviewMode] = useState(false);
   const [sectionOrder, setSectionOrder] = useState([
-    'personal', 'summary', 'experience', 'education', 'skills'
+    "personal",
+    "summary",
+    "experience",
+    "education",
+    "skills",
   ]);
 
-  const { control, handleSubmit, watch, setValue } = useForm({
+  const currentResumeId = useResumeStore((state) => state.currentResumeId);
+  const loadResume = useResumeStore((state) => state.loadResume);
+  const saveCurrentResume = useResumeStore((state) => state.saveCurrentResume);
+
+  const { control, handleSubmit, watch, setValue, reset } = useForm({
     defaultValues: {
       personalInfo: {
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
-        city: '',
-        country: '',
-        professionalTitle: '',
-        linkedinUrl: '',
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        city: "",
+        country: "",
+        professionalTitle: "",
+        linkedinUrl: "",
       },
-      summary: '',
+      summary: "",
       experience: [],
       education: [],
       skills: [],
@@ -33,19 +47,39 @@ export const ResumeEditor: React.FC = () => {
       hobbies: [],
       languages: [],
       references: [],
-    }
+    },
   });
 
   const formData = watch();
+
+  // Load resume data when currentResumeId changes
+  useEffect(() => {
+    if (currentResumeId) {
+      const data = loadResume(currentResumeId);
+      if (data) {
+        reset(data);
+      }
+    }
+  }, [currentResumeId, loadResume, reset]);
+
+  // Auto-save every 2 seconds when data changes
+  useEffect(() => {
+    if (!currentResumeId) return;
+
+    const timeoutId = setTimeout(() => {
+      saveCurrentResume(currentResumeId, formData);
+    }, 2000);
+
+    return () => clearTimeout(timeoutId);
+  }, [formData, currentResumeId, saveCurrentResume]);
 
   const addAdditionalSection = (sectionId: string) => {
     if (!additionalSections.includes(sectionId)) {
       const newAdditionalSections = [...additionalSections, sectionId];
       setAdditionalSections(newAdditionalSections);
-      
-      // Insert before 'additional' section
-      const newOrder = sectionOrder.filter(id => id !== 'additional');
-      newOrder.push(sectionId, 'additional');
+
+      const newOrder = sectionOrder.filter((id) => id !== "additional");
+      newOrder.push(sectionId, "additional");
       setSectionOrder(newOrder);
     }
   };
@@ -64,6 +98,19 @@ export const ResumeEditor: React.FC = () => {
   return (
     <div className="flex-1 h-screen bg-gray-50 overflow-hidden pt-10">
       <div className="h-full flex flex-col p-8">
+        {/* Back Button */}
+        {onBack && (
+          <div className="mb-4">
+            <button
+              onClick={onBack}
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              <span className="font-medium">Back to My Resumes</span>
+            </button>
+          </div>
+        )}
+
         <div className="flex-1 grid grid-cols-2 gap-1 min-h-0 overflow-hidden">
           <div className="bg-white rounded-lg shadow-sm p-6 flex flex-col h-full overflow-hidden">
             <ResumeForm
