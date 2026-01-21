@@ -11,6 +11,7 @@ import { HobbiesForm } from "./HobbiesForm";
 import { InternshipsForm } from "./InternshipsForm";
 import { LanguagesForm } from "./LanguagesForm";
 import { ReferencesForm } from "./ReferencesForm";
+import useSession from "@/hooks/useSession";
 
 
 
@@ -41,6 +42,9 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({
   setValue,
   onReview,
 }) => {
+  const { user, loading: loadingUserData } = useSession();
+  console.log(user);
+  
   const availableSections = [
     { id: 'courses', label: 'Courses', icon: 'FileText' },
     { id: 'internships', label: 'Internships', icon: 'Briefcase' },
