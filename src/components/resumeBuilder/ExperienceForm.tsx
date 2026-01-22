@@ -317,7 +317,7 @@ export const ExperienceForm: React.FC<ExperienceFormProps> = ({ control, watch, 
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="text-base font-semibold text-gray-900">Work Experience</h3>
+          <h3 className="text-base font-semibold text-gray-900">Experiences</h3>
           <p className="text-xs text-gray-600 mt-1">Add your relevant work history</p>
         </div>
 
