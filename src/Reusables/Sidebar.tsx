@@ -101,9 +101,8 @@ const Sidebar = () => {
 
   return (
     <motion.div
-      className={`relative h-screen flex flex-col border-r border-gray-200 text-sm bg-white px-3 py-6 z-50 ${
-        isOpen ? "w-72" : "w-20"
-      }`}
+      className={`relative h-screen flex flex-col border-r border-gray-200 text-sm bg-white px-3 py-6 z-50 ${isOpen ? "w-72" : "w-20"
+        }`}
       animate={{ width: isOpen ? 288 : 80 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
     >

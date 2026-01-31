@@ -29,7 +29,7 @@ const FeaturesContent: React.FC<FeaturesContentProps> = ({
 
         {/* Steps header */}
         <motion.div variants={FEATURES_ANIMATIONS.fadeUp}>
-          <p className="font-headingmd lg:text-base text-[18px]">{config.sectionTitle}</p>
+          <p className="font-headingmd lg:text-3xl text-[18px]">{config.sectionTitle}</p>
         </motion.div>
       </motion.div>
 

@@ -1,120 +1,76 @@
-// store/resumeStore.ts
-
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { ResumeStore, PersonalInfo, Experience, Education, Skill } from '../types/resume';
+
+// Simple resume list item for the dashboard
+export interface ResumeListItem {
+  id: string;
+  name: string; // User's full name
+  jobTitle: string; // Professional title
+  lastModified: string;
+}
+
+// Your existing resume structure
+interface ResumeData {
+  personalInfo: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    city: string;
+    country: string;
+    professionalTitle: string;
+    linkedinUrl: string;
+  };
+  summary: string;
+  experience: any[];
+  education: any[];
+  skills: any[];
+  courses: any[];
+  internships: any[];
+  hobbies: any[];
+  languages: any[];
+  references: any[];
+}
+
+interface ResumeStore {
+  // Current resume being edited
+  currentResumeId: string | null;
+  
+  // List of all resumes (for the dashboard)
+  resumes: ResumeListItem[];
+  
+  // Actions
+  createNewResume: () => string;
+  loadResume: (id: string) => ResumeData | null;
+  saveCurrentResume: (id: string, data: ResumeData) => void;
+  deleteResume: (id: string) => void;
+  getAllResumes: () => ResumeListItem[];
+  setCurrentResumeId: (id: string | null) => void;
+}
 
 export const useResumeStore = create<ResumeStore>()(
   persist(
-    (set) => ({
-      personalInfo: {
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
-        city: '',
-        country: '',
-        professionalTitle: '',
-        linkedinUrl: '',
-      },
-      summary: '',
-      experience: [],
-      education: [],
-      skills: [],
+    (set, get) => ({
+      currentResumeId: null,
+      resumes: [],
 
-      setPersonalInfo: (info: Partial<PersonalInfo>) =>
+      // Create a new resume and return its ID
+      createNewResume: () => {
+        const newId = `resume_${Date.now()}`;
+        const newResume: ResumeListItem = {
+          id: newId,
+          name: 'Untitled Resume',
+          jobTitle: '',
+          lastModified: new Date().toISOString(),
+        };
+
         set((state) => ({
-          personalInfo: { ...state.personalInfo, ...info },
-        })),
+          resumes: [newResume, ...state.resumes],
+          currentResumeId: newId,
+        }));
 
-      setSummary: (summary: string) => set({ summary }),
-
-      addExperience: () =>
-        set((state) => ({
-          experience: [
-            ...state.experience,
-            {
-              id: Date.now().toString(),
-              jobTitle: '',
-              employer: '',
-              city: '',
-              country: '',
-              startDate: '',
-              endDate: '',
-              currentlyWorking: false,
-              description: '',
-            },
-          ],
-        })),
-
-      updateExperience: (id: string, data: Partial<Experience>) =>
-        set((state) => ({
-          experience: state.experience.map((exp) =>
-            exp.id === id ? { ...exp, ...data } : exp
-          ),
-        })),
-
-      removeExperience: (id: string) =>
-        set((state) => ({
-          experience: state.experience.filter((exp) => exp.id !== id),
-        })),
-
-      addEducation: () =>
-        set((state) => ({
-          education: [
-            ...state.education,
-            {
-              id: Date.now().toString(),
-              degree: '',
-              school: '',
-              city: '',
-              country: '',
-              startDate: '',
-              endDate: '',
-              currentlyStudying: false,
-              description: '',
-            },
-          ],
-        })),
-
-      updateEducation: (id: string, data: Partial<Education>) =>
-        set((state) => ({
-          education: state.education.map((edu) =>
-            edu.id === id ? { ...edu, ...data } : edu
-          ),
-        })),
-
-      removeEducation: (id: string) =>
-        set((state) => ({
-          education: state.education.filter((edu) => edu.id !== id),
-        })),
-
-      addSkill: () =>
-        set((state) => ({
-          skills: [
-            ...state.skills,
-            {
-              id: Date.now().toString(),
-              name: '',
-              level: 3,
-            },
-          ],
-        })),
-
-      updateSkill: (id: string, data: Partial<Skill>) =>
-        set((state) => ({
-          skills: state.skills.map((skill) =>
-            skill.id === id ? { ...skill, ...data } : skill
-          ),
-        })),
-
-      removeSkill: (id: string) =>
-        set((state) => ({
-          skills: state.skills.filter((skill) => skill.id !== id),
-        })),
-
-      resetResume: () =>
-        set({
+        // Initialize empty resume data in localStorage
+        const emptyData: ResumeData = {
           personalInfo: {
             firstName: '',
             lastName: '',
@@ -129,19 +85,81 @@ export const useResumeStore = create<ResumeStore>()(
           experience: [],
           education: [],
           skills: [],
-        }),
+          courses: [],
+          internships: [],
+          hobbies: [],
+          languages: [],
+          references: [],
+        };
+        localStorage.setItem(`resume_data_${newId}`, JSON.stringify(emptyData));
 
-      loadFromJSON: (data: any) =>
-        set({
-          personalInfo: data.personalInfo || {},
-          summary: data.summary || '',
-          experience: data.experience || [],
-          education: data.education || [],
-          skills: data.skills || [],
-        }),
+        return newId;
+      },
+
+      // Load resume data from localStorage
+      loadResume: (id: string) => {
+        const data = localStorage.getItem(`resume_data_${id}`);
+        if (data) {
+          set({ currentResumeId: id });
+          return JSON.parse(data);
+        }
+        return null;
+      },
+
+      // Save current resume data to localStorage
+      saveCurrentResume: (id: string, data: ResumeData) => {
+        // Save the full data
+        localStorage.setItem(`resume_data_${id}`, JSON.stringify(data));
+
+        // Update the resume list item
+        const name =
+          data.personalInfo.firstName && data.personalInfo.lastName
+            ? `${data.personalInfo.firstName} ${data.personalInfo.lastName}`
+            : 'Untitled Resume';
+
+        set((state) => ({
+          resumes: state.resumes.map((resume) =>
+            resume.id === id
+              ? {
+                  ...resume,
+                  name,
+                  jobTitle: data.personalInfo.professionalTitle || '',
+                  lastModified: new Date().toISOString(),
+                }
+              : resume
+          ),
+        }));
+      },
+
+      // Delete a resume
+      deleteResume: (id: string) => {
+        // Remove from localStorage
+        localStorage.removeItem(`resume_data_${id}`);
+
+        // Remove from list
+        set((state) => ({
+          resumes: state.resumes.filter((r) => r.id !== id),
+          currentResumeId: state.currentResumeId === id ? null : state.currentResumeId,
+        }));
+      },
+
+      // Get all resumes
+      getAllResumes: () => {
+        return get().resumes;
+      },
+
+      // Set current resume ID
+      setCurrentResumeId: (id: string | null) => {
+        set({ currentResumeId: id });
+      },
     }),
     {
-      name: 'resume-storage', // localStorage key
+      name: 'resume-storage',
+      // Only persist the resume list, not the full data
+      partialize: (state) => ({
+        resumes: state.resumes,
+        currentResumeId: state.currentResumeId,
+      }),
     }
   )
 );

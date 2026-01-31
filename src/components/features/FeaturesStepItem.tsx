@@ -42,7 +42,7 @@ const FeaturesStepItem: React.FC<FeaturesStepItemProps> = ({
       </motion.div>
       <div className="px-5">
         <motion.p
-          className="font-headingmd lg:text-[18px] text-[16px] mb-3"
+          className="font-headingmd lg:text-2xl text-[16px] mb-3"
           initial={{ opacity: 0 }}
           whileInView={{
             opacity: 1,

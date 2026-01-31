@@ -90,13 +90,13 @@ export default function Notifications() {
 
             {/* Dropdown Panel */}
             {isOpen && (
-                <div className="absolute right-0 mt-3 w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
                     {/* Header */}
-                    <div className="px-6 py-4 border-b border-gray-100">
+                    <div className="px-4 py-3 border-b border-gray-100">
                         <div className="flex items-center justify-between">
                             <div>
-                                <h3 className="text-lg font-semibold text-gray-900">Notifications</h3>
-                                <p className="text-sm text-gray-500 mt-0.5">
+                                <h3 className="text-base font-semibold text-gray-900">Notifications</h3>
+                                <p className="text-xs text-gray-500">
                                     {unreadCount > 0 ? `${unreadCount} unread` : 'All caught up!'}
                                 </p>
                             </div>
@@ -143,25 +143,25 @@ export default function Notifications() {
                                         >
                                             <div
                                                 onClick={() => toggleExpand(notification.id)}
-                                                className="px-6 py-4 hover:bg-gray-50 cursor-pointer"
+                                                className="px-4 py-3 hover:bg-gray-50 cursor-pointer"
                                             >
-                                                <div className="flex gap-3">
+                                                <div className="flex gap-2.5">
                                                     {/* Icon */}
-                                                    <div className={`flex-shrink-0 w-10 h-10 rounded-full ${getIconColor(notification.color)} flex items-center justify-center`}>
-                                                        <IconComponent size={18} />
+                                                    <div className={`flex-shrink-0 w-8 h-8 rounded-full ${getIconColor(notification.color)} flex items-center justify-center`}>
+                                                        <IconComponent size={16} />
                                                     </div>
 
                                                     {/* Content */}
                                                     <div className="flex-1 min-w-0">
-                                                        <div className="flex items-start justify-between gap-2">
-                                                            <p className="text-sm font-semibold text-gray-900">
+                                                        <div className="flex items-start justify-between gap-1.5">
+                                                            <p className="text-[13px] font-semibold text-gray-900 leading-tight">
                                                                 {notification.title}
                                                             </p>
                                                             {notification.unread && (
-                                                                <span className="flex-shrink-0 w-2 h-2 bg-blue-600 rounded-full mt-1.5"></span>
+                                                                <span className="flex-shrink-0 w-1.5 h-1.5 bg-blue-600 rounded-full mt-1.5"></span>
                                                             )}
                                                         </div>
-                                                        <p className="text-sm text-gray-600 mt-0.5 line-clamp-2 truncate">
+                                                        <p className="text-xs text-gray-500 mt-0.5 line-clamp-1 truncate">
                                                             {notification.description}
                                                         </p>
                                                         <div className="flex items-center gap-1 mt-2 text-xs text-gray-500">
@@ -174,9 +174,9 @@ export default function Notifications() {
 
                                             {/* Expanded Content */}
                                             {isExpanded && (
-                                                <div className="px-6  animate-in fade-in slide-in-from-top-1 duration-200 pb-3">
-                                                    <div className="ml-[52px] p-4 bg-gray-50 rounded-lg border border-gray-200">
-                                                        <p className="text-sm text-gray-700 leading-relaxed">
+                                                <div className="px-4 animate-in fade-in slide-in-from-top-1 duration-200 pb-3">
+                                                    <div className="ml-[34px] p-3 bg-gray-50 rounded-xl border border-gray-100">
+                                                        <p className="text-[12px] text-gray-600 leading-relaxed">
                                                             {notification.fullContent}
                                                         </p>
                                                         {notification.link && (
@@ -200,8 +200,8 @@ export default function Notifications() {
                     {/* Footer */}
                     {hasMoreNotifications && (
                         <Link to="/notifications">
-                            <div className="px-6 py-3 border-t border-gray-100 bg-gray-50">
-                                <button className="w-full text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">
+                            <div className="px-4 py-2.5 border-t border-gray-100 bg-gray-50">
+                                <button className="w-full text-xs font-semibold text-gray-600 hover:text-gray-900 transition-colors">
                                     View older notifications
                                 </button>
                             </div>

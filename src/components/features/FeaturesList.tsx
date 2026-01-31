@@ -6,7 +6,7 @@ const FeaturesList: React.FC<FeaturesListProps> = ({ config }) => {
   return (
     <motion.div variants={FEATURES_ANIMATIONS.fadeUp}>
       <motion.p
-        className="font-headingmd mb-5 lg:text-base text-[18px]"
+        className="font-headingmd mb-5 lg:text-3xl text-[18px]"
         variants={FEATURES_ANIMATIONS.fadeUp}
       >
         Why Provolo Works
@@ -18,7 +18,7 @@ const FeaturesList: React.FC<FeaturesListProps> = ({ config }) => {
         {config.features.map((feature) => (
           <motion.li
             key={feature.id}
-            className="flex items-center font-headingmd text-[#6B7280]"
+            className="flex items-center text-[#6B7280] text-[18px]"
             variants={FEATURES_ANIMATIONS.featureItem}
             whileHover={FEATURES_ANIMATIONS.hover}
           >
