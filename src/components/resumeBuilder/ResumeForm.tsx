@@ -11,7 +11,9 @@ import { HobbiesForm } from "./HobbiesForm";
 import { InternshipsForm } from "./InternshipsForm";
 import { LanguagesForm } from "./LanguagesForm";
 import { ReferencesForm } from "./ReferencesForm";
+import { ProjectsForm } from "./ProjectsForm";
 import useSession from "@/hooks/useSession";
+import { CertificationsForm } from "./CertificationsForm";
 
 
 
@@ -42,12 +44,14 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({
   setValue,
   onReview,
 }) => {
-  const { user, loading: loadingUserData } = useSession();
+  const { user } = useSession();
   console.log(user);
   
   const availableSections = [
     { id: 'courses', label: 'Courses', icon: 'FileText' },
     { id: 'internships', label: 'Internships', icon: 'Briefcase' },
+    { id: 'projects', label: 'Projects', icon: 'FolderGit2' },
+    { id: 'certifications', label: 'Certifications', icon: 'Award' },
     { id: 'hobbies', label: 'Hobbies', icon: 'Zap' },
     { id: 'languages', label: 'Languages', icon: 'Globe' },
     { id: 'references', label: 'References', icon: 'Users' },
@@ -123,6 +127,8 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({
             {activeSection === 'skills' && <SkillsForm control={control} watch={watch} setValue={setValue} />}
             {activeSection === 'courses' && <CoursesForm control={control} watch={watch} setValue={setValue} />}
             {activeSection === 'internships' && <InternshipsForm control={control} watch={watch} setValue={setValue} />}
+            {activeSection === 'projects' && <ProjectsForm control={control} watch={watch} setValue={setValue} />}
+            {activeSection === 'certifications' && <CertificationsForm control={control} watch={watch} setValue={setValue} />}
             {activeSection === 'hobbies' && <HobbiesForm control={control} watch={watch} setValue={setValue} />}
             {activeSection === 'languages' && <LanguagesForm control={control} watch={watch} setValue={setValue} />}
             {activeSection === 'references' && <ReferencesForm control={control} watch={watch} setValue={setValue} />}

@@ -9,27 +9,110 @@ export interface ResumeListItem {
   lastModified: string;
 }
 
-// Your existing resume structure
-interface ResumeData {
-  personalInfo: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone: string;
-    city: string;
-    country: string;
-    professionalTitle: string;
-    linkedinUrl: string;
-  };
+// Properly typed structures
+export interface PersonalInfo {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  city: string;
+  country: string;
+  jobTitle: string; // Changed from professionalTitle
+  linkedinUrl: string;
+}
+
+export interface Experience {
+  company: string;
+  position: string;
+  startDate: string;
+  endDate: string;
+  current: boolean;
+  description: string;
+  location: string;
+}
+
+export interface Education {
+  institution: string;
+  degree: string;
+  fieldOfStudy: string;
+  startDate: string;
+  endDate: string;
+  current: boolean;
+  description: string;
+}
+
+export interface Skill {
+  name: string;
+  level: 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
+}
+
+export interface Course {
+  name: string;
+  institution: string;
+  completionDate: string;
+  description: string;
+}
+
+export interface Internship {
+  company: string;
+  position: string;
+  startDate: string;
+  endDate: string;
+  current: boolean;
+  description: string;
+  location: string;
+}
+
+export interface Hobby {
+  name: string;
+  description: string;
+}
+
+export interface Language {
+  name: string;
+  proficiency: 'Basic' | 'Conversational' | 'Fluent' | 'Native';
+}
+
+export interface Reference {
+  name: string;
+  position: string;
+  company: string;
+  email: string;
+  phone: string;
+}
+
+export interface Project {
+  title: string;
+  description: string;
+  link: string;
+  technologies: string[];
+  startDate: string;
+  endDate: string;
+}
+
+export interface Certification {
+  name: string;
+  issuingOrganization: string;
+  issueDate: string;
+  expirationDate?: string;
+  credentialId?: string;
+  credentialUrl?: string;
+}
+
+// Complete resume data structure
+export interface ResumeData {
+  personalInfo: PersonalInfo;
   summary: string;
-  experience: any[];
-  education: any[];
-  skills: any[];
-  courses: any[];
-  internships: any[];
-  hobbies: any[];
-  languages: any[];
-  references: any[];
+  experience: Experience[];
+  education: Education[];
+  skills: Skill[];
+  courses: Course[];
+  internships: Internship[];
+  hobbies: Hobby[];
+  languages: Language[];
+  references: Reference[];
+  projects: Project[]; // Added
+  certifications: Certification[]; // Added
 }
 
 interface ResumeStore {
@@ -78,7 +161,7 @@ export const useResumeStore = create<ResumeStore>()(
             phone: '',
             city: '',
             country: '',
-            professionalTitle: '',
+            jobTitle: '', // Changed from professionalTitle
             linkedinUrl: '',
           },
           summary: '',
@@ -90,6 +173,8 @@ export const useResumeStore = create<ResumeStore>()(
           hobbies: [],
           languages: [],
           references: [],
+          projects: [], // Added
+          certifications: [], // Added
         };
         localStorage.setItem(`resume_data_${newId}`, JSON.stringify(emptyData));
 
@@ -101,7 +186,7 @@ export const useResumeStore = create<ResumeStore>()(
         const data = localStorage.getItem(`resume_data_${id}`);
         if (data) {
           set({ currentResumeId: id });
-          return JSON.parse(data);
+          return JSON.parse(data) as ResumeData;
         }
         return null;
       },
@@ -123,7 +208,7 @@ export const useResumeStore = create<ResumeStore>()(
               ? {
                   ...resume,
                   name,
-                  jobTitle: data.personalInfo.professionalTitle || '',
+                  jobTitle: data.personalInfo.jobTitle || '', // Changed from professionalTitle
                   lastModified: new Date().toISOString(),
                 }
               : resume

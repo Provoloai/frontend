@@ -273,6 +273,78 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ formData, sectionO
           </section>
         );
 
+      case 'projects':
+        if (!formData.projects?.length) return null;
+        return (
+          <section className="mb-6">
+            <h2 className="font-semibold uppercase text-xs tracking-wider text-gray-700 mb-3">
+              Projects
+            </h2>
+            {formData.projects.map((project: any) => (
+              <div key={project.id} className="mb-4">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="font-medium text-sm">{project.title}</p>
+                    {project.technologies?.length > 0 && (
+                      <p className="text-gray-600 text-xs">
+                        {project.technologies.join(", ")}
+                      </p>
+                    )}
+                  </div>
+                  <span className="text-gray-500 text-xs whitespace-nowrap">
+                    {formatDate(project.startDate)}
+                    {project.endDate && ` — ${formatDate(project.endDate)}`}
+                  </span>
+                </div>
+                {project.description && (
+                  <div className="mt-2">
+                    {renderRichText(project.description)}
+                  </div>
+                )}
+                {project.link && (
+                  <p className="text-blue-600 text-xs mt-1 break-all">{project.link}</p>
+                )}
+              </div>
+            ))}
+          </section>
+        );
+
+      case 'certifications':
+        if (!formData.certifications?.length) return null;
+        return (
+          <section className="mb-6">
+            <h2 className="font-semibold uppercase text-xs tracking-wider text-gray-700 mb-3">
+              Certifications
+            </h2>
+            {formData.certifications.map((cert: any) => (
+              <div key={cert.id} className="mb-3">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="font-medium text-sm">{cert.name}</p>
+                    <p className="text-gray-600 text-sm">{cert.issuingOrganization}</p>
+                    {cert.credentialId && (
+                      <p className="text-gray-500 text-xs">Credential ID: {cert.credentialId}</p>
+                    )}
+                  </div>
+                  <div className="text-right">
+                    <p className="text-gray-500 text-xs">
+                      Issued: {formatDate(cert.issueDate)}
+                    </p>
+                    {cert.expirationDate && (
+                      <p className="text-gray-500 text-xs">
+                        Expires: {formatDate(cert.expirationDate)}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                {cert.credentialUrl && (
+                  <p className="text-blue-600 text-xs mt-1 break-all">{cert.credentialUrl}</p>
+                )}
+              </div>
+            ))}
+          </section>
+        );
+
       default:
         return null;
     }
