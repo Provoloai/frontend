@@ -32,6 +32,8 @@ export const AdditionalSectionsForm: React.FC<AdditionalSectionsFormProps> = ({
             hobbies: "from-rose-500/10 to-pink-500/10 text-rose-600 border-rose-100",
             languages: "from-teal-500/10 to-emerald-500/10 text-teal-600 border-teal-100",
             references: "from-violet-500/10 to-purple-500/10 text-violet-600 border-violet-100",
+            projects: "from-green-500/10 to-lime-500/10 text-green-600 border-green-100",
+            certifications: "from-amber-500/10 to-yellow-500/10 text-amber-600 border-amber-100",
         };
         return colors[sectionId] || "from-gray-500/10 to-slate-500/10 text-gray-600 border-gray-100";
     };
