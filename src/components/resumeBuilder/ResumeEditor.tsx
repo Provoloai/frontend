@@ -3,8 +3,9 @@ import { useForm } from "react-hook-form";
 import { ResumeForm } from "./ResumeForm";
 import { ResumePreview } from "./ResumePreview";
 import { ReviewMode } from "./ReviewMode";
-import { useResumeStore } from "@/stores/resumeStore";
+import { useResumeStore, ResumeData } from "@/stores/resumeStore";
 import { ArrowLeft } from "lucide-react";
+import { resumeApi } from "@/api";
 
 interface ResumeEditorProps {
   onBack?: () => void;
@@ -21,12 +22,13 @@ export const ResumeEditor: React.FC<ResumeEditorProps> = ({ onBack }) => {
     "education",
     "skills",
   ]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const currentResumeId = useResumeStore((state) => state.currentResumeId);
   const loadResume = useResumeStore((state) => state.loadResume);
   const saveCurrentResume = useResumeStore((state) => state.saveCurrentResume);
 
-  const { control, handleSubmit, watch, setValue, reset } = useForm({
+  const { control, watch, setValue, reset } = useForm<ResumeData>({
     defaultValues: {
       personalInfo: {
         firstName: "",
@@ -35,7 +37,7 @@ export const ResumeEditor: React.FC<ResumeEditorProps> = ({ onBack }) => {
         phone: "",
         city: "",
         country: "",
-        professionalTitle: "",
+        jobTitle: "",
         linkedinUrl: "",
       },
       summary: "",
@@ -44,6 +46,8 @@ export const ResumeEditor: React.FC<ResumeEditorProps> = ({ onBack }) => {
       skills: [],
       courses: [],
       internships: [],
+      projects: [],
+      certifications: [],
       hobbies: [],
       languages: [],
       references: [],
@@ -51,6 +55,46 @@ export const ResumeEditor: React.FC<ResumeEditorProps> = ({ onBack }) => {
   });
 
   const formData = watch();
+
+  // Handle resume submission to backend
+  const handleSubmitResume = async () => {
+    setIsSubmitting(true);
+
+    try {
+      // Transform form data to match backend expectations (remove any temporary IDs)
+      const resumeData: ResumeData = {
+        personalInfo: formData.personalInfo,
+        summary: formData.summary,
+        experience: formData.experience || [],
+        education: formData.education || [],
+        skills: formData.skills || [],
+        courses: formData.courses || [],
+        internships: formData.internships || [],
+        projects: formData.projects || [],
+        certifications: formData.certifications || [],
+        hobbies: formData.hobbies || [],
+        languages: formData.languages || [],
+        references: formData.references || [],
+      };
+
+      const result = await resumeApi.createResume(resumeData);
+
+      if (result.success) {
+        // Save the backend ID to the store
+        if (currentResumeId && result.data?.id) {
+          localStorage.setItem(`resume_backend_id_${currentResumeId}`, result.data.id);
+        }
+        // Show success message
+        alert('Resume submitted successfully!');
+      } else {
+        alert(`Error: ${result.error || 'Failed to submit resume'}`);
+      }
+    } catch (error: any) {
+      alert(`Error: ${error.message || 'An unexpected error occurred'}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   // Load resume data when currentResumeId changes
   useEffect(() => {
@@ -91,6 +135,8 @@ export const ResumeEditor: React.FC<ResumeEditorProps> = ({ onBack }) => {
         sectionOrder={sectionOrder}
         setSectionOrder={setSectionOrder}
         onBack={() => setIsReviewMode(false)}
+        onSubmit={handleSubmitResume}
+        isSubmitting={isSubmitting}
       />
     );
   }

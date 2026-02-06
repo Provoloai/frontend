@@ -1,3 +1,4 @@
+import { ResumeData } from "@/stores/resumeStore";
 import { apiGet } from "@/utils/api.util";
 import { useQuery } from "@tanstack/react-query";
 
@@ -214,6 +215,8 @@ export const authApi = {
   },
 };
 
+
+
 export const useGetProposalList = (page: number = 1, limit: number = 10) => {
   return useQuery({
     queryKey: ["proposal-history", page, limit],
@@ -369,6 +372,29 @@ export const useGetNotifications = (
     queryFn: () => notificationApi.getNotifications(limit, startAfter),
   });
 };
+
+// API Request/Response Types
+
+
+// Response type for create/save resume
+export interface CreateResumeResponse {
+  success: boolean;
+  data?: {
+    id: string;
+    [key: string]: any;
+  };
+  error?: string;
+}
+
+export const resumeApi = {
+  createResume: async (data: ResumeData): Promise<CreateResumeResponse> => {
+    return apiRequest<CreateResumeResponse>("/api/v1/resumes/save", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+};
+
 
 // Export the generic API request function for custom use cases
 export { apiRequest };
