@@ -249,7 +249,6 @@ export const Resume: React.FC = () => {
               </defs>
             </svg>
 
-
             <h3 className="text-lg font-semibold text-gray-900 my-2">No resumes yet</h3>
             <p className="text-sm text-gray-600 mb-6 max-w-md mx-auto">
               Get started by creating your first resume. Choose from multiple
