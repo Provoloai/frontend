@@ -9,6 +9,8 @@ interface ReviewModeProps {
   sectionOrder: string[];
   setSectionOrder: (order: string[]) => void;
   onBack: () => void;
+  onSubmit?: () => void;
+  isSubmitting?: boolean;
 }
 
 export const ReviewMode: React.FC<ReviewModeProps> = ({
@@ -16,6 +18,8 @@ export const ReviewMode: React.FC<ReviewModeProps> = ({
   sectionOrder,
   setSectionOrder,
   onBack,
+  onSubmit,
+  isSubmitting = false,
 }) => {
   const sectionLabels: any = {
     personal: "Personal Information",
@@ -25,6 +29,8 @@ export const ReviewMode: React.FC<ReviewModeProps> = ({
     skills: "Skills",
     courses: "Courses",
     internships: "Internships",
+    projects: "Projects",
+    certifications: "Certifications",
     hobbies: "Hobbies",
     languages: "Languages",
     references: "References",
@@ -76,17 +82,31 @@ export const ReviewMode: React.FC<ReviewModeProps> = ({
 
         <div className="flex justify-between mt-6 pt-6 border-t">
           <div className="w-fit flex justify-end">
-            <CustomButton onClick={onBack} className="btn-primary ">
+            <CustomButton onClick={onBack} className="btn-primary" disabled={isSubmitting}>
               Back to Edit
             </CustomButton>
           </div>
-          <div className="w-fit flex justify-end">
-            <CustomButton
-              onClick={() => alert("Download feature coming soon!")}
-              className="btn-primary"
-            >
-              Download Resume
-            </CustomButton>
+          <div className="flex gap-3">
+            <div className="w-fit flex justify-end">
+              <CustomButton
+                onClick={() => alert("Download feature coming soon!")}
+                className="btn-primary"
+                disabled={isSubmitting}
+              >
+                Download Resume
+              </CustomButton>
+            </div>
+            {onSubmit && (
+              <div className="w-fit flex justify-end">
+                <CustomButton
+                  onClick={onSubmit}
+                  className="btn-primary bg-green-600 hover:bg-green-700"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Submitting..." : "Submit Resume"}
+                </CustomButton>
+              </div>
+            )}
           </div>
         </div>
       </div>
