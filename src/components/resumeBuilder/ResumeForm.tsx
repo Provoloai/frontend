@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from "motion/react";
+import { Control, UseFormWatch, UseFormSetValue } from "react-hook-form";
 import { PersonalInfoForm } from "./PersonalInfoForm";
 import { SummaryForm } from "./SummaryForm";
 import { ExperienceForm } from "./ExperienceForm";
@@ -12,10 +13,8 @@ import { InternshipsForm } from "./InternshipsForm";
 import { LanguagesForm } from "./LanguagesForm";
 import { ReferencesForm } from "./ReferencesForm";
 import { ProjectsForm } from "./ProjectsForm";
-import useSession from "@/hooks/useSession";
 import { CertificationsForm } from "./CertificationsForm";
-
-
+import { ResumeData } from "@/stores/resumeStore";
 
 interface Section {
   id: string;
@@ -23,14 +22,20 @@ interface Section {
   shortLabel: string;
 }
 
+interface AvailableSection {
+  id: string;
+  label: string;
+  icon: string;
+}
+
 interface ResumeFormProps {
   activeSection: string;
   setActiveSection: (section: string) => void;
   additionalSections: string[];
   addAdditionalSection: (sectionId: string) => void;
-  control: any;
-  watch: any;
-  setValue: any;
+  control: Control<ResumeData>;
+  watch: UseFormWatch<ResumeData>;
+  setValue: UseFormSetValue<ResumeData>;
   onReview: () => void;
 }
 
@@ -44,10 +49,7 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({
   setValue,
   onReview,
 }) => {
-  const { user } = useSession();
-  console.log(user);
-  
-  const availableSections = [
+  const availableSections: AvailableSection[] = [
     { id: 'courses', label: 'Courses', icon: 'FileText' },
     { id: 'internships', label: 'Internships', icon: 'Briefcase' },
     { id: 'projects', label: 'Projects', icon: 'FolderGit2' },
@@ -65,7 +67,7 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({
     { id: 'skills', label: 'Skills', shortLabel: 'Skills' },
   ];
 
-  const addedSectionObjects = additionalSections.map(id => ({
+  const addedSectionObjects: Section[] = additionalSections.map(id => ({
     id,
     label: availableSections.find(s => s.id === id)?.label || id,
     shortLabel: availableSections.find(s => s.id === id)?.label || id,
@@ -80,7 +82,7 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({
   const currentIndex = sections.findIndex(s => s.id === activeSection);
   const isLastStep = activeSection === 'additional';
 
-  const handleNext = () => {
+  const handleNext = (): void => {
     if (isLastStep) {
       onReview();
     } else if (currentIndex < sections.length - 1) {
@@ -88,7 +90,7 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({
     }
   };
 
-  const handlePrevious = () => {
+  const handlePrevious = (): void => {
     if (currentIndex > 0) {
       setActiveSection(sections[currentIndex - 1].id);
     }
@@ -136,9 +138,8 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({
               <AdditionalSectionsForm
                 availableSections={availableSections}
                 addedSections={additionalSections}
-                onAddSection={(sectionId) => {
+                onAddSection={(sectionId: string) => {
                   addAdditionalSection(sectionId);
-                  // Immediately navigate to the newly added section
                   setActiveSection(sectionId);
                 }}
               />
@@ -177,15 +178,7 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({
         </div>
         <div className="w-fit flex justify-end">
           <CustomButton onClick={handleNext} className="btn-primary">
-            {isLastStep ? (
-              <>
-                Review
-              </>
-            ) : (
-              <>
-                Next
-              </>
-            )}
+            {isLastStep ? "Review" : "Next"}
           </CustomButton>
         </div>
       </div>

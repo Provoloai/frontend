@@ -1,10 +1,11 @@
-import { Controller } from "react-hook-form";
+import { Controller, Control } from "react-hook-form";
 import { User, Mail, Phone, MapPin, Briefcase, Linkedin, Lightbulb } from "lucide-react";
 import { motion } from "motion/react";
 import TextInputField from "@/Reusables/TextInputField";
+import { ResumeData } from "@/stores/resumeStore";
 
 interface PersonalInfoFormProps {
-  control: any;
+  control: Control<ResumeData>;
 }
 
 export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ control }) => {
@@ -34,7 +35,6 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ control }) =
       initial="hidden"
       animate="visible"
     >
-      {/* Name Fields */}
       <motion.div variants={itemVariants}>
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Full Name <span className="text-red-500">*</span>
@@ -69,15 +69,14 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ control }) =
         </div>
       </motion.div>
 
-      {/* Professional Title */}
       <motion.div variants={itemVariants}>
         <Controller
-          name="personalInfo.professionalTitle"
+          name="personalInfo.jobTitle"
           control={control}
           render={({ field }) => (
             <TextInputField
               {...field}
-              id="professionalTitle"
+              id="jobTitle"
               label="Professional Title"
               placeholder="e.g. Software Engineer, Marketing Manager"
               iconStart={<Briefcase className="w-4 h-4 text-gray-400" />}
@@ -87,7 +86,6 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ control }) =
         />
       </motion.div>
 
-      {/* Contact Information */}
       <motion.div variants={itemVariants} className="space-y-4">
         <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
           <div className="w-1 h-4 bg-blue-600 rounded-full"></div>
@@ -124,7 +122,6 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ control }) =
         />
       </motion.div>
 
-      {/* Location */}
       <motion.div variants={itemVariants} className="space-y-4">
         <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
           <div className="w-1 h-4 bg-blue-600 rounded-full"></div>
@@ -161,7 +158,6 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ control }) =
         </div>
       </motion.div>
 
-      {/* Social Links */}
       <motion.div variants={itemVariants} className="space-y-4">
         <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
           <div className="w-1 h-4 bg-blue-600 rounded-full"></div>
@@ -184,7 +180,6 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ control }) =
         />
       </motion.div>
 
-      {/* Helper Text */}
       <motion.div
         initial={{ opacity: 0, y: 5 }}
         animate={{ opacity: 1, y: 0 }}
