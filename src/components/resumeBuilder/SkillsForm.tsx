@@ -1,6 +1,8 @@
-import { Heart, Lightbulb, Search, X, Zap } from "lucide-react";
+import { Lightbulb, Search, X, Zap } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import React, { useState, useMemo } from "react";
+import { Control, UseFormWatch, UseFormSetValue } from "react-hook-form";
+import { ResumeData, Skill } from "@/stores/resumeStore";
 
 const SUGGESTED_SKILLS = [
   // Programming & Engineering
@@ -26,14 +28,19 @@ const SUGGESTED_SKILLS = [
   "Time Management", "Conflict Resolution", "Public Speaking", "Technical Writing", "Creative Direction"
 ];
 
+interface SkillWithId extends Skill {
+  id: string;
+}
+
 interface SkillsFormProps {
-  watch: any;
-  setValue: any;
+  control: Control<ResumeData>;
+  watch: UseFormWatch<ResumeData>;
+  setValue: UseFormSetValue<ResumeData>;
 }
 
 export const SkillsForm: React.FC<SkillsFormProps> = ({ watch, setValue }) => {
-  const skills = watch('skills') || [];
-  const [searchQuery, setSearchQuery] = useState("");
+  const skills = (watch('skills') || []) as SkillWithId[];
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const filteredSkills = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
@@ -41,8 +48,6 @@ export const SkillsForm: React.FC<SkillsFormProps> = ({ watch, setValue }) => {
       skill.toLowerCase().includes(query)
     );
 
-    // If query is not empty and doesn't exactly match any suggestion,
-    // add it as a custom option at the beginning
     const exactMatch = SUGGESTED_SKILLS.find(s => s.toLowerCase() === query);
     if (query && !exactMatch) {
       return [searchQuery.trim(), ...suggestions];
@@ -51,24 +56,22 @@ export const SkillsForm: React.FC<SkillsFormProps> = ({ watch, setValue }) => {
     return suggestions;
   }, [searchQuery]);
 
-  const addSkill = (name: string) => {
+  const addSkill = (name: string): void => {
     if (!name.trim()) return;
 
-    // Check if limit reached
     if (skills.length >= 10) {
       setSearchQuery("");
       return;
     }
 
     const newId = Date.now().toString();
-    const newSkill = {
+    const newSkill: SkillWithId = {
       id: newId,
       name: name.trim(),
-      level: 3, // Default level for compatibility
+      level: 'Intermediate',
     };
 
-    // Check if skill already exists
-    if (skills.some((s: any) => s.name.toLowerCase() === name.trim().toLowerCase())) {
+    if (skills.some((s) => s.name.toLowerCase() === name.trim().toLowerCase())) {
       setSearchQuery("");
       return;
     }
@@ -77,8 +80,8 @@ export const SkillsForm: React.FC<SkillsFormProps> = ({ watch, setValue }) => {
     setSearchQuery("");
   };
 
-  const removeSkill = (id: string) => {
-    setValue('skills', skills.filter((skill: any) => skill.id !== id));
+  const removeSkill = (id: string): void => {
+    setValue('skills', skills.filter((skill) => skill.id !== id));
   };
 
   const containerVariants = {
@@ -96,13 +99,11 @@ export const SkillsForm: React.FC<SkillsFormProps> = ({ watch, setValue }) => {
       initial="hidden"
       animate="visible"
     >
-      {/* Header */}
       <div>
         <h3 className="text-base font-semibold text-gray-900">Skills & Expertise</h3>
         <p className="text-xs text-gray-600 mt-1">Select up to 10 skills that highlight your professional expertise</p>
       </div>
 
-      {/* Search Section */}
       <div className="space-y-4">
         <div className="relative">
           <Search className="absolute left-3 top-[11px] w-4 h-4 text-gray-400" />
@@ -122,7 +123,6 @@ export const SkillsForm: React.FC<SkillsFormProps> = ({ watch, setValue }) => {
           />
         </div>
 
-        {/* Warning Message Container with fixed height to prevent wobble */}
         <div className="h-6 mt-1">
           <AnimatePresence>
             {skills.length >= 10 && (
@@ -141,7 +141,7 @@ export const SkillsForm: React.FC<SkillsFormProps> = ({ watch, setValue }) => {
         <div className="max-h-60 overflow-y-auto p-1 no-scrollbar">
           <div className="flex flex-wrap gap-2">
             {filteredSkills.slice(0, 50).map((skillName, idx) => {
-              const isSelected = skills.some((s: any) => s.name.toLowerCase() === skillName.toLowerCase());
+              const isSelected = skills.some((s) => s.name.toLowerCase() === skillName.toLowerCase());
               const isCustom = searchQuery.trim() && !SUGGESTED_SKILLS.some(s => s.toLowerCase() === skillName.toLowerCase());
 
               return (
@@ -150,7 +150,7 @@ export const SkillsForm: React.FC<SkillsFormProps> = ({ watch, setValue }) => {
                   type="button"
                   onClick={() => {
                     if (isSelected) {
-                      const skillToRemove = skills.find((s: any) => s.name.toLowerCase() === skillName.toLowerCase());
+                      const skillToRemove = skills.find((s) => s.name.toLowerCase() === skillName.toLowerCase());
                       if (skillToRemove) removeSkill(skillToRemove.id);
                     } else {
                       addSkill(skillName);
@@ -173,7 +173,6 @@ export const SkillsForm: React.FC<SkillsFormProps> = ({ watch, setValue }) => {
         </div>
       </div>
 
-      {/* Selected Skills Summary */}
       <div className="space-y-4">
         {skills.length > 0 && (
           <div className="flex items-center gap-2 mb-2">
@@ -184,7 +183,7 @@ export const SkillsForm: React.FC<SkillsFormProps> = ({ watch, setValue }) => {
 
         <div className="flex flex-wrap gap-2">
           <AnimatePresence mode="popLayout">
-            {skills.map((skill: any) => (
+            {skills.map((skill) => (
               <motion.div
                 key={skill.id}
                 layout
@@ -203,7 +202,6 @@ export const SkillsForm: React.FC<SkillsFormProps> = ({ watch, setValue }) => {
         </div>
       </div>
 
-      {/* Empty State */}
       {skills.length === 0 && searchQuery === "" && (
         <motion.div
           initial={{ opacity: 0 }}
@@ -216,7 +214,6 @@ export const SkillsForm: React.FC<SkillsFormProps> = ({ watch, setValue }) => {
         </motion.div>
       )}
 
-      {/* Tips */}
       <motion.div
         initial={{ opacity: 0, y: 5 }}
         animate={{ opacity: 1, y: 0 }}

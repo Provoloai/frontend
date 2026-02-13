@@ -1,6 +1,8 @@
 import { Heart, Lightbulb, Search, X } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import React, { useState, useMemo } from "react";
+import { Control, UseFormWatch, UseFormSetValue } from "react-hook-form";
+import { ResumeData, Hobby } from "@/stores/resumeStore";
 
 const SUGGESTED_HOBBIES = [
   // Adventure & Outdoors
@@ -21,14 +23,19 @@ const SUGGESTED_HOBBIES = [
   "Volunteering", "Animal Fostering", "Book Clubs", "Community Gardening", "Podcasting", "Journaling", "Historical Reenactment"
 ];
 
+interface HobbyWithId extends Hobby {
+  id: string;
+}
+
 interface HobbiesFormProps {
-  watch: any;
-  setValue: any;
+  control: Control<ResumeData>;
+  watch: UseFormWatch<ResumeData>;
+  setValue: UseFormSetValue<ResumeData>;
 }
 
 export const HobbiesForm: React.FC<HobbiesFormProps> = ({ watch, setValue }) => {
-  const hobbies = watch('hobbies') || [];
-  const [searchQuery, setSearchQuery] = useState("");
+  const hobbies = (watch('hobbies') || []) as HobbyWithId[];
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const filteredHobbies = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
@@ -36,8 +43,6 @@ export const HobbiesForm: React.FC<HobbiesFormProps> = ({ watch, setValue }) => 
       hobby.toLowerCase().includes(query)
     );
 
-    // If query is not empty and doesn't match any suggestion exactly,
-    // show it as a custom option at the beginning
     const exactMatch = SUGGESTED_HOBBIES.find(h => h.toLowerCase() === query);
     if (query && !exactMatch) {
       return [searchQuery.trim(), ...suggestions];
@@ -46,25 +51,23 @@ export const HobbiesForm: React.FC<HobbiesFormProps> = ({ watch, setValue }) => 
     return suggestions;
   }, [searchQuery]);
 
-  const addHobby = (name: string) => {
+  const addHobby = (name: string): void => {
     if (!name.trim()) return;
 
-    // Check if limit reached
     if (hobbies.length >= 10) {
       setSearchQuery("");
       return;
     }
 
     const newId = Date.now().toString();
-    const newHobby = {
+    const newHobby: HobbyWithId = {
       id: newId,
       name: name.trim(),
       description: '',
     };
 
-    // Check if hobby already exists
-    if (hobbies.some((h: any) => h.name.toLowerCase() === name.trim().toLowerCase())) {
-      setSearchQuery(""); // Clear search if already exists
+    if (hobbies.some((h) => h.name.toLowerCase() === name.trim().toLowerCase())) {
+      setSearchQuery("");
       return;
     }
 
@@ -72,8 +75,8 @@ export const HobbiesForm: React.FC<HobbiesFormProps> = ({ watch, setValue }) => 
     setSearchQuery("");
   };
 
-  const removeHobby = (id: string) => {
-    setValue('hobbies', hobbies.filter((hobby: any) => hobby.id !== id));
+  const removeHobby = (id: string): void => {
+    setValue('hobbies', hobbies.filter((hobby) => hobby.id !== id));
   };
 
   const containerVariants = {
@@ -91,13 +94,11 @@ export const HobbiesForm: React.FC<HobbiesFormProps> = ({ watch, setValue }) => 
       initial="hidden"
       animate="visible"
     >
-      {/* Header */}
       <div>
         <h3 className="text-base font-semibold text-gray-900">Hobbies & Interests</h3>
         <p className="text-xs text-gray-600 mt-1">Select up to 10 interests that highlight your personality and skills</p>
       </div>
 
-      {/* Search Section */}
       <div className="space-y-4">
         <div className="relative">
           <Search className="absolute left-3 top-[11px] w-4 h-4 text-gray-400" />
@@ -117,7 +118,6 @@ export const HobbiesForm: React.FC<HobbiesFormProps> = ({ watch, setValue }) => 
           />
         </div>
 
-        {/* Warning Message Container with fixed height to prevent wobble */}
         <div className="h-6 mt-1">
           <AnimatePresence>
             {hobbies.length >= 10 && (
@@ -136,7 +136,7 @@ export const HobbiesForm: React.FC<HobbiesFormProps> = ({ watch, setValue }) => 
         <div className="max-h-60 overflow-y-auto p-1 no-scrollbar">
           <div className="flex flex-wrap gap-2">
             {filteredHobbies.slice(0, 50).map((hobbyName, idx) => {
-              const isSelected = hobbies.some((h: any) => h.name.toLowerCase() === hobbyName.toLowerCase());
+              const isSelected = hobbies.some((h) => h.name.toLowerCase() === hobbyName.toLowerCase());
               const isCustom = searchQuery.trim() && !SUGGESTED_HOBBIES.some(h => h.toLowerCase() === hobbyName.toLowerCase());
 
               return (
@@ -145,7 +145,7 @@ export const HobbiesForm: React.FC<HobbiesFormProps> = ({ watch, setValue }) => 
                   type="button"
                   onClick={() => {
                     if (isSelected) {
-                      const hobbyToRemove = hobbies.find((h: any) => h.name.toLowerCase() === hobbyName.toLowerCase());
+                      const hobbyToRemove = hobbies.find((h) => h.name.toLowerCase() === hobbyName.toLowerCase());
                       if (hobbyToRemove) removeHobby(hobbyToRemove.id);
                     } else {
                       addHobby(hobbyName);
@@ -168,7 +168,6 @@ export const HobbiesForm: React.FC<HobbiesFormProps> = ({ watch, setValue }) => 
         </div>
       </div>
 
-      {/* Selected Hobbies Summary */}
       <div className="space-y-4">
         {hobbies.length > 0 && (
           <div className="flex items-center gap-2 mb-2">
@@ -179,7 +178,7 @@ export const HobbiesForm: React.FC<HobbiesFormProps> = ({ watch, setValue }) => 
 
         <div className="flex flex-wrap gap-2">
           <AnimatePresence mode="popLayout">
-            {hobbies.map((hobby: any) => (
+            {hobbies.map((hobby) => (
               <motion.div
                 key={hobby.id}
                 layout
@@ -198,7 +197,6 @@ export const HobbiesForm: React.FC<HobbiesFormProps> = ({ watch, setValue }) => 
         </div>
       </div>
 
-      {/* Empty State */}
       {hobbies.length === 0 && searchQuery === "" && (
         <motion.div
           initial={{ opacity: 0 }}
@@ -211,7 +209,6 @@ export const HobbiesForm: React.FC<HobbiesFormProps> = ({ watch, setValue }) => 
         </motion.div>
       )}
 
-      {/* Tips */}
       <motion.div
         initial={{ opacity: 0, y: 5 }}
         animate={{ opacity: 1, y: 0 }}

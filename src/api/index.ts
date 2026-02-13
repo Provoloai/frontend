@@ -388,7 +388,7 @@ export interface CreateResumeResponse {
 
 export const resumeApi = {
   createResume: async (data: ResumeData): Promise<CreateResumeResponse> => {
-    return apiRequest<CreateResumeResponse>("/api/v1/resumes/save", {
+    return apiRequest<CreateResumeResponse>("/resumes/save", {
       method: "POST",
       body: JSON.stringify(data),
     });
