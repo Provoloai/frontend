@@ -1,20 +1,40 @@
-import { Controller } from "react-hook-form";
-import { Trash2, Briefcase, Calendar, MapPin, Building2, ChevronDown, ChevronUp, GripVertical } from "lucide-react";
-import { motion, AnimatePresence, Reorder, useDragControls } from "motion/react";
+import {
+  Control,
+  Controller,
+  UseFormWatch,
+  UseFormSetValue,
+} from "react-hook-form";
+import {
+  Trash2,
+  Briefcase,
+  Calendar,
+  MapPin,
+  Building2,
+  ChevronDown,
+  ChevronUp,
+  GripVertical,
+} from "lucide-react";
+import {
+  motion,
+  AnimatePresence,
+  Reorder,
+  useDragControls,
+} from "motion/react";
 import React, { useState } from "react";
 import CustomButton from "@/Reusables/CustomButton";
 import TextInputField from "@/Reusables/TextInputField";
+import { Resume, Experience } from "@/types";
 
 interface ExperienceFormProps {
-  control: any;
-  watch: any;
-  setValue: any;
+  control: Control<Resume>;
+  watch: UseFormWatch<Resume>;
+  setValue: UseFormSetValue<Resume>;
 }
 
 interface ExperienceItemProps {
-  exp: any;
+  exp: Experience;
   index: number;
-  control: any;
+  control: Control<Resume>;
   isExpanded: boolean;
   onToggle: () => void;
   onRemove: (id: string) => void;
@@ -26,7 +46,7 @@ const ExperienceItem: React.FC<ExperienceItemProps> = ({
   control,
   isExpanded,
   onToggle,
-  onRemove
+  onRemove,
 }) => {
   const controls = useDragControls();
 
@@ -35,13 +55,13 @@ const ExperienceItem: React.FC<ExperienceItemProps> = ({
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.3 }
+      transition: { duration: 0.3 },
     },
     exit: {
       opacity: 0,
       scale: 0.95,
-      transition: { duration: 0.2 }
-    }
+      transition: { duration: 0.2 },
+    },
   };
 
   return (
@@ -57,8 +77,11 @@ const ExperienceItem: React.FC<ExperienceItemProps> = ({
       dragControls={controls}
     >
       <div
-        className={`border-2 rounded-xl transition-all duration-200 overflow-hidden ${isExpanded ? "border-blue-300 bg-white shadow-md text-gray-900" : "border-gray-200 bg-gray-50 hover:border-gray-300"
-          }`}
+        className={`border-2 rounded-xl transition-all duration-200 overflow-hidden ${
+          isExpanded
+            ? "border-blue-300 bg-white shadow-md text-gray-900"
+            : "border-gray-200 bg-gray-50 hover:border-gray-300"
+        }`}
       >
         {/* Accordion Header */}
         <div
@@ -66,16 +89,21 @@ const ExperienceItem: React.FC<ExperienceItemProps> = ({
           onClick={onToggle}
         >
           <div className="flex items-center gap-3 pr-8">
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isExpanded ? "bg-blue-100" : "bg-gray-200"
-              }`}>
-              <Briefcase className={`w-4 h-4 ${isExpanded ? "text-blue-600" : "text-gray-500"}`} />
+            <div
+              className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                isExpanded ? "bg-blue-100" : "bg-gray-200"
+              }`}
+            >
+              <Briefcase
+                className={`w-4 h-4 ${isExpanded ? "text-blue-600" : "text-gray-500"}`}
+              />
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-semibold text-gray-900 line-clamp-1">
-                {exp.jobTitle || "Job Title"}
+                {exp.position || "Job Title"}
               </span>
               <span className="text-xs text-gray-500 line-clamp-1">
-                {exp.employer || "Company / Employer"}
+                {exp.company || "Company / Employer"}
               </span>
             </div>
           </div>
@@ -101,7 +129,7 @@ const ExperienceItem: React.FC<ExperienceItemProps> = ({
                 {/* Job Title & Company */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Controller
-                    name={`experience.${index}.jobTitle`}
+                    name={`content.experience.${index}.position`}
                     control={control}
                     render={({ field }: { field: any }) => (
                       <TextInputField
@@ -109,13 +137,15 @@ const ExperienceItem: React.FC<ExperienceItemProps> = ({
                         id={`jobTitle-${index}`}
                         label="Job Title"
                         placeholder="e.g. Software Engineer"
-                        iconStart={<Briefcase className="w-4 h-4 text-gray-400" />}
+                        iconStart={
+                          <Briefcase className="w-4 h-4 text-gray-400" />
+                        }
                       />
                     )}
                   />
 
                   <Controller
-                    name={`experience.${index}.employer`}
+                    name={`content.experience.${index}.company`}
                     control={control}
                     render={({ field }: { field: any }) => (
                       <TextInputField
@@ -123,7 +153,9 @@ const ExperienceItem: React.FC<ExperienceItemProps> = ({
                         id={`employer-${index}`}
                         label="Company"
                         placeholder="e.g. Google"
-                        iconStart={<Building2 className="w-4 h-4 text-gray-400" />}
+                        iconStart={
+                          <Building2 className="w-4 h-4 text-gray-400" />
+                        }
                       />
                     )}
                   />
@@ -132,61 +164,71 @@ const ExperienceItem: React.FC<ExperienceItemProps> = ({
                 {/* Location */}
                 <div className="grid grid-cols-2 gap-4">
                   <Controller
-                    name={`experience.${index}.city`}
+                    name={`content.experience.${index}.location`}
                     control={control}
                     render={({ field }: { field: any }) => (
                       <TextInputField
                         {...field}
                         id={`exp-city-${index}`}
-                        label="City"
-                        placeholder="City"
+                        label="Location"
+                        placeholder="City, Country"
                         iconStart={<MapPin className="w-4 h-4 text-gray-400" />}
                       />
                     )}
                   />
-
-                  <Controller
-                    name={`experience.${index}.country`}
-                    control={control}
-                    render={({ field }: { field: any }) => (
-                      <TextInputField
-                        {...field}
-                        id={`exp-country-${index}`}
-                        label="Country"
-                        placeholder="Country"
-                        iconStart={<MapPin className="w-4 h-4 text-gray-400" />}
-                      />
-                    )}
-                  />
+                  {/* Note: Original code had separate city/country, but new interface has single location string. merging or keeping separate? 
+                      The new interface says `location: string`. The old one had city/country inputs but mapped to... wait. 
+                      The OLD interface had `location: string` too (line 32 in view_file Step 5).
+                      BUT the component was using `city` and `country` fields in the form!
+                      Lines 135-160 in Step 102 view_file show `experience.${index}.city` and `.country`.
+                      Does `Experience` interface have city/country?
+                      Let's check `resumeStore.ts` (Step 61).
+                      `Experience` interface:
+                      ```typescript
+                      export interface Experience {
+                        // ...
+                        location: string;
+                      }
+                      ```
+                      It does NOT have city/country. 
+                      So I should probably combine them or just use one field for Location.
+                      I'll switch to a single Location field to match the interface.
+                  */}
                 </div>
 
                 {/* Dates */}
                 <div className="grid grid-cols-2 gap-4">
                   <Controller
-                    name={`experience.${index}.startDate`}
+                    name={`content.experience.${index}.startDate`}
                     control={control}
                     render={({ field }: { field: any }) => (
                       <TextInputField
                         {...field}
                         id={`exp-startDate-${index}`}
                         label="Start Date"
-                        type="date"
-                        iconStart={<Calendar className="w-4 h-4 text-gray-400" />}
+                        type="month"
+                        max={new Date().toISOString().slice(0, 7)}
+                        iconStart={
+                          <Calendar className="w-4 h-4 text-gray-400" />
+                        }
                       />
                     )}
                   />
 
                   <Controller
-                    name={`experience.${index}.endDate`}
+                    name={`content.experience.${index}.endDate`}
                     control={control}
                     render={({ field }: { field: any }) => (
                       <TextInputField
                         {...field}
                         id={`exp-endDate-${index}`}
                         label="End Date"
-                        type="date"
-                        disabled={exp.currentlyWorking}
-                        iconStart={<Calendar className="w-4 h-4 text-gray-400" />}
+                        type="month"
+                        max={new Date().toISOString().slice(0, 7)}
+                        disabled={exp.current}
+                        iconStart={
+                          <Calendar className="w-4 h-4 text-gray-400" />
+                        }
                       />
                     )}
                   />
@@ -195,7 +237,7 @@ const ExperienceItem: React.FC<ExperienceItemProps> = ({
                 {/* Currently Working */}
                 <label className="flex items-center gap-2 cursor-pointer group/cb">
                   <Controller
-                    name={`experience.${index}.currentlyWorking`}
+                    name={`content.experience.${index}.current`}
                     control={control}
                     render={({ field }: { field: any }) => (
                       <input
@@ -213,9 +255,15 @@ const ExperienceItem: React.FC<ExperienceItemProps> = ({
 
                 <div className="space-y-2">
                   <Controller
-                    name={`experience.${index}.description`}
+                    name={`content.experience.${index}.description`}
                     control={control}
-                    render={({ field, fieldState }: { field: any; fieldState: any }) => (
+                    render={({
+                      field,
+                      fieldState,
+                    }: {
+                      field: any;
+                      fieldState: any;
+                    }) => (
                       <TextInputField
                         {...field}
                         id={`exp-desc-${index}`}
@@ -237,10 +285,13 @@ const ExperienceItem: React.FC<ExperienceItemProps> = ({
 
       {/* Floating Drag Handle */}
       <div
-        className={`absolute -left-2 -top-2 p-1.5 bg-white border border-gray-200 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-full shadow-md transition-all duration-300 z-10 cursor-grab active:cursor-grabbing ${isExpanded ? "opacity-100 scale-100" : "opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100"
-          }`}
+        className={`absolute -left-2 -top-2 p-1.5 bg-white border border-gray-200 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-full shadow-md transition-all duration-300 z-10 cursor-grab active:cursor-grabbing ${
+          isExpanded
+            ? "opacity-100 scale-100"
+            : "opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100"
+        }`}
         title="Drag to reorder"
-        onPointerDown={(e) => controls.start(e)}
+        onPointerDown={e => controls.start(e)}
       >
         <GripVertical className="w-4 h-4" />
       </div>
@@ -251,10 +302,13 @@ const ExperienceItem: React.FC<ExperienceItemProps> = ({
         whileTap={{ scale: 0.9 }}
         onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
           e.stopPropagation();
-          onRemove(exp.id);
+          onRemove(exp.id!);
         }}
-        className={`absolute -right-2 -top-2 p-1.5 bg-white border border-gray-200 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-full shadow-md transition-all duration-300 z-10 ${isExpanded ? "opacity-100 scale-100" : "opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100"
-          }`}
+        className={`absolute -right-2 -top-2 p-1.5 bg-white border border-gray-200 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-full shadow-md transition-all duration-300 z-10 ${
+          isExpanded
+            ? "opacity-100 scale-100"
+            : "opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100"
+        }`}
         title="Remove Experience"
       >
         <Trash2 className="w-4 h-4" />
@@ -263,36 +317,45 @@ const ExperienceItem: React.FC<ExperienceItemProps> = ({
   );
 };
 
-export const ExperienceForm: React.FC<ExperienceFormProps> = ({ control, watch, setValue }) => {
-  const experience = watch('experience') || [];
-  const [expandedId, setExpandedId] = useState<string | null>(experience[0]?.id || null);
+export const ExperienceForm: React.FC<ExperienceFormProps> = ({
+  control,
+  watch,
+  setValue,
+}) => {
+  const experience = watch("content.experience") || [];
+  const [expandedId, setExpandedId] = useState<string | null>(
+    experience[0]?.id || null
+  );
 
   const addExperience = () => {
     const newId = Date.now().toString();
-    setValue('experience', [
-      {
-        id: newId,
-        jobTitle: '',
-        employer: '',
-        city: '',
-        country: '',
-        startDate: '',
-        endDate: '',
-        currentlyWorking: false,
-        description: '',
-      },
-      ...experience, // Add existing items after the new one
-    ]);
+    const newExperience: Experience = {
+      id: newId,
+      position: "",
+      company: "",
+      location: "",
+      startDate: "",
+      endDate: "",
+      current: false,
+      description: "",
+    };
+    setValue("content.experience", [newExperience, ...experience]);
     setExpandedId(newId);
   };
 
   const removeExperience = (id: string) => {
-    setValue('experience', experience.filter((exp: any) => exp.id !== id));
+    setValue(
+      "content.experience",
+      experience.filter(exp => exp.id !== id)
+    );
     if (expandedId === id) setExpandedId(null);
   };
 
-  const handleReorder = (newOrder: any[]) => {
-    setValue('experience', newOrder, { shouldDirty: true, shouldValidate: true });
+  const handleReorder = (newOrder: Experience[]) => {
+    setValue("content.experience", newOrder, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
   };
 
   const toggleExpand = (id: string) => {
@@ -303,8 +366,8 @@ export const ExperienceForm: React.FC<ExperienceFormProps> = ({ control, watch, 
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
+      transition: { staggerChildren: 0.1 },
+    },
   };
 
   return (
@@ -318,7 +381,9 @@ export const ExperienceForm: React.FC<ExperienceFormProps> = ({ control, watch, 
       <div className="flex justify-between items-center">
         <div>
           <h3 className="text-base font-semibold text-gray-900">Experiences</h3>
-          <p className="text-xs text-gray-600 mt-1">Add your relevant work history</p>
+          <p className="text-xs text-gray-600 mt-1">
+            Add your relevant work history
+          </p>
         </div>
 
         <div className="w-fit flex justify-end">
@@ -336,14 +401,14 @@ export const ExperienceForm: React.FC<ExperienceFormProps> = ({ control, watch, 
         className="space-y-4 px-2"
       >
         <AnimatePresence mode="popLayout" initial={false}>
-          {experience.map((exp: any, index: number) => (
+          {experience.map((exp: Experience, index: number) => (
             <ExperienceItem
               key={exp.id}
               exp={exp}
               index={index}
               control={control}
               isExpanded={expandedId === exp.id}
-              onToggle={() => toggleExpand(exp.id)}
+              onToggle={() => toggleExpand(exp.id || "")}
               onRemove={removeExperience}
             />
           ))}
@@ -358,8 +423,12 @@ export const ExperienceForm: React.FC<ExperienceFormProps> = ({ control, watch, 
           className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300"
         >
           <Briefcase className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-          <p className="text-sm text-gray-600 mb-1">No work experience added yet</p>
-          <p className="text-xs text-gray-500">Click "Add Experience" to get started</p>
+          <p className="text-sm text-gray-600 mb-1">
+            No work experience added yet
+          </p>
+          <p className="text-xs text-gray-500">
+            Click "Add Experience" to get started
+          </p>
         </motion.div>
       )}
     </motion.div>

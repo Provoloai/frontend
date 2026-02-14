@@ -1,9 +1,20 @@
-import { Eye, EyeClosed, Bold, Italic, List, ListOrdered, Link as LinkIcon, Quote, Heading1, Heading2 } from "lucide-react";
+import {
+  Eye,
+  EyeClosed,
+  Bold,
+  Italic,
+  List,
+  ListOrdered,
+  Link as LinkIcon,
+  Quote,
+  Heading1,
+  Heading2,
+} from "lucide-react";
 import React, { useState, useEffect } from "react";
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import Placeholder from '@tiptap/extension-placeholder';
-import Link from '@tiptap/extension-link';
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Placeholder from "@tiptap/extension-placeholder";
+import Link from "@tiptap/extension-link";
 
 interface TextInputFieldProps {
   id: string;
@@ -11,8 +22,14 @@ interface TextInputFieldProps {
   label: string;
   placeholder?: string;
   value?: string;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | { target: { name?: string; value: string } }) => void;
-  onBlur?: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  onChange?: (
+    e:
+      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      | { target: { name?: string; value: string } }
+  ) => void;
+  onBlur?: (
+    e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void;
   touched?: boolean;
   type?: "text" | "password" | "email" | "number" | "date" | "textarea";
   variant?: "default" | "rich-text";
@@ -22,9 +39,13 @@ interface TextInputFieldProps {
   disabled?: boolean;
   // React Hook Form compatibility
   ref?: React.Ref<HTMLInputElement | HTMLTextAreaElement>;
-  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  onKeyDown?: (
+    e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void;
   rows?: number;
   helperText?: string;
+  max?: string;
+  min?: string;
 }
 
 const MenuBar = ({ editor }: { editor: any }) => {
@@ -95,8 +116,9 @@ const MenuBar = ({ editor }: { editor: any }) => {
           key={i}
           type="button"
           onClick={btn.action}
-          className={`p-1.5 rounded-lg hover:bg-gray-200 transition-colors ${btn.isActive ? "bg-gray-200 text-gray-900" : "text-gray-500"
-            }`}
+          className={`p-1.5 rounded-lg hover:bg-gray-200 transition-colors ${
+            btn.isActive ? "bg-gray-200 text-gray-900" : "text-gray-500"
+          }`}
           title={btn.title}
         >
           {btn.icon}
@@ -146,7 +168,7 @@ const RichTextEditorInternal = ({
     editable: !disabled,
     editorProps: {
       attributes: {
-        class: 'focus:outline-none min-h-[200px] h-full cursor-text',
+        class: "focus:outline-none min-h-[200px] h-full cursor-text",
       },
     },
   });
@@ -159,8 +181,9 @@ const RichTextEditorInternal = ({
 
   return (
     <div
-      className={`flex flex-col h-full ${disabled ? "bg-gray-100 opacity-60 cursor-not-allowed" : "bg-white"
-        }`}
+      className={`flex flex-col h-full ${
+        disabled ? "bg-gray-100 opacity-60 cursor-not-allowed" : "bg-white"
+      }`}
       onClick={() => editor?.chain().focus().run()}
     >
       <MenuBar editor={editor} />
@@ -198,14 +221,17 @@ const TextInputField = React.forwardRef<
       onKeyDown,
       rows = 4,
       helperText,
+      max,
+      min,
     },
     ref
   ) => {
     const [showPassword, setShowPassword] = useState(false);
     const inputValue = value ?? "";
-    const isInvalid =
+    const isInvalid = !!(
       (touched && required && !inputValue.trim()) ||
-      (error && error.length > 0);
+      (error && error.length > 0)
+    );
 
     const isRichText = variant === "rich-text";
     const isTextarea = type === "textarea";
@@ -213,21 +239,25 @@ const TextInputField = React.forwardRef<
     const currentType = isPassword && showPassword ? "text" : type;
 
     const togglePasswordVisibility = () => {
-      setShowPassword((prev) => !prev);
+      setShowPassword(prev => !prev);
     };
 
     return (
       <div className="w-full">
         <label
           htmlFor={id}
-          className={`block text-xs mb-2 font-bold capitalize tracking-wider ${disabled ? "text-gray-400" : "text-gray-900"
-            }`}
+          className={`block text-xs mb-2 font-bold capitalize tracking-wider ${
+            disabled ? "text-gray-400" : "text-gray-900"
+          }`}
         >
           {label}
         </label>
         <div
-          className={`relative ${isRichText ? "rounded-xl border border-gray-200 overflow-hidden" : ""
-            }`}
+          className={`relative ${
+            isRichText
+              ? "rounded-xl border border-gray-200 overflow-hidden"
+              : ""
+          }`}
         >
           {isRichText ? (
             <RichTextEditorInternal
@@ -254,15 +284,17 @@ const TextInputField = React.forwardRef<
                   name={name}
                   rows={rows}
                   className={`w-full p-3.5 border rounded-xl transition-all duration-200 placeholder:text-gray-400 placeholder:text-xs
-                  ${isInvalid
+                  ${
+                    isInvalid
                       ? "border-red-200 bg-red-50/50 focus:ring-red-100 focus:border-red-300"
                       : "border-gray-200 bg-gray-50/30 focus:bg-white focus:border-gray-400 focus:ring-4 focus:ring-gray-100"
-                    }
+                  }
                   ${iconStart ? "pl-11" : ""} 
-                  ${disabled
+                  ${
+                    disabled
                       ? "bg-gray-100/50 text-gray-400 border-gray-100 cursor-not-allowed focus:ring-0"
                       : ""
-                    }`}
+                  }`}
                   placeholder={placeholder}
                   value={inputValue}
                   onChange={onChange as any}
@@ -278,22 +310,26 @@ const TextInputField = React.forwardRef<
                   id={id}
                   name={name}
                   className={`w-full p-3.5 border rounded-xl transition-all duration-200 placeholder:text-gray-400 placeholder:text-xs
-                  ${isInvalid
+                  ${
+                    isInvalid
                       ? "border-red-200 bg-red-50/50 focus:ring-red-100 focus:border-red-300"
                       : "border-gray-200 bg-gray-50/30 focus:bg-white focus:border-gray-400 focus:ring-4 focus:ring-gray-100"
-                    }
+                  }
                   ${iconStart ? "pl-11" : ""} 
                   ${isPassword ? "pr-11" : ""}
-                  ${disabled
+                  ${
+                    disabled
                       ? "bg-gray-100/50 text-gray-400 border-gray-100 cursor-not-allowed focus:ring-0"
                       : ""
-                    }`}
+                  }`}
                   placeholder={placeholder}
                   value={inputValue}
                   onChange={onChange as any}
                   onBlur={onBlur as any}
                   onKeyDown={onKeyDown as any}
                   disabled={disabled}
+                  max={max}
+                  min={min}
                 />
               )}
 
@@ -301,8 +337,11 @@ const TextInputField = React.forwardRef<
                 <button
                   type="button"
                   onClick={togglePasswordVisibility}
-                  className={`absolute inset-y-0 right-0 pr-3 flex items-center ${disabled ? "text-gray-300 cursor-not-allowed" : "text-gray-400"
-                    }`}
+                  className={`absolute inset-y-0 right-0 pr-3 flex items-center ${
+                    disabled
+                      ? "text-gray-300 cursor-not-allowed"
+                      : "text-gray-400"
+                  }`}
                   tabIndex={-1}
                   disabled={disabled}
                 >
@@ -314,12 +353,18 @@ const TextInputField = React.forwardRef<
         </div>
 
         {error && error.length > 0 ? (
-          <p className="text-[11px] font-medium text-red-600 mt-1.5 ml-1">{error}</p>
+          <p className="text-[11px] font-medium text-red-600 mt-1.5 ml-1">
+            {error}
+          </p>
+        ) : isInvalid ? (
+          <p className="text-[11px] font-medium text-red-600 mt-1.5 ml-1">
+            This field is required
+          </p>
         ) : (
-          isInvalid ? (
-            <p className="text-[11px] font-medium text-red-600 mt-1.5 ml-1">This field is required</p>
-          ) : (
-            helperText && <p className="text-[11px] text-gray-400 mt-1.5 ml-1">{helperText}</p>
+          helperText && (
+            <p className="text-[11px] text-gray-400 mt-1.5 ml-1">
+              {helperText}
+            </p>
           )
         )}
       </div>

@@ -1,20 +1,39 @@
-import { Controller } from "react-hook-form";
-import { Trash2, BookOpen, Calendar, ChevronDown, ChevronUp, GripVertical, Lightbulb } from "lucide-react";
-import { motion, AnimatePresence, Reorder, useDragControls } from "motion/react";
+import {
+  Control,
+  Controller,
+  UseFormWatch,
+  UseFormSetValue,
+} from "react-hook-form";
+import {
+  Trash2,
+  BookOpen,
+  Calendar,
+  ChevronDown,
+  ChevronUp,
+  GripVertical,
+  Lightbulb,
+} from "lucide-react";
+import {
+  motion,
+  AnimatePresence,
+  Reorder,
+  useDragControls,
+} from "motion/react";
 import React, { useState } from "react";
 import CustomButton from "@/Reusables/CustomButton";
 import TextInputField from "@/Reusables/TextInputField";
+import { Resume, Course } from "@/types";
 
 interface CoursesFormProps {
-  control: any;
-  watch: any;
-  setValue: any;
+  control: Control<Resume>;
+  watch: UseFormWatch<Resume>;
+  setValue: UseFormSetValue<Resume>;
 }
 
 interface CourseItemProps {
-  course: any;
+  course: Course;
   index: number;
-  control: any;
+  control: Control<Resume>;
   isExpanded: boolean;
   onToggle: () => void;
   onRemove: (id: string) => void;
@@ -26,7 +45,7 @@ const CourseItem: React.FC<CourseItemProps> = ({
   control,
   isExpanded,
   onToggle,
-  onRemove
+  onRemove,
 }) => {
   const controls = useDragControls();
 
@@ -35,13 +54,13 @@ const CourseItem: React.FC<CourseItemProps> = ({
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.3 }
+      transition: { duration: 0.3 },
     },
     exit: {
       opacity: 0,
       scale: 0.95,
-      transition: { duration: 0.2 }
-    }
+      transition: { duration: 0.2 },
+    },
   };
 
   return (
@@ -57,8 +76,11 @@ const CourseItem: React.FC<CourseItemProps> = ({
       dragControls={controls}
     >
       <div
-        className={`border-2 rounded-xl transition-all duration-200 overflow-hidden ${isExpanded ? "border-blue-300 bg-white shadow-md text-gray-900" : "border-gray-200 bg-gray-50 hover:border-gray-300"
-          }`}
+        className={`border-2 rounded-xl transition-all duration-200 overflow-hidden ${
+          isExpanded
+            ? "border-blue-300 bg-white shadow-md text-gray-900"
+            : "border-gray-200 bg-gray-50 hover:border-gray-300"
+        }`}
       >
         {/* Accordion Header */}
         <div
@@ -66,9 +88,14 @@ const CourseItem: React.FC<CourseItemProps> = ({
           onClick={onToggle}
         >
           <div className="flex items-center gap-3 pr-8">
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isExpanded ? "bg-indigo-100" : "bg-gray-200"
-              }`}>
-              <BookOpen className={`w-4 h-4 ${isExpanded ? "text-indigo-600" : "text-gray-500"}`} />
+            <div
+              className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                isExpanded ? "bg-indigo-100" : "bg-gray-200"
+              }`}
+            >
+              <BookOpen
+                className={`w-4 h-4 ${isExpanded ? "text-indigo-600" : "text-gray-500"}`}
+              />
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-semibold text-gray-900 line-clamp-1">
@@ -100,7 +127,7 @@ const CourseItem: React.FC<CourseItemProps> = ({
               <div className="px-5 pb-5 pt-2 space-y-4 border-t border-gray-100">
                 {/* Course Name */}
                 <Controller
-                  name={`courses.${index}.name`}
+                  name={`content.courses.${index}.name`}
                   control={control}
                   render={({ field }: { field: any }) => (
                     <TextInputField
@@ -116,7 +143,7 @@ const CourseItem: React.FC<CourseItemProps> = ({
                 {/* Institution & Date */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Controller
-                    name={`courses.${index}.institution`}
+                    name={`content.courses.${index}.institution`}
                     control={control}
                     render={({ field }: { field: any }) => (
                       <TextInputField
@@ -124,13 +151,15 @@ const CourseItem: React.FC<CourseItemProps> = ({
                         id={`course-institution-${index}`}
                         label="Institution/Platform"
                         placeholder="e.g. Coursera, Udemy"
-                        iconStart={<BookOpen className="w-4 h-4 text-gray-400" />}
+                        iconStart={
+                          <BookOpen className="w-4 h-4 text-gray-400" />
+                        }
                       />
                     )}
                   />
 
                   <Controller
-                    name={`courses.${index}.completionDate`}
+                    name={`content.courses.${index}.completionDate`}
                     control={control}
                     render={({ field }: { field: any }) => (
                       <TextInputField
@@ -138,7 +167,9 @@ const CourseItem: React.FC<CourseItemProps> = ({
                         id={`course-date-${index}`}
                         label="Completion Date"
                         type="date"
-                        iconStart={<Calendar className="w-4 h-4 text-gray-400" />}
+                        iconStart={
+                          <Calendar className="w-4 h-4 text-gray-400" />
+                        }
                       />
                     )}
                   />
@@ -147,9 +178,15 @@ const CourseItem: React.FC<CourseItemProps> = ({
                 {/* Description */}
                 <div className="space-y-2">
                   <Controller
-                    name={`courses.${index}.description`}
+                    name={`content.courses.${index}.description`}
                     control={control}
-                    render={({ field, fieldState }: { field: any; fieldState: any }) => (
+                    render={({
+                      field,
+                      fieldState,
+                    }: {
+                      field: any;
+                      fieldState: any;
+                    }) => (
                       <TextInputField
                         {...field}
                         id={`course-desc-${index}`}
@@ -171,10 +208,13 @@ const CourseItem: React.FC<CourseItemProps> = ({
 
       {/* Floating Drag Handle */}
       <div
-        className={`absolute -left-2 -top-2 p-1.5 bg-white border border-gray-200 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-full shadow-md transition-all duration-300 z-10 cursor-grab active:cursor-grabbing ${isExpanded ? "opacity-100 scale-100" : "opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100"
-          }`}
+        className={`absolute -left-2 -top-2 p-1.5 bg-white border border-gray-200 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-full shadow-md transition-all duration-300 z-10 cursor-grab active:cursor-grabbing ${
+          isExpanded
+            ? "opacity-100 scale-100"
+            : "opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100"
+        }`}
         title="Drag to reorder"
-        onPointerDown={(e) => controls.start(e)}
+        onPointerDown={e => controls.start(e)}
       >
         <GripVertical className="w-4 h-4" />
       </div>
@@ -185,10 +225,13 @@ const CourseItem: React.FC<CourseItemProps> = ({
         whileTap={{ scale: 0.9 }}
         onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
           e.stopPropagation();
-          onRemove(course.id);
+          onRemove(course.id || "");
         }}
-        className={`absolute -right-2 -top-2 p-1.5 bg-white border border-gray-200 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-full shadow-md transition-all duration-300 z-10 ${isExpanded ? "opacity-100 scale-100" : "opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100"
-          }`}
+        className={`absolute -right-2 -top-2 p-1.5 bg-white border border-gray-200 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-full shadow-md transition-all duration-300 z-10 ${
+          isExpanded
+            ? "opacity-100 scale-100"
+            : "opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100"
+        }`}
         title="Remove Course"
       >
         <Trash2 className="w-4 h-4" />
@@ -197,32 +240,45 @@ const CourseItem: React.FC<CourseItemProps> = ({
   );
 };
 
-export const CoursesForm: React.FC<CoursesFormProps> = ({ control, watch, setValue }) => {
-  const courses = watch('courses') || [];
-  const [expandedId, setExpandedId] = useState<string | null>(courses[0]?.id || null);
+export const CoursesForm: React.FC<CoursesFormProps> = ({
+  control,
+  watch,
+  setValue,
+}) => {
+  const courses = watch("content.courses") || [];
+  const [expandedId, setExpandedId] = useState<string | null>(
+    courses[0]?.id || null
+  );
 
   const addCourse = () => {
     const newId = Date.now().toString();
-    setValue('courses', [
-      {
-        id: newId,
-        name: '',
-        institution: '',
-        completionDate: '',
-        description: '',
-      },
+    const newCourse: Course = {
+      id: newId,
+      name: "",
+      institution: "",
+      completionDate: "",
+      description: "",
+    };
+    setValue("content.courses", [
+      newCourse,
       ...courses, // Add existing items after the new one
     ]);
     setExpandedId(newId);
   };
 
   const removeCourse = (id: string) => {
-    setValue('courses', courses.filter((course: any) => course.id !== id));
+    setValue(
+      "content.courses",
+      courses.filter(course => course.id !== id)
+    );
     if (expandedId === id) setExpandedId(null);
   };
 
-  const handleReorder = (newOrder: any[]) => {
-    setValue('courses', newOrder, { shouldDirty: true, shouldValidate: true });
+  const handleReorder = (newOrder: Course[]) => {
+    setValue("content.courses", newOrder, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
   };
 
   const toggleExpand = (id: string) => {
@@ -233,8 +289,8 @@ export const CoursesForm: React.FC<CoursesFormProps> = ({ control, watch, setVal
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
+      transition: { staggerChildren: 0.1 },
+    },
   };
 
   return (
@@ -247,8 +303,12 @@ export const CoursesForm: React.FC<CoursesFormProps> = ({ control, watch, setVal
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="text-base font-semibold text-gray-900">Courses & Certifications</h3>
-          <p className="text-xs text-gray-600 mt-1">Add relevant courses and certifications</p>
+          <h3 className="text-base font-semibold text-gray-900">
+            Courses & Certifications
+          </h3>
+          <p className="text-xs text-gray-600 mt-1">
+            Add relevant courses and certifications
+          </p>
         </div>
 
         <div className="w-fit flex justify-end">
@@ -266,14 +326,14 @@ export const CoursesForm: React.FC<CoursesFormProps> = ({ control, watch, setVal
         className="space-y-4 px-2"
       >
         <AnimatePresence mode="popLayout" initial={false}>
-          {courses.map((course: any, index: number) => (
+          {courses.map((course: Course, index: number) => (
             <CourseItem
               key={course.id}
               course={course}
               index={index}
               control={control}
               isExpanded={expandedId === course.id}
-              onToggle={() => toggleExpand(course.id)}
+              onToggle={() => toggleExpand(course.id || "")}
               onRemove={removeCourse}
             />
           ))}
@@ -289,7 +349,9 @@ export const CoursesForm: React.FC<CoursesFormProps> = ({ control, watch, setVal
         >
           <BookOpen className="w-12 h-12 text-gray-400 mx-auto mb-3" />
           <p className="text-sm text-gray-600 mb-1">No courses added yet</p>
-          <p className="text-xs text-gray-500">Click "Add Course" to get started</p>
+          <p className="text-xs text-gray-500">
+            Click "Add Course" to get started
+          </p>
         </motion.div>
       )}
       {/* Tips */}
@@ -303,26 +365,31 @@ export const CoursesForm: React.FC<CoursesFormProps> = ({ control, watch, setVal
           <div className="bg-blue-500 text-white p-1 rounded-full shrink-0 shadow-sm">
             <Lightbulb className="w-3 h-3 fill-current" />
           </div>
-          <span className="text-[11px] font-bold text-blue-900 underline decoration-blue-200 underline-offset-2 uppercase tracking-tight">Pro Tips</span>
+          <span className="text-[11px] font-bold text-blue-900 underline decoration-blue-200 underline-offset-2 uppercase tracking-tight">
+            Pro Tips
+          </span>
         </div>
 
         <div className="space-y-2 px-1">
           <div className="flex items-start gap-3">
             <div className="w-1 h-1 rounded-full bg-blue-400 mt-1.5 flex-shrink-0"></div>
             <p className="text-[11px] text-blue-800 leading-relaxed">
-              Prioritize **certifications** that are highly recognized in your industry
+              Prioritize **certifications** that are highly recognized in your
+              industry
             </p>
           </div>
           <div className="flex items-start gap-3">
             <div className="w-1 h-1 rounded-full bg-blue-400 mt-1.5 flex-shrink-0"></div>
             <p className="text-[11px] text-blue-800 leading-relaxed">
-              Include the **expiration date** if the certification requires renewal
+              Include the **expiration date** if the certification requires
+              renewal
             </p>
           </div>
           <div className="flex items-start gap-3">
             <div className="w-1 h-1 rounded-full bg-blue-400 mt-1.5 flex-shrink-0"></div>
             <p className="text-[11px] text-blue-800 leading-relaxed">
-              Mention specific **platforms** (e.g., Coursera, AWS, Google) for credibility
+              Mention specific **platforms** (e.g., Coursera, AWS, Google) for
+              credibility
             </p>
           </div>
         </div>

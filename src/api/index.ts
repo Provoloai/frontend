@@ -1,4 +1,11 @@
-import { ResumeData } from "@/stores/resumeStore";
+import {
+  Resume,
+  DeviceSession,
+  NotificationsResponse,
+  CreateResumeResponse,
+  GetResumesResponse,
+  DeleteResumeResponse,
+} from "@/types";
 import { apiGet } from "@/utils/api.util";
 import { useQuery } from "@tanstack/react-query";
 
@@ -37,11 +44,15 @@ const apiRequest = async <T>(
           "/forgot-password",
           "/reset-password",
         ];
+        const currentPath = window.location.pathname;
+
         const isOnPublicAuthRoute = publicAuthRoutes.some(route =>
-          window.location.pathname.startsWith(route)
+          currentPath.startsWith(route)
         );
+
         if (!isOnPublicAuthRoute) {
-          window.location.href = "/login?reason=session_expired";
+          window.location.replace("/login?reason=session_expired");
+          throw new Error("Session expired");
         }
       }
 
@@ -59,17 +70,6 @@ const apiRequest = async <T>(
 };
 
 // Device Tracking API
-export interface DeviceSession {
-  id: string;
-  device: string;
-  browser: string;
-  os: string;
-  ip: string;
-  userAgent?: string;
-  timestamp: string; // ISO Date from backend
-  isCurrent?: boolean;
-}
-
 export const deviceApi = {
   getDevices: async () => {
     return apiRequest<{
@@ -215,8 +215,6 @@ export const authApi = {
   },
 };
 
-
-
 export const useGetProposalList = (page: number = 1, limit: number = 10) => {
   return useQuery({
     queryKey: ["proposal-history", page, limit],
@@ -273,52 +271,6 @@ export const useGetQuota = (quotaSlug: string) => {
   });
 };
 
-// Notification API types
-export enum NotificationCategory {
-  SYSTEM = "system",
-  USER = "user",
-  PROMOTION = "promotion",
-  ADMIN = "admin",
-  OTHER = "other",
-  PROFILE = "profile",
-  PROPOSAL = "proposal",
-  KNOWLEDGE = "knowledge",
-  COMMUNITY = "community",
-  ACHIEVEMENT = "achievement",
-  SUBSCRIPTION = "subscription",
-  RESEARCH = "research",
-}
-
-export interface FirebaseTimestamp {
-  _seconds: number;
-  _nanoseconds: number;
-}
-
-export interface BackendNotification {
-  id: string;
-  recipient: string;
-  title: string;
-  message: string;
-  read: boolean;
-  category: NotificationCategory;
-  createdAt: string | FirebaseTimestamp;
-}
-
-export interface NotificationsResponse {
-  title: string;
-  message: string;
-  status: string;
-  data: {
-    notifications: BackendNotification[];
-    lastVisibleId: string;
-    totalCount: number;
-    pageSize: number;
-    currentPage: number;
-    totalPages: number;
-    remainingPages: number;
-  };
-}
-
 // Notification API functions
 export const notificationApi = {
   getNotifications: async (limit: number = 20, startAfter?: string) => {
@@ -373,28 +325,28 @@ export const useGetNotifications = (
   });
 };
 
-// API Request/Response Types
-
-
-// Response type for create/save resume
-export interface CreateResumeResponse {
-  success: boolean;
-  data?: {
-    id: string;
-    [key: string]: any;
-  };
-  error?: string;
-}
-
 export const resumeApi = {
-  createResume: async (data: ResumeData): Promise<CreateResumeResponse> => {
+  getResumes: async (): Promise<GetResumesResponse> => {
+    return apiRequest<GetResumesResponse>("/resumes/list", {
+      method: "GET",
+    });
+  },
+
+  createResume: async (
+    data: Partial<Resume>
+  ): Promise<CreateResumeResponse> => {
     return apiRequest<CreateResumeResponse>("/resumes/save", {
       method: "POST",
       body: JSON.stringify(data),
     });
-  }
-};
+  },
 
+  deleteResume: async (id: string): Promise<DeleteResumeResponse> => {
+    return apiRequest<DeleteResumeResponse>(`/resumes/${id}`, {
+      method: "DELETE",
+    });
+  },
+};
 
 // Export the generic API request function for custom use cases
 export { apiRequest };

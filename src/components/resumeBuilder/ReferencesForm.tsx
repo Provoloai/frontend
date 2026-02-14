@@ -1,20 +1,41 @@
-import { Controller } from "react-hook-form";
-import { Trash2, Users, Mail, Phone, Briefcase, ChevronDown, ChevronUp, GripVertical, Lightbulb } from "lucide-react";
-import { motion, AnimatePresence, Reorder, useDragControls } from "motion/react";
+import {
+  Control,
+  Controller,
+  UseFormWatch,
+  UseFormSetValue,
+} from "react-hook-form";
+import {
+  Trash2,
+  Users,
+  Mail,
+  Phone,
+  Briefcase,
+  ChevronDown,
+  ChevronUp,
+  GripVertical,
+  Lightbulb,
+} from "lucide-react";
+import {
+  motion,
+  AnimatePresence,
+  Reorder,
+  useDragControls,
+} from "motion/react";
 import React, { useState } from "react";
 import CustomButton from "@/Reusables/CustomButton";
 import TextInputField from "@/Reusables/TextInputField";
+import { Resume, Reference } from "@/types";
 
 interface ReferencesFormProps {
-  control: any;
-  watch: any;
-  setValue: any;
+  control: Control<Resume>;
+  watch: UseFormWatch<Resume>;
+  setValue: UseFormSetValue<Resume>;
 }
 
 interface ReferenceItemProps {
-  reference: any;
+  reference: Reference;
   index: number;
-  control: any;
+  control: Control<Resume>;
   isExpanded: boolean;
   onToggle: () => void;
   onRemove: (id: string) => void;
@@ -26,7 +47,7 @@ const ReferenceItem: React.FC<ReferenceItemProps> = ({
   control,
   isExpanded,
   onToggle,
-  onRemove
+  onRemove,
 }) => {
   const controls = useDragControls();
 
@@ -35,13 +56,13 @@ const ReferenceItem: React.FC<ReferenceItemProps> = ({
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.3 }
+      transition: { duration: 0.3 },
     },
     exit: {
       opacity: 0,
       scale: 0.95,
-      transition: { duration: 0.2 }
-    }
+      transition: { duration: 0.2 },
+    },
   };
 
   return (
@@ -57,8 +78,11 @@ const ReferenceItem: React.FC<ReferenceItemProps> = ({
       dragControls={controls}
     >
       <div
-        className={`border-2 rounded-xl transition-all duration-200 overflow-hidden ${isExpanded ? "border-blue-300 bg-white shadow-md text-gray-900" : "border-gray-200 bg-gray-50 hover:border-gray-300"
-          }`}
+        className={`border-2 rounded-xl transition-all duration-200 overflow-hidden ${
+          isExpanded
+            ? "border-blue-300 bg-white shadow-md text-gray-900"
+            : "border-gray-200 bg-gray-50 hover:border-gray-300"
+        }`}
       >
         {/* Accordion Header */}
         <div
@@ -66,16 +90,22 @@ const ReferenceItem: React.FC<ReferenceItemProps> = ({
           onClick={onToggle}
         >
           <div className="flex items-center gap-3 pr-8">
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isExpanded ? "bg-cyan-100" : "bg-gray-200"
-              }`}>
-              <Users className={`w-4 h-4 ${isExpanded ? "text-cyan-600" : "text-gray-500"}`} />
+            <div
+              className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                isExpanded ? "bg-cyan-100" : "bg-gray-200"
+              }`}
+            >
+              <Users
+                className={`w-4 h-4 ${isExpanded ? "text-cyan-600" : "text-gray-500"}`}
+              />
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-semibold text-gray-900 line-clamp-1">
                 {reference.name || "Full Name"}
               </span>
               <span className="text-xs text-gray-500 line-clamp-1">
-                {reference.position || "Position"}{reference.company ? ` at ${reference.company}` : ""}
+                {reference.position || "Position"}
+                {reference.company ? ` at ${reference.company}` : ""}
               </span>
             </div>
           </div>
@@ -100,7 +130,7 @@ const ReferenceItem: React.FC<ReferenceItemProps> = ({
               <div className="px-5 pb-5 pt-2 space-y-4 border-t border-gray-100">
                 {/* Name */}
                 <Controller
-                  name={`references.${index}.name`}
+                  name={`content.references.${index}.name`}
                   control={control}
                   render={({ field }: { field: any }) => (
                     <TextInputField
@@ -116,7 +146,7 @@ const ReferenceItem: React.FC<ReferenceItemProps> = ({
                 {/* Position & Company */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Controller
-                    name={`references.${index}.position`}
+                    name={`content.references.${index}.position`}
                     control={control}
                     render={({ field }: { field: any }) => (
                       <TextInputField
@@ -124,13 +154,15 @@ const ReferenceItem: React.FC<ReferenceItemProps> = ({
                         id={`reference-position-${index}`}
                         label="Position"
                         placeholder="e.g. Senior Manager"
-                        iconStart={<Briefcase className="w-4 h-4 text-gray-400" />}
+                        iconStart={
+                          <Briefcase className="w-4 h-4 text-gray-400" />
+                        }
                       />
                     )}
                   />
 
                   <Controller
-                    name={`references.${index}.company`}
+                    name={`content.references.${index}.company`}
                     control={control}
                     render={({ field }: { field: any }) => (
                       <TextInputField
@@ -138,7 +170,9 @@ const ReferenceItem: React.FC<ReferenceItemProps> = ({
                         id={`reference-company-${index}`}
                         label="Company"
                         placeholder="e.g. Google"
-                        iconStart={<Briefcase className="w-4 h-4 text-gray-400" />}
+                        iconStart={
+                          <Briefcase className="w-4 h-4 text-gray-400" />
+                        }
                       />
                     )}
                   />
@@ -147,7 +181,7 @@ const ReferenceItem: React.FC<ReferenceItemProps> = ({
                 {/* Contact Info */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Controller
-                    name={`references.${index}.email`}
+                    name={`content.references.${index}.email`}
                     control={control}
                     render={({ field }: { field: any }) => (
                       <TextInputField
@@ -162,7 +196,7 @@ const ReferenceItem: React.FC<ReferenceItemProps> = ({
                   />
 
                   <Controller
-                    name={`references.${index}.phone`}
+                    name={`content.references.${index}.phone`}
                     control={control}
                     render={({ field }: { field: any }) => (
                       <TextInputField
@@ -183,10 +217,13 @@ const ReferenceItem: React.FC<ReferenceItemProps> = ({
 
       {/* Floating Drag Handle */}
       <div
-        className={`absolute -left-2 -top-2 p-1.5 bg-white border border-gray-200 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-full shadow-md transition-all duration-300 z-10 cursor-grab active:cursor-grabbing ${isExpanded ? "opacity-100 scale-100" : "opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100"
-          }`}
+        className={`absolute -left-2 -top-2 p-1.5 bg-white border border-gray-200 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-full shadow-md transition-all duration-300 z-10 cursor-grab active:cursor-grabbing ${
+          isExpanded
+            ? "opacity-100 scale-100"
+            : "opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100"
+        }`}
         title="Drag to reorder"
-        onPointerDown={(e) => controls.start(e)}
+        onPointerDown={e => controls.start(e)}
       >
         <GripVertical className="w-4 h-4" />
       </div>
@@ -197,10 +234,13 @@ const ReferenceItem: React.FC<ReferenceItemProps> = ({
         whileTap={{ scale: 0.9 }}
         onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
           e.stopPropagation();
-          onRemove(reference.id);
+          onRemove(reference.id || "");
         }}
-        className={`absolute -right-2 -top-2 p-1.5 bg-white border border-gray-200 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-full shadow-md transition-all duration-300 z-10 ${isExpanded ? "opacity-100 scale-100" : "opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100"
-          }`}
+        className={`absolute -right-2 -top-2 p-1.5 bg-white border border-gray-200 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-full shadow-md transition-all duration-300 z-10 ${
+          isExpanded
+            ? "opacity-100 scale-100"
+            : "opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100"
+        }`}
         title="Remove Reference"
       >
         <Trash2 className="w-4 h-4" />
@@ -209,33 +249,46 @@ const ReferenceItem: React.FC<ReferenceItemProps> = ({
   );
 };
 
-export const ReferencesForm: React.FC<ReferencesFormProps> = ({ control, watch, setValue }) => {
-  const references = watch('references') || [];
-  const [expandedId, setExpandedId] = useState<string | null>(references[0]?.id || null);
+export const ReferencesForm: React.FC<ReferencesFormProps> = ({
+  control,
+  watch,
+  setValue,
+}) => {
+  const references = watch("content.references") || [];
+  const [expandedId, setExpandedId] = useState<string | null>(
+    references[0]?.id || null
+  );
 
   const addReference = () => {
     const newId = Date.now().toString();
-    setValue('references', [
-      {
-        id: newId,
-        name: '',
-        position: '',
-        company: '',
-        email: '',
-        phone: '',
-      },
+    const newReference: Reference = {
+      id: newId,
+      name: "",
+      position: "",
+      company: "",
+      email: "",
+      phone: "",
+    };
+    setValue("content.references", [
+      newReference,
       ...references, // Add existing items after the new one
     ]);
     setExpandedId(newId);
   };
 
   const removeReference = (id: string) => {
-    setValue('references', references.filter((ref: any) => ref.id !== id));
+    setValue(
+      "content.references",
+      references.filter(ref => ref.id !== id)
+    );
     if (expandedId === id) setExpandedId(null);
   };
 
-  const handleReorder = (newOrder: any[]) => {
-    setValue('references', newOrder, { shouldDirty: true, shouldValidate: true });
+  const handleReorder = (newOrder: Reference[]) => {
+    setValue("content.references", newOrder, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
   };
 
   const toggleExpand = (id: string) => {
@@ -246,8 +299,8 @@ export const ReferencesForm: React.FC<ReferencesFormProps> = ({ control, watch, 
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
+      transition: { staggerChildren: 0.1 },
+    },
   };
 
   return (
@@ -261,7 +314,9 @@ export const ReferencesForm: React.FC<ReferencesFormProps> = ({ control, watch, 
       <div className="flex justify-between items-center">
         <div>
           <h3 className="text-base font-semibold text-gray-900">References</h3>
-          <p className="text-xs text-gray-600 mt-1">Add professional references</p>
+          <p className="text-xs text-gray-600 mt-1">
+            Add professional references
+          </p>
         </div>
 
         <div className="w-fit flex justify-end">
@@ -279,14 +334,14 @@ export const ReferencesForm: React.FC<ReferencesFormProps> = ({ control, watch, 
         className="space-y-4 px-2"
       >
         <AnimatePresence mode="popLayout" initial={false}>
-          {references.map((ref: any, index: number) => (
+          {references.map((ref: Reference, index: number) => (
             <ReferenceItem
               key={ref.id}
               reference={ref}
               index={index}
               control={control}
               isExpanded={expandedId === ref.id}
-              onToggle={() => toggleExpand(ref.id)}
+              onToggle={() => toggleExpand(ref.id || "")}
               onRemove={removeReference}
             />
           ))}
@@ -302,7 +357,9 @@ export const ReferencesForm: React.FC<ReferencesFormProps> = ({ control, watch, 
         >
           <Users className="w-12 h-12 text-gray-400 mx-auto mb-3" />
           <p className="text-sm text-gray-600 mb-1">No references added yet</p>
-          <p className="text-xs text-gray-500">Click "Add Reference" to get started</p>
+          <p className="text-xs text-gray-500">
+            Click "Add Reference" to get started
+          </p>
         </motion.div>
       )}
       {/* Tips */}
@@ -316,7 +373,9 @@ export const ReferencesForm: React.FC<ReferencesFormProps> = ({ control, watch, 
           <div className="bg-blue-500 text-white p-1 rounded-full shrink-0 shadow-sm">
             <Lightbulb className="w-3 h-3 fill-current" />
           </div>
-          <span className="text-[11px] font-bold text-blue-900 underline decoration-blue-200 underline-offset-2 uppercase tracking-tight">Pro Tips</span>
+          <span className="text-[11px] font-bold text-blue-900 underline decoration-blue-200 underline-offset-2 uppercase tracking-tight">
+            Pro Tips
+          </span>
         </div>
 
         <div className="space-y-2 px-1">

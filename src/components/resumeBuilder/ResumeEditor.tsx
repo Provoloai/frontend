@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
-import { useForm, Control, UseFormWatch, UseFormSetValue } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { ResumeForm } from "./ResumeForm";
 import { ResumePreview } from "./ResumePreview";
 import { ReviewMode } from "./ReviewMode";
-import { useResumeStore, ResumeData, transformToBackendPayload } from "@/stores/resumeStore";
+import { useResumeStore } from "@/stores/resumeStore";
+import { Resume } from "@/types";
 import { ArrowLeft } from "lucide-react";
 import { resumeApi } from "@/api";
+import CustomSnackbar from "@/Reusables/CustomSnackbar";
 
 interface ResumeEditorProps {
   onBack?: () => void;
@@ -24,37 +26,64 @@ export const ResumeEditor: React.FC<ResumeEditorProps> = ({ onBack }) => {
   ]);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const currentResumeId = useResumeStore((state) => state.currentResumeId);
-  const loadResume = useResumeStore((state) => state.loadResume);
-  const saveCurrentResume = useResumeStore((state) => state.saveCurrentResume);
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    color: "primary" | "neutral" | "danger" | "success" | "warning";
+  }>({
+    open: false,
+    message: "",
+    color: "success",
+  });
 
-  const { control, watch, setValue, reset } = useForm<ResumeData>({
+  const currentResumeId = useResumeStore(state => state.currentResumeId);
+  const loadResume = useResumeStore(state => state.loadResume);
+  const saveCurrentResume = useResumeStore(state => state.saveCurrentResume);
+  const syncResume = useResumeStore(state => state.syncResume);
+
+  const { control, watch, setValue, reset } = useForm<Resume>({
     defaultValues: {
-      personalInfo: {
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        city: "",
-        country: "",
-        jobTitle: "",
-        linkedinUrl: "",
+      title: "Untitled Resume",
+      template: "default",
+      content: {
+        personalInfo: {
+          firstName: "",
+          lastName: "",
+          email: "",
+          phone: "",
+          city: "",
+          country: "",
+          jobTitle: "",
+          linkedinUrl: "",
+          summary: "",
+        },
+        experience: [],
+        education: [],
+        skills: [],
+        courses: [],
+        internships: [],
+        projects: [],
+        certifications: [],
+        hobbies: [],
+        languages: [],
+        references: [],
       },
-      summary: "",
-      experience: [],
-      education: [],
-      skills: [],
-      courses: [],
-      internships: [],
-      projects: [],
-      certifications: [],
-      hobbies: [],
-      languages: [],
-      references: [],
     },
   });
 
   const formData = watch();
+  const firstName = watch("content.personalInfo.firstName");
+  const lastName = watch("content.personalInfo.lastName");
+
+  // Sync title with Name (First + Last) whenever name changes
+  useEffect(() => {
+    if (firstName || lastName) {
+      const fullName = `${firstName || ""} ${lastName || ""}`.trim();
+      if (fullName) {
+        setValue("title", fullName);
+      }
+    }
+  }, [firstName, lastName, setValue]);
 
   // Handle resume submission to backend
   const handleSubmitResume = async (): Promise<void> => {
@@ -62,38 +91,59 @@ export const ResumeEditor: React.FC<ResumeEditorProps> = ({ onBack }) => {
 
     try {
       // Validate that we have content
-      if (!formData.personalInfo.firstName || !formData.personalInfo.lastName) {
-        alert('Please fill in at least your name before submitting.');
+      if (
+        !formData.content.personalInfo.firstName ||
+        !formData.content.personalInfo.lastName
+      ) {
+        setSnackbar({
+          open: true,
+          message: "Please fill in at least your name before submitting.",
+          color: "warning",
+        });
         return;
       }
 
-      // Get the backend ID if it exists
-      const backendId = currentResumeId 
-        ? localStorage.getItem(`resume_backend_id_${currentResumeId}`)
-        : null;
+      // Prepare payload
+      const payload = {
+        ...formData,
+      };
 
-        console.log(transformToBackendPayload(formData));
-        
-      // Transform form data to match backend expectations
-      const payload = transformToBackendPayload(formData, backendId || undefined);
+      console.log("Submitting payload:", payload);
 
-      console.log('Submitting payload:', payload);
-
-      const result = await resumeApi.createResume(payload);
-
-      if (result.success) {
-        // Save the backend ID to the store
-        if (currentResumeId && result.data?.id) {
-          localStorage.setItem(`resume_backend_id_${currentResumeId}`, result.data.id);
-        }
-        alert('Resume submitted successfully!');
+      // Sync resume with backend
+      if (currentResumeId) {
+        await syncResume(currentResumeId, payload as Resume);
+        setSnackbar({
+          open: true,
+          message: "Resume submitted/synced successfully!",
+          color: "success",
+        });
       } else {
-        alert(`Error: ${result.error || 'Failed to submit resume'}`);
+        // Fallback for edge cases (shouldn't happen with current flow as ID exists on create)
+        const result = await resumeApi.createResume(payload);
+        if (result.success) {
+          setSnackbar({
+            open: true,
+            message: "Resume submitted successfully!",
+            color: "success",
+          });
+        } else {
+          setSnackbar({
+            open: true,
+            message: `Error: ${result.error || "Failed to submit resume"}`,
+            color: "danger",
+          });
+        }
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
-      console.error('Resume submission error:', error);
-      alert(`Error: ${errorMessage}`);
+      const errorMessage =
+        error instanceof Error ? error.message : "An unexpected error occurred";
+      console.error("Resume submission error:", error);
+      setSnackbar({
+        open: true,
+        message: `Error: ${errorMessage}`,
+        color: "danger",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -125,59 +175,73 @@ export const ResumeEditor: React.FC<ResumeEditorProps> = ({ onBack }) => {
       const newAdditionalSections = [...additionalSections, sectionId];
       setAdditionalSections(newAdditionalSections);
 
-      const newOrder = sectionOrder.filter((id) => id !== "additional");
+      const newOrder = sectionOrder.filter(id => id !== "additional");
       newOrder.push(sectionId, "additional");
       setSectionOrder(newOrder);
     }
   };
 
-  if (isReviewMode) {
+  const renderContent = () => {
+    if (isReviewMode) {
+      return (
+        <ReviewMode
+          formData={formData}
+          sectionOrder={sectionOrder}
+          setSectionOrder={setSectionOrder}
+          onBack={() => setIsReviewMode(false)}
+          onSubmit={handleSubmitResume}
+          isSubmitting={isSubmitting}
+        />
+      );
+    }
+
     return (
-      <ReviewMode
-        formData={formData}
-        sectionOrder={sectionOrder}
-        setSectionOrder={setSectionOrder}
-        onBack={() => setIsReviewMode(false)}
-        onSubmit={handleSubmitResume}
-        isSubmitting={isSubmitting}
-      />
-    );
-  }
+      <div className="flex-1 h-screen bg-gray-50 overflow-hidden pt-10">
+        <div className="h-full flex flex-col p-8">
+          {onBack && (
+            <div className="mb-4">
+              <button
+                onClick={onBack}
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                <ArrowLeft className="w-3 h-3" />
+                <span className="font-medium text-xs">Back to My Resumes</span>
+              </button>
+            </div>
+          )}
 
-  return (
-    <div className="flex-1 h-screen bg-gray-50 overflow-hidden pt-10">
-      <div className="h-full flex flex-col p-8">
-        {onBack && (
-          <div className="mb-4">
-            <button
-              onClick={onBack}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              <ArrowLeft className="w-3 h-3" />
-              <span className="font-medium text-xs">Back to My Resumes</span>
-            </button>
-          </div>
-        )}
+          <div className="flex-1 grid grid-cols-2 gap-1 min-h-0 overflow-hidden">
+            <div className="bg-white rounded-lg shadow-sm p-6 flex flex-col h-full overflow-hidden">
+              <ResumeForm
+                activeSection={activeSection}
+                setActiveSection={setActiveSection}
+                additionalSections={additionalSections}
+                addAdditionalSection={addAdditionalSection}
+                control={control}
+                watch={watch}
+                setValue={setValue}
+                onReview={() => setIsReviewMode(true)}
+              />
+            </div>
 
-        <div className="flex-1 grid grid-cols-2 gap-1 min-h-0 overflow-hidden">
-          <div className="bg-white rounded-lg shadow-sm p-6 flex flex-col h-full overflow-hidden">
-            <ResumeForm
-              activeSection={activeSection}
-              setActiveSection={setActiveSection}
-              additionalSections={additionalSections}
-              addAdditionalSection={addAdditionalSection}
-              control={control}
-              watch={watch}
-              setValue={setValue}
-              onReview={() => setIsReviewMode(true)}
-            />
-          </div>
-
-          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-            <ResumePreview formData={formData} sectionOrder={sectionOrder} />
+            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+              <ResumePreview formData={formData} sectionOrder={sectionOrder} />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    );
+  };
+
+  return (
+    <>
+      {renderContent()}
+      <CustomSnackbar
+        open={snackbar.open}
+        snackbarMessage={snackbar.message}
+        snackbarColor={snackbar.color}
+        close={() => setSnackbar(prev => ({ ...prev, open: false }))}
+      />
+    </>
   );
 };

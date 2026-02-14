@@ -1,20 +1,41 @@
-import { Controller } from "react-hook-form";
-import { Trash2, Award, Calendar, Building2, LinkIcon, ChevronDown, ChevronUp, GripVertical, Lightbulb } from "lucide-react";
-import { motion, AnimatePresence, Reorder, useDragControls } from "motion/react";
+import {
+  Control,
+  Controller,
+  UseFormWatch,
+  UseFormSetValue,
+} from "react-hook-form";
+import {
+  Trash2,
+  Award,
+  Calendar,
+  Building2,
+  LinkIcon,
+  ChevronDown,
+  ChevronUp,
+  GripVertical,
+  Lightbulb,
+} from "lucide-react";
+import {
+  motion,
+  AnimatePresence,
+  Reorder,
+  useDragControls,
+} from "motion/react";
 import React, { useState } from "react";
 import CustomButton from "@/Reusables/CustomButton";
 import TextInputField from "@/Reusables/TextInputField";
+import { Resume, Certification } from "@/types";
 
 interface CertificationsFormProps {
-  control: any;
-  watch: any;
-  setValue: any;
+  control: Control<Resume>;
+  watch: UseFormWatch<Resume>;
+  setValue: UseFormSetValue<Resume>;
 }
 
 interface CertificationItemProps {
-  certification: any;
+  certification: Certification;
   index: number;
-  control: any;
+  control: Control<Resume>;
   isExpanded: boolean;
   onToggle: () => void;
   onRemove: (id: string) => void;
@@ -26,7 +47,7 @@ const CertificationItem: React.FC<CertificationItemProps> = ({
   control,
   isExpanded,
   onToggle,
-  onRemove
+  onRemove,
 }) => {
   const controls = useDragControls();
 
@@ -35,13 +56,13 @@ const CertificationItem: React.FC<CertificationItemProps> = ({
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.3 }
+      transition: { duration: 0.3 },
     },
     exit: {
       opacity: 0,
       scale: 0.95,
-      transition: { duration: 0.2 }
-    }
+      transition: { duration: 0.2 },
+    },
   };
 
   return (
@@ -57,8 +78,11 @@ const CertificationItem: React.FC<CertificationItemProps> = ({
       dragControls={controls}
     >
       <div
-        className={`border-2 rounded-xl transition-all duration-200 overflow-hidden ${isExpanded ? "border-blue-300 bg-white shadow-md text-gray-900" : "border-gray-200 bg-gray-50 hover:border-gray-300"
-          }`}
+        className={`border-2 rounded-xl transition-all duration-200 overflow-hidden ${
+          isExpanded
+            ? "border-blue-300 bg-white shadow-md text-gray-900"
+            : "border-gray-200 bg-gray-50 hover:border-gray-300"
+        }`}
       >
         {/* Accordion Header */}
         <div
@@ -66,9 +90,14 @@ const CertificationItem: React.FC<CertificationItemProps> = ({
           onClick={onToggle}
         >
           <div className="flex items-center gap-3 pr-8">
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isExpanded ? "bg-amber-100" : "bg-gray-200"
-              }`}>
-              <Award className={`w-4 h-4 ${isExpanded ? "text-amber-600" : "text-gray-500"}`} />
+            <div
+              className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                isExpanded ? "bg-amber-100" : "bg-gray-200"
+              }`}
+            >
+              <Award
+                className={`w-4 h-4 ${isExpanded ? "text-amber-600" : "text-gray-500"}`}
+              />
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-semibold text-gray-900 line-clamp-1">
@@ -100,7 +129,7 @@ const CertificationItem: React.FC<CertificationItemProps> = ({
               <div className="px-5 pb-5 pt-2 space-y-4 border-t border-gray-100">
                 {/* Certification Name */}
                 <Controller
-                  name={`certifications.${index}.name`}
+                  name={`content.certifications.${index}.name`}
                   control={control}
                   render={({ field }: { field: any }) => (
                     <TextInputField
@@ -115,7 +144,7 @@ const CertificationItem: React.FC<CertificationItemProps> = ({
 
                 {/* Issuing Organization */}
                 <Controller
-                  name={`certifications.${index}.issuingOrganization`}
+                  name={`content.certifications.${index}.issuingOrganization`}
                   control={control}
                   render={({ field }: { field: any }) => (
                     <TextInputField
@@ -123,7 +152,9 @@ const CertificationItem: React.FC<CertificationItemProps> = ({
                       id={`cert-org-${index}`}
                       label="Issuing Organization"
                       placeholder="e.g. Amazon Web Services"
-                      iconStart={<Building2 className="w-4 h-4 text-gray-400" />}
+                      iconStart={
+                        <Building2 className="w-4 h-4 text-gray-400" />
+                      }
                     />
                   )}
                 />
@@ -131,7 +162,7 @@ const CertificationItem: React.FC<CertificationItemProps> = ({
                 {/* Dates */}
                 <div className="grid grid-cols-2 gap-4">
                   <Controller
-                    name={`certifications.${index}.issueDate`}
+                    name={`content.certifications.${index}.issueDate`}
                     control={control}
                     render={({ field }: { field: any }) => (
                       <TextInputField
@@ -139,13 +170,15 @@ const CertificationItem: React.FC<CertificationItemProps> = ({
                         id={`cert-issueDate-${index}`}
                         label="Issue Date"
                         type="date"
-                        iconStart={<Calendar className="w-4 h-4 text-gray-400" />}
+                        iconStart={
+                          <Calendar className="w-4 h-4 text-gray-400" />
+                        }
                       />
                     )}
                   />
 
                   <Controller
-                    name={`certifications.${index}.expirationDate`}
+                    name={`content.certifications.${index}.expirationDate`}
                     control={control}
                     render={({ field }: { field: any }) => (
                       <TextInputField
@@ -153,7 +186,9 @@ const CertificationItem: React.FC<CertificationItemProps> = ({
                         id={`cert-expDate-${index}`}
                         label="Expiration Date (Optional)"
                         type="date"
-                        iconStart={<Calendar className="w-4 h-4 text-gray-400" />}
+                        iconStart={
+                          <Calendar className="w-4 h-4 text-gray-400" />
+                        }
                       />
                     )}
                   />
@@ -162,7 +197,7 @@ const CertificationItem: React.FC<CertificationItemProps> = ({
                 {/* Credential ID & URL */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Controller
-                    name={`certifications.${index}.credentialId`}
+                    name={`content.certifications.${index}.credentialId`}
                     control={control}
                     render={({ field }: { field: any }) => (
                       <TextInputField
@@ -176,7 +211,7 @@ const CertificationItem: React.FC<CertificationItemProps> = ({
                   />
 
                   <Controller
-                    name={`certifications.${index}.credentialUrl`}
+                    name={`content.certifications.${index}.credentialUrl`}
                     control={control}
                     render={({ field }: { field: any }) => (
                       <TextInputField
@@ -184,7 +219,9 @@ const CertificationItem: React.FC<CertificationItemProps> = ({
                         id={`cert-url-${index}`}
                         label="Credential URL (Optional)"
                         placeholder="https://..."
-                        iconStart={<LinkIcon className="w-4 h-4 text-gray-400" />}
+                        iconStart={
+                          <LinkIcon className="w-4 h-4 text-gray-400" />
+                        }
                       />
                     )}
                   />
@@ -197,10 +234,13 @@ const CertificationItem: React.FC<CertificationItemProps> = ({
 
       {/* Floating Drag Handle */}
       <div
-        className={`absolute -left-2 -top-2 p-1.5 bg-white border border-gray-200 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-full shadow-md transition-all duration-300 z-10 cursor-grab active:cursor-grabbing ${isExpanded ? "opacity-100 scale-100" : "opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100"
-          }`}
+        className={`absolute -left-2 -top-2 p-1.5 bg-white border border-gray-200 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-full shadow-md transition-all duration-300 z-10 cursor-grab active:cursor-grabbing ${
+          isExpanded
+            ? "opacity-100 scale-100"
+            : "opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100"
+        }`}
         title="Drag to reorder"
-        onPointerDown={(e) => controls.start(e)}
+        onPointerDown={e => controls.start(e)}
       >
         <GripVertical className="w-4 h-4" />
       </div>
@@ -211,10 +251,13 @@ const CertificationItem: React.FC<CertificationItemProps> = ({
         whileTap={{ scale: 0.9 }}
         onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
           e.stopPropagation();
-          onRemove(certification.id);
+          onRemove(certification.id || "");
         }}
-        className={`absolute -right-2 -top-2 p-1.5 bg-white border border-gray-200 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-full shadow-md transition-all duration-300 z-10 ${isExpanded ? "opacity-100 scale-100" : "opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100"
-          }`}
+        className={`absolute -right-2 -top-2 p-1.5 bg-white border border-gray-200 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-full shadow-md transition-all duration-300 z-10 ${
+          isExpanded
+            ? "opacity-100 scale-100"
+            : "opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100"
+        }`}
         title="Remove Certification"
       >
         <Trash2 className="w-4 h-4" />
@@ -223,34 +266,44 @@ const CertificationItem: React.FC<CertificationItemProps> = ({
   );
 };
 
-export const CertificationsForm: React.FC<CertificationsFormProps> = ({ control, watch, setValue }) => {
-  const certifications = watch('certifications') || [];
-  const [expandedId, setExpandedId] = useState<string | null>(certifications[0]?.id || null);
+export const CertificationsForm: React.FC<CertificationsFormProps> = ({
+  control,
+  watch,
+  setValue,
+}) => {
+  const certifications = watch("content.certifications") || [];
+  const [expandedId, setExpandedId] = useState<string | null>(
+    certifications[0]?.id || null
+  );
 
   const addCertification = () => {
     const newId = Date.now().toString();
-    setValue('certifications', [
-      {
-        id: newId,
-        name: '',
-        issuingOrganization: '',
-        issueDate: '',
-        expirationDate: '',
-        credentialId: '',
-        credentialUrl: '',
-      },
-      ...certifications,
-    ]);
+    const newCertification: Certification = {
+      id: newId,
+      name: "",
+      issuingOrganization: "",
+      issueDate: "",
+      expirationDate: "",
+      credentialId: "",
+      credentialUrl: "",
+    };
+    setValue("content.certifications", [newCertification, ...certifications]);
     setExpandedId(newId);
   };
 
   const removeCertification = (id: string) => {
-    setValue('certifications', certifications.filter((cert: any) => cert.id !== id));
+    setValue(
+      "content.certifications",
+      certifications.filter(cert => cert.id !== id)
+    );
     if (expandedId === id) setExpandedId(null);
   };
 
-  const handleReorder = (newOrder: any[]) => {
-    setValue('certifications', newOrder, { shouldDirty: true, shouldValidate: true });
+  const handleReorder = (newOrder: Certification[]) => {
+    setValue("content.certifications", newOrder, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
   };
 
   const toggleExpand = (id: string) => {
@@ -261,8 +314,8 @@ export const CertificationsForm: React.FC<CertificationsFormProps> = ({ control,
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
+      transition: { staggerChildren: 0.1 },
+    },
   };
 
   return (
@@ -275,8 +328,12 @@ export const CertificationsForm: React.FC<CertificationsFormProps> = ({ control,
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="text-base font-semibold text-gray-900">Certifications</h3>
-          <p className="text-xs text-gray-600 mt-1">List your professional certifications</p>
+          <h3 className="text-base font-semibold text-gray-900">
+            Certifications
+          </h3>
+          <p className="text-xs text-gray-600 mt-1">
+            List your professional certifications
+          </p>
         </div>
 
         <div className="w-fit flex justify-end">
@@ -294,14 +351,14 @@ export const CertificationsForm: React.FC<CertificationsFormProps> = ({ control,
         className="space-y-4 px-2"
       >
         <AnimatePresence mode="popLayout" initial={false}>
-          {certifications.map((cert: any, index: number) => (
+          {certifications.map((cert: Certification, index: number) => (
             <CertificationItem
               key={cert.id}
               certification={cert}
               index={index}
               control={control}
               isExpanded={expandedId === cert.id}
-              onToggle={() => toggleExpand(cert.id)}
+              onToggle={() => toggleExpand(cert.id || "")}
               onRemove={removeCertification}
             />
           ))}
@@ -316,8 +373,12 @@ export const CertificationsForm: React.FC<CertificationsFormProps> = ({ control,
           className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300"
         >
           <Award className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-          <p className="text-sm text-gray-600 mb-1">No certifications added yet</p>
-          <p className="text-xs text-gray-500">Click "Add Certification" to get started</p>
+          <p className="text-sm text-gray-600 mb-1">
+            No certifications added yet
+          </p>
+          <p className="text-xs text-gray-500">
+            Click "Add Certification" to get started
+          </p>
         </motion.div>
       )}
 
@@ -332,14 +393,17 @@ export const CertificationsForm: React.FC<CertificationsFormProps> = ({ control,
           <div className="bg-blue-500 text-white p-1 rounded-full shrink-0 shadow-sm">
             <Lightbulb className="w-3 h-3 fill-current" />
           </div>
-          <span className="text-[11px] font-bold text-blue-900 underline decoration-blue-200 underline-offset-2 uppercase tracking-tight">Pro Tips</span>
+          <span className="text-[11px] font-bold text-blue-900 underline decoration-blue-200 underline-offset-2 uppercase tracking-tight">
+            Pro Tips
+          </span>
         </div>
 
         <div className="space-y-2 px-1">
           <div className="flex items-start gap-3">
             <div className="w-1 h-1 rounded-full bg-blue-400 mt-1.5 flex-shrink-0"></div>
             <p className="text-[11px] text-blue-800 leading-relaxed">
-              Include **credential IDs** and **verification links** for authenticity
+              Include **credential IDs** and **verification links** for
+              authenticity
             </p>
           </div>
           <div className="flex items-start gap-3">
