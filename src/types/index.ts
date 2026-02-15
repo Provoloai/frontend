@@ -11,6 +11,7 @@ export interface Resume {
   title: string;
   template: string;
   content: ResumeContent;
+  sectionOrder?: string[]; // Custom section arrangement
   createdAt?: string | { _seconds: number; _nanoseconds: number };
   updatedAt?: string | { _seconds: number; _nanoseconds: number };
 }
@@ -205,6 +206,7 @@ export interface SaveResumeRequest {
   title?: string;
   template?: string;
   content: ResumeContent;
+  sectionOrder?: string[]; // Custom section arrangement
   latex?: string;
   html?: string;
 }
