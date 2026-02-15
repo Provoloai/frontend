@@ -10,7 +10,6 @@ import { resumeApi } from "@/api";
 import CustomSnackbar from "@/Reusables/CustomSnackbar";
 import { generateLatex } from "@/utils/latexGenerator";
 import { Download } from "lucide-react";
-import { renderToStaticMarkup } from "react-dom/server";
 
 interface ResumeEditorProps {
   onBack?: () => void;
@@ -107,18 +106,13 @@ export const ResumeEditor: React.FC<ResumeEditorProps> = ({ onBack }) => {
         return;
       }
 
-      // Generate HTML string for preview
-      const htmlString = renderToStaticMarkup(
-        <ResumePreview formData={formData} sectionOrder={sectionOrder} />
-      );
-
       // Generate LaTeX string
       const latexString = generateLatex(formData, sectionOrder);
 
       // Prepare payload
       const payload = {
         ...formData,
-        html: htmlString,
+        sectionOrder: sectionOrder, // Save section arrangement
         latex: latexString,
       };
 
@@ -201,6 +195,10 @@ export const ResumeEditor: React.FC<ResumeEditorProps> = ({ onBack }) => {
       const data = loadResume(currentResumeId);
       if (data) {
         reset(data);
+        // Load saved section order if it exists
+        if (data.sectionOrder && data.sectionOrder.length > 0) {
+          setSectionOrder(data.sectionOrder);
+        }
       }
     }
   }, [currentResumeId, loadResume, reset]);
