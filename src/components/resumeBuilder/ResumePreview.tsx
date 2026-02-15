@@ -1,4 +1,3 @@
-import CustomButton from "@/Reusables/CustomButton";
 import React from "react";
 import DOMPurify from "dompurify";
 import { Resume } from "@/types";
@@ -32,12 +31,6 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({
       "Dec",
     ];
     return `${monthNames[parseInt(month) - 1]} ${year}`;
-  };
-
-  const handleDownload = () => {
-    alert(
-      "Download feature requires a PDF generation library. This is a demo placeholder."
-    );
   };
 
   const renderRichText = (html: string) => {
@@ -393,23 +386,14 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({
   };
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="flex justify-end px-6 py-4 border-b">
-        <div className="w-fit flex justify-end">
-          <CustomButton onClick={handleDownload} className="btn-primary ">
-            Download PDF
-          </CustomButton>
-        </div>
-      </div>
-      <div className="flex-1 overflow-y-auto p-10 text-gray-800">
-        {sectionOrder
-          .filter(id => id !== "additional")
-          .map(sectionId => (
-            <React.Fragment key={sectionId}>
-              {renderSection(sectionId)}
-            </React.Fragment>
-          ))}
-      </div>
+    <div className="flex-1 overflow-y-auto p-10 text-gray-800">
+      {sectionOrder
+        .filter(id => id !== "additional")
+        .map(sectionId => (
+          <React.Fragment key={sectionId}>
+            {renderSection(sectionId)}
+          </React.Fragment>
+        ))}
     </div>
   );
 };

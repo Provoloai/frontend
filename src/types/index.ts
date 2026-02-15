@@ -200,6 +200,15 @@ export interface NotificationsResponse {
   };
 }
 
+export interface SaveResumeRequest {
+  resumeId?: string;
+  title?: string;
+  template?: string;
+  content: ResumeContent;
+  latex?: string;
+  html?: string;
+}
+
 // Resume API Response Types
 export interface CreateResumeResponse {
   success: boolean;

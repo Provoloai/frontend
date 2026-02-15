@@ -4,11 +4,7 @@ import {
   Bold,
   Italic,
   List,
-  ListOrdered,
   Link as LinkIcon,
-  Quote,
-  Heading1,
-  Heading2,
 } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
@@ -55,18 +51,6 @@ const MenuBar = ({ editor }: { editor: any }) => {
 
   const buttons = [
     {
-      icon: <Heading1 className="w-4 h-4" />,
-      title: "Heading 1",
-      action: () => editor.chain().focus().toggleHeading({ level: 1 }).run(),
-      isActive: editor.isActive("heading", { level: 1 }),
-    },
-    {
-      icon: <Heading2 className="w-4 h-4" />,
-      title: "Heading 2",
-      action: () => editor.chain().focus().toggleHeading({ level: 2 }).run(),
-      isActive: editor.isActive("heading", { level: 2 }),
-    },
-    {
       icon: <Bold className="w-4 h-4" />,
       title: "Bold",
       action: () => editor.chain().focus().toggleBold().run(),
@@ -84,18 +68,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
       action: () => editor.chain().focus().toggleBulletList().run(),
       isActive: editor.isActive("bulletList"),
     },
-    {
-      icon: <ListOrdered className="w-4 h-4" />,
-      title: "Ordered List",
-      action: () => editor.chain().focus().toggleOrderedList().run(),
-      isActive: editor.isActive("orderedList"),
-    },
-    {
-      icon: <Quote className="w-4 h-4" />,
-      title: "Blockquote",
-      action: () => editor.chain().focus().toggleBlockquote().run(),
-      isActive: editor.isActive("blockquote"),
-    },
+
     {
       icon: <LinkIcon className="w-4 h-4" />,
       title: "Link",

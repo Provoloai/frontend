@@ -5,6 +5,7 @@ import {
   CreateResumeResponse,
   GetResumesResponse,
   DeleteResumeResponse,
+  SaveResumeRequest,
 } from "@/types";
 import { apiGet } from "@/utils/api.util";
 import { useQuery } from "@tanstack/react-query";
@@ -12,7 +13,8 @@ import { useQuery } from "@tanstack/react-query";
 // Generic API request function
 const apiRequest = async <T>(
   endpoint: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  responseType: "json" | "blob" = "json"
 ): Promise<T> => {
   const NODE_ENV = (import.meta.env.VITE_NODE_ENV as string) || "";
   const SERVER_URL = (import.meta.env.VITE_SERVER_URL as string) || "";
@@ -62,7 +64,9 @@ const apiRequest = async <T>(
       );
     }
 
-    return await response.json();
+    return responseType === "blob"
+      ? ((await response.blob()) as unknown as T)
+      : await response.json();
   } catch (error) {
     console.error(`API request failed for ${endpoint}:`, error);
     throw error;
@@ -333,7 +337,7 @@ export const resumeApi = {
   },
 
   createResume: async (
-    data: Partial<Resume>
+    data: Partial<Resume> | SaveResumeRequest
   ): Promise<CreateResumeResponse> => {
     return apiRequest<CreateResumeResponse>("/resumes/save", {
       method: "POST",
@@ -346,7 +350,17 @@ export const resumeApi = {
       method: "DELETE",
     });
   },
+
+  downloadResumePdf: async (latexContent: string): Promise<Blob> => {
+    return apiRequest<Blob>(
+      "/latex/compile",
+      {
+        method: "POST",
+        body: JSON.stringify({ latexContent }),
+      },
+      "blob"
+    );
+  },
 };
 
-// Export the generic API request function for custom use cases
 export { apiRequest };

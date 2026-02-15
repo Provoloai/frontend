@@ -188,7 +188,7 @@ const EducationItem: React.FC<EducationItemProps> = ({
                         {...field}
                         id={`edu-startDate-${index}`}
                         label="Start Date"
-                        type="date"
+                        type="month"
                         iconStart={
                           <Calendar className="w-4 h-4 text-gray-400" />
                         }
@@ -204,7 +204,7 @@ const EducationItem: React.FC<EducationItemProps> = ({
                         {...field}
                         id={`edu-endDate-${index}`}
                         label="End Date"
-                        type="date"
+                        type="month"
                         disabled={edu.current}
                         iconStart={
                           <Calendar className="w-4 h-4 text-gray-400" />

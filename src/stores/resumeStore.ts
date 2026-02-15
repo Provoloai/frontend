@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { Resume, ResumeListItem } from "@/types";
+import { Resume, ResumeListItem, SaveResumeRequest } from "@/types";
 import { resumeApi } from "@/api";
 
 interface ResumeStore {
@@ -29,15 +29,87 @@ export const useResumeStore = create<ResumeStore>()(
             (response.success || response.status === "success") &&
             response.data
           ) {
-            const fetchedResumes: Resume[] = response.data.map((r: any) => ({
-              id: r.id,
-              userId: r.userId,
-              title: r.title || "Untitled Resume",
-              template: r.template || "default",
-              content: r.content || {},
-              createdAt: r.createdAt,
-              updatedAt: r.updatedAt,
-            }));
+            const fetchedResumes: Resume[] = response.data.map((r: any) => {
+              const content = r.content || {};
+
+              // Helper to normalize dates
+              const normalizeDate = (
+                date: string | undefined,
+                type: "month" | "date" = "date"
+              ) => {
+                if (!date) return "";
+                const d = date.includes("T") ? date.split("T")[0] : date;
+                // For month input, we want YYYY-MM
+                if (type === "month") return d.slice(0, 7);
+                // For date input, we want YYYY-MM-DD
+                return d;
+              };
+
+              // Normalize Experience dates (type="month")
+              if (content.experience) {
+                content.experience = content.experience.map((exp: any) => ({
+                  ...exp,
+                  startDate: normalizeDate(exp.startDate, "month"),
+                  endDate: normalizeDate(exp.endDate, "month"),
+                }));
+              }
+
+              // Normalize Education dates (type="date")
+              if (content.education) {
+                content.education = content.education.map((edu: any) => ({
+                  ...edu,
+                  startDate: normalizeDate(edu.startDate, "month"),
+                  endDate: normalizeDate(edu.endDate, "month"),
+                }));
+              }
+
+              // Normalize Internships dates (type="date")
+              if (content.internships) {
+                content.internships = content.internships.map((int: any) => ({
+                  ...int,
+                  startDate: normalizeDate(int.startDate, "date"),
+                  endDate: normalizeDate(int.endDate, "date"),
+                }));
+              }
+
+              // Normalize Projects dates (type="date")
+              if (content.projects) {
+                content.projects = content.projects.map((proj: any) => ({
+                  ...proj,
+                  startDate: normalizeDate(proj.startDate, "date"),
+                  endDate: normalizeDate(proj.endDate, "date"),
+                }));
+              }
+
+              // Normalize Certifications dates (type="date")
+              if (content.certifications) {
+                content.certifications = content.certifications.map(
+                  (cert: any) => ({
+                    ...cert,
+                    issueDate: normalizeDate(cert.issueDate, "date"),
+                    expirationDate: normalizeDate(cert.expirationDate, "date"),
+                  })
+                );
+              }
+
+              // Normalize Courses dates (type="date")
+              if (content.courses) {
+                content.courses = content.courses.map((course: any) => ({
+                  ...course,
+                  completionDate: normalizeDate(course.completionDate, "date"),
+                }));
+              }
+
+              return {
+                id: r.id,
+                userId: r.userId,
+                title: r.title || "Untitled Resume",
+                template: r.template || "default",
+                content,
+                createdAt: r.createdAt,
+                updatedAt: r.updatedAt,
+              };
+            });
 
             set({ resumes: fetchedResumes });
           }
@@ -46,42 +118,47 @@ export const useResumeStore = create<ResumeStore>()(
         }
       },
 
-      syncResume: async (id: string, data: Resume) => {
+      syncResume: async (id: string, data: Resume | SaveResumeRequest) => {
         try {
           const isTempId = id.startsWith("resume_");
 
-          if (isTempId) {
-            // Create new resume
-            const { id: _, ...payload } = data;
-            const response = await resumeApi.createResume(payload);
+          // Convert SaveResumeRequest to Partial<Resume> for local update
+          // We only update fields that are present in Resume interface
+          const localUpdate: Partial<Resume> = {
+            content: data.content,
+            title: data.title,
+            template: data.template,
+          };
+          // Cast data to any to access potentially missing properties safely
+          const safeData = data as any;
+          if (safeData.id) localUpdate.id = safeData.id;
+          if (safeData.userId) localUpdate.userId = safeData.userId;
 
-            if (
-              response.success &&
-              (response.data?.id || response.data?.resumeId)
-            ) {
-              const newBackendId =
-                response.data.id || response.data.resumeId || "";
-              const updatedResume = { ...data, id: newBackendId };
+          // Optimistically update local state (excluding latex/html which are invalid for Resume type)
+          set(state => ({
+            resumes: state.resumes.map(r =>
+              r.id === id
+                ? { ...r, ...localUpdate, updatedAt: new Date().toISOString() }
+                : r
+            ),
+          }));
 
+          // Send to backend (including latex/html if present in data)
+          const response = await resumeApi.createResume({
+            ...data,
+            resumeId: isTempId ? undefined : id,
+          });
+
+          if (response.success && response.data) {
+            const newId = response.data.id || response.data.resumeId;
+            if (newId && newId !== id) {
               set(state => ({
+                currentResumeId: newId,
                 resumes: state.resumes.map(r =>
-                  r.id === id ? updatedResume : r
+                  r.id === id ? { ...r, id: newId } : r
                 ),
-                currentResumeId:
-                  state.currentResumeId === id
-                    ? newBackendId
-                    : state.currentResumeId,
               }));
             }
-          } else {
-            // Update existing resume
-            const { id: _, ...rest } = data;
-            await resumeApi.createResume({ ...rest, resumeId: id } as any);
-
-            // Update local state to match
-            set(state => ({
-              resumes: state.resumes.map(r => (r.id === id ? data : r)),
-            }));
           }
         } catch (error) {
           console.error("Failed to sync resume:", error);

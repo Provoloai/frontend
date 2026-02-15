@@ -5,9 +5,12 @@ import { ResumePreview } from "./ResumePreview";
 import { ReviewMode } from "./ReviewMode";
 import { useResumeStore } from "@/stores/resumeStore";
 import { Resume } from "@/types";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Save } from "lucide-react";
 import { resumeApi } from "@/api";
 import CustomSnackbar from "@/Reusables/CustomSnackbar";
+import { generateLatex } from "@/utils/latexGenerator";
+import { Download } from "lucide-react";
+import { renderToStaticMarkup } from "react-dom/server";
 
 interface ResumeEditorProps {
   onBack?: () => void;
@@ -25,6 +28,7 @@ export const ResumeEditor: React.FC<ResumeEditorProps> = ({ onBack }) => {
     "skills",
   ]);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isDownloading, setIsDownloading] = useState<boolean>(false);
 
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
@@ -103,19 +107,29 @@ export const ResumeEditor: React.FC<ResumeEditorProps> = ({ onBack }) => {
         return;
       }
 
+      // Generate HTML string for preview
+      const htmlString = renderToStaticMarkup(
+        <ResumePreview formData={formData} sectionOrder={sectionOrder} />
+      );
+
+      // Generate LaTeX string
+      const latexString = generateLatex(formData, sectionOrder);
+
       // Prepare payload
       const payload = {
         ...formData,
+        html: htmlString,
+        latex: latexString,
       };
 
       console.log("Submitting payload:", payload);
 
       // Sync resume with backend
       if (currentResumeId) {
-        await syncResume(currentResumeId, payload as Resume);
+        await syncResume(currentResumeId, payload);
         setSnackbar({
           open: true,
-          message: "Resume submitted/synced successfully!",
+          message: "Resume saved/synced successfully!",
           color: "success",
         });
       } else {
@@ -146,6 +160,38 @@ export const ResumeEditor: React.FC<ResumeEditorProps> = ({ onBack }) => {
       });
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleDownloadPdf = async () => {
+    setIsDownloading(true);
+    try {
+      const latex = generateLatex(formData, sectionOrder);
+      const blob = await resumeApi.downloadResumePdf(latex);
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `${formData.title || "resume"}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      setSnackbar({
+        open: true,
+        message: "PDF downloaded successfully!",
+        color: "success",
+      });
+    } catch (error) {
+      console.error("PDF download failed:", error);
+      setSnackbar({
+        open: true,
+        message: "Failed to download PDF. Please try again.",
+        color: "danger",
+      });
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -191,6 +237,8 @@ export const ResumeEditor: React.FC<ResumeEditorProps> = ({ onBack }) => {
           onBack={() => setIsReviewMode(false)}
           onSubmit={handleSubmitResume}
           isSubmitting={isSubmitting}
+          onDownload={handleDownloadPdf}
+          isDownloading={isDownloading}
         />
       );
     }
@@ -209,6 +257,31 @@ export const ResumeEditor: React.FC<ResumeEditorProps> = ({ onBack }) => {
               </button>
             </div>
           )}
+
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleSubmitResume}
+                disabled={isSubmitting}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+              >
+                <Save className="w-4 h-4" />
+                <span className="text-sm font-medium">
+                  {isSubmitting ? "Saving..." : "Save Resume"}
+                </span>
+              </button>
+            </div>
+            <button
+              onClick={handleDownloadPdf}
+              disabled={isDownloading}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Download className="w-4 h-4" />
+              <span className="text-sm font-medium">
+                {isDownloading ? "Generating PDF..." : "Download PDF"}
+              </span>
+            </button>
+          </div>
 
           <div className="flex-1 grid grid-cols-2 gap-1 min-h-0 overflow-hidden">
             <div className="bg-white rounded-lg shadow-sm p-6 flex flex-col h-full overflow-hidden">
