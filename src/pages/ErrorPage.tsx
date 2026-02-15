@@ -1,8 +1,16 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useRouter } from "@tanstack/react-router";
 import { TriangleAlert } from "lucide-react";
 
-const ErrorPage = ({ error, info, reset }) => {
+const ErrorPage = ({
+  error,
+  info,
+  reset,
+}: {
+  error?: Error;
+  info?: { componentStack?: string };
+  reset?: () => void;
+}) => {
   const isDevelopment = import.meta.env.VITE_NODE_ENV === "development";
   const [showError, setShowError] = useState(false);
   const router = useRouter();
@@ -37,18 +45,20 @@ const ErrorPage = ({ error, info, reset }) => {
             notified.
           </p>
 
-          {/* Error Details Toggle - Always show for debugging */}
-          <div className="mb-6">
-            <button
-              onClick={() => setShowError(!showError)}
-              className="text-blue-600 hover:text-blue-800 underline text-sm"
-            >
-              {showError ? "Hide Error Details" : "Show Error Details"}
-            </button>
-          </div>
+          {/* Error Details Toggle - Only show in development */}
+          {isDevelopment && (
+            <div className="mb-6">
+              <button
+                onClick={() => setShowError(!showError)}
+                className="text-blue-600 hover:text-blue-800 underline text-sm"
+              >
+                {showError ? "Hide Error Details" : "Show Error Details"}
+              </button>
+            </div>
+          )}
 
-          {/* Error Details - Always show for debugging */}
-          {showError && error && (
+          {/* Error Details - Only show in development */}
+          {isDevelopment && showError && error && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-left">
               <h3 className="font-semibold text-red-800 mb-2">
                 Error Details:
