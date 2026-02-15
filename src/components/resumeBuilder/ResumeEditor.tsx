@@ -88,6 +88,13 @@ export const ResumeEditor: React.FC<ResumeEditorProps> = ({ onBack }) => {
     }
   }, [firstName, lastName, setValue]);
 
+  // Debug logging for staging
+  useEffect(() => {
+    console.log("[ResumeEditor] Component mounted");
+    console.log("[ResumeEditor] Current Resume ID:", currentResumeId);
+    console.log("[ResumeEditor] Section Order:", sectionOrder);
+  }, []);
+
   // Handle resume submission to backend
   const handleSubmitResume = async (): Promise<void> => {
     setIsSubmitting(true);
@@ -106,8 +113,13 @@ export const ResumeEditor: React.FC<ResumeEditorProps> = ({ onBack }) => {
         return;
       }
 
+      console.log("[ResumeEditor] Generating LaTeX...");
       // Generate LaTeX string
       const latexString = generateLatex(formData, sectionOrder);
+      console.log(
+        "[ResumeEditor] LaTeX generated successfully, length:",
+        latexString.length
+      );
 
       // Prepare payload
       const payload = {
@@ -116,40 +128,31 @@ export const ResumeEditor: React.FC<ResumeEditorProps> = ({ onBack }) => {
         latex: latexString,
       };
 
-      console.log("Submitting payload:", payload);
+      console.log("[ResumeEditor] Submitting payload:", {
+        ...payload,
+        latex: `${latexString.substring(0, 100)}... (truncated)`,
+      });
 
       // Sync resume with backend
       if (currentResumeId) {
         await syncResume(currentResumeId, payload);
         setSnackbar({
           open: true,
-          message: "Resume saved/synced successfully!",
+          message: "Resume saved successfully!",
           color: "success",
         });
       } else {
-        // Fallback for edge cases (shouldn't happen with current flow as ID exists on create)
-        const result = await resumeApi.createResume(payload);
-        if (result.success) {
-          setSnackbar({
-            open: true,
-            message: "Resume submitted successfully!",
-            color: "success",
-          });
-        } else {
-          setSnackbar({
-            open: true,
-            message: `Error: ${result.error || "Failed to submit resume"}`,
-            color: "danger",
-          });
-        }
+        throw new Error("No resume ID found");
       }
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "An unexpected error occurred";
-      console.error("Resume submission error:", error);
+      console.error("[ResumeEditor] Error submitting resume:", error);
+      console.error(
+        "[ResumeEditor] Error stack:",
+        error instanceof Error ? error.stack : "No stack trace"
+      );
       setSnackbar({
         open: true,
-        message: `Error: ${errorMessage}`,
+        message: `Failed to save resume: ${error instanceof Error ? error.message : "Unknown error"}`,
         color: "danger",
       });
     } finally {
