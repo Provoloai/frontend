@@ -11,6 +11,8 @@ interface ReviewModeProps {
   onBack: () => void;
   onSubmit?: () => void;
   isSubmitting?: boolean;
+  onDownload: () => void;
+  isDownloading: boolean;
 }
 
 export const ReviewMode: React.FC<ReviewModeProps> = ({
@@ -20,6 +22,8 @@ export const ReviewMode: React.FC<ReviewModeProps> = ({
   onBack,
   onSubmit,
   isSubmitting = false,
+  onDownload,
+  isDownloading,
 }) => {
   const sectionLabels: any = {
     personal: "Personal Information",
@@ -82,18 +86,22 @@ export const ReviewMode: React.FC<ReviewModeProps> = ({
 
         <div className="flex justify-between mt-6 pt-6 border-t">
           <div className="w-fit flex justify-end">
-            <CustomButton onClick={onBack} className="btn-primary" disabled={isSubmitting}>
+            <CustomButton
+              onClick={onBack}
+              className="btn-primary"
+              disabled={isSubmitting}
+            >
               Back to Edit
             </CustomButton>
           </div>
           <div className="flex gap-3">
             <div className="w-fit flex justify-end">
               <CustomButton
-                onClick={() => alert("Download feature coming soon!")}
+                onClick={onDownload}
                 className="btn-primary"
-                disabled={isSubmitting}
+                disabled={isSubmitting || isDownloading}
               >
-                Download Resume
+                {isDownloading ? "Generating PDF..." : "Download Resume"}
               </CustomButton>
             </div>
             {onSubmit && (
@@ -103,7 +111,7 @@ export const ReviewMode: React.FC<ReviewModeProps> = ({
                   className="btn-primary bg-green-600 hover:bg-green-700"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Submitting..." : "Submit Resume"}
+                  {isSubmitting ? "Saving..." : "Save Resume"}
                 </CustomButton>
               </div>
             )}

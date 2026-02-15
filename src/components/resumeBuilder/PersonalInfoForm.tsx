@@ -1,22 +1,32 @@
 import { Controller, Control } from "react-hook-form";
-import { User, Mail, Phone, MapPin, Briefcase, Linkedin, Lightbulb } from "lucide-react";
+import {
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Briefcase,
+  Linkedin,
+  Lightbulb,
+} from "lucide-react";
 import { motion } from "motion/react";
 import TextInputField from "@/Reusables/TextInputField";
-import { ResumeData } from "@/stores/resumeStore";
+import { Resume } from "@/types";
 
 interface PersonalInfoFormProps {
-  control: Control<ResumeData>;
+  control: Control<Resume>;
 }
 
-export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ control }) => {
+export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
+  control,
+}) => {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
-      }
-    }
+        staggerChildren: 0.1,
+      },
+    },
   };
 
   const itemVariants = {
@@ -24,8 +34,8 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ control }) =
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.3 }
-    }
+      transition: { duration: 0.3 },
+    },
   };
 
   return (
@@ -41,7 +51,7 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ control }) =
         </label>
         <div className="grid grid-cols-2 gap-4">
           <Controller
-            name="personalInfo.firstName"
+            name="content.personalInfo.firstName"
             control={control}
             render={({ field }) => (
               <TextInputField
@@ -54,7 +64,7 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ control }) =
             )}
           />
           <Controller
-            name="personalInfo.lastName"
+            name="content.personalInfo.lastName"
             control={control}
             render={({ field }) => (
               <TextInputField
@@ -71,7 +81,7 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ control }) =
 
       <motion.div variants={itemVariants}>
         <Controller
-          name="personalInfo.jobTitle"
+          name="content.personalInfo.jobTitle"
           control={control}
           render={({ field }) => (
             <TextInputField
@@ -93,7 +103,7 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ control }) =
         </h3>
 
         <Controller
-          name="personalInfo.email"
+          name="content.personalInfo.email"
           control={control}
           render={({ field }) => (
             <TextInputField
@@ -108,7 +118,7 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ control }) =
         />
 
         <Controller
-          name="personalInfo.phone"
+          name="content.personalInfo.phone"
           control={control}
           render={({ field }) => (
             <TextInputField
@@ -130,7 +140,7 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ control }) =
 
         <div className="grid grid-cols-2 gap-4">
           <Controller
-            name="personalInfo.city"
+            name="content.personalInfo.city"
             control={control}
             render={({ field }) => (
               <TextInputField
@@ -143,7 +153,7 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ control }) =
             )}
           />
           <Controller
-            name="personalInfo.country"
+            name="content.personalInfo.country"
             control={control}
             render={({ field }) => (
               <TextInputField
@@ -165,7 +175,7 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ control }) =
         </h3>
 
         <Controller
-          name="personalInfo.linkedinUrl"
+          name="content.personalInfo.linkedinUrl"
           control={control}
           render={({ field }) => (
             <TextInputField
@@ -190,8 +200,11 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ control }) =
           <Lightbulb className="w-3 h-3 fill-current" />
         </div>
         <p className="text-[11px] leading-relaxed text-blue-800">
-          <span className="font-bold underline decoration-blue-200 underline-offset-2">PRO TIP:</span>{" "}
-          Fill in all required fields marked with * to create a complete resume. Recruiters often verify these details first!
+          <span className="font-bold underline decoration-blue-200 underline-offset-2">
+            PRO TIP:
+          </span>{" "}
+          Fill in all required fields marked with * to create a complete resume.
+          Recruiters often verify these details first!
         </p>
       </motion.div>
     </motion.div>

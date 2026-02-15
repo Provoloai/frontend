@@ -1,200 +1,19 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-
-// Simple resume list item for the dashboard
-export interface ResumeListItem {
-  id: string;
-  name: string;
-  jobTitle: string;
-  lastModified: string;
-}
-
-// Properly typed structures
-export interface PersonalInfo {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  city: string;
-  country: string;
-  jobTitle: string;
-  linkedinUrl: string;
-}
-
-export interface Experience {
-  id?: string;
-  company: string;
-  position: string;
-  startDate: string;
-  endDate: string;
-  current: boolean;
-  description: string;
-  location: string;
-}
-
-export interface Education {
-  id?: string;
-  institution: string;
-  degree: string;
-  fieldOfStudy: string;
-  startDate: string;
-  endDate: string;
-  current: boolean;
-  description: string;
-}
-
-export type SkillLevel = 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
-
-export interface Skill {
-  id?: string;
-  name: string;
-  level: SkillLevel;
-}
-
-export interface Course {
-  id?: string;
-  name: string;
-  institution: string;
-  completionDate: string;
-  description: string;
-}
-
-export interface Internship {
-  id?: string;
-  company: string;
-  position: string;
-  startDate: string;
-  endDate: string;
-  current: boolean;
-  description: string;
-  location: string;
-}
-
-export interface Hobby {
-  id?: string;
-  name: string;
-  description: string;
-}
-
-export type LanguageProficiency = 'Basic' | 'Conversational' | 'Fluent' | 'Native';
-
-export interface Language {
-  id?: string;
-  name: string;
-  proficiency: LanguageProficiency;
-}
-
-export interface Reference {
-  id?: string;
-  name: string;
-  position: string;
-  company: string;
-  email: string;
-  phone: string;
-}
-
-export interface Project {
-  id?: string;
-  title: string;
-  description: string;
-  link: string;
-  technologies: string[];
-  startDate: string;
-  endDate: string;
-}
-
-export interface Certification {
-  id?: string;
-  name: string;
-  issuingOrganization: string;
-  issueDate: string;
-  expirationDate?: string;
-  credentialId?: string;
-  credentialUrl?: string;
-}
-
-// Complete resume data structure
-export interface ResumeData {
-  personalInfo: PersonalInfo;
-  summary: string;
-  experience: Experience[];
-  education: Education[];
-  skills: Skill[];
-  courses: Course[];
-  internships: Internship[];
-  hobbies: Hobby[];
-  languages: Language[];
-  references: Reference[];
-  projects: Project[];
-  certifications: Certification[];
-}
-
-// Backend API payload structure
-export interface BackendResumePayload {
-  resumeId?: string;
-  title: string;
-  template: string;
-  content: {
-    personalInfo: {
-      firstName: string;
-      lastName: string;
-      email: string;
-      phone: string;
-      address?: string;
-      city: string;
-      country: string;
-      summary: string;
-      jobTitle: string;
-      links?: Record<string, string>;
-    };
-    education: Array<{
-      institution: string;
-      degree: string;
-      fieldOfStudy: string;
-      startDate: string;
-      endDate: string;
-      current: boolean;
-      description: string;
-    }>;
-    experience: Array<{
-      company: string;
-      position: string;
-      startDate: string;
-      endDate: string;
-      current: boolean;
-      description: string;
-      location: string;
-    }>;
-    skills: Array<{
-      name: string;
-      level: SkillLevel;
-    }>;
-    projects: Array<{
-      title: string;
-      description: string;
-      link: string;
-      technologies: string[];
-      startDate: string;
-      endDate: string;
-    }>;
-    languages: Array<{
-      name: string;
-      level: LanguageProficiency;
-    }>;
-    certifications: Certification[];
-    [key: string]: unknown;
-  };
-}
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { Resume, ResumeListItem, SaveResumeRequest } from "@/types";
+import { resumeApi } from "@/api";
 
 interface ResumeStore {
   currentResumeId: string | null;
-  resumes: ResumeListItem[];
+  resumes: Resume[];
   createNewResume: () => string;
-  loadResume: (id: string) => ResumeData | null;
-  saveCurrentResume: (id: string, data: ResumeData) => void;
-  deleteResume: (id: string) => void;
+  loadResume: (id: string) => Resume | null;
+  saveCurrentResume: (id: string, data: Resume) => void;
+  deleteResume: (id: string) => Promise<void>;
   getAllResumes: () => ResumeListItem[];
   setCurrentResumeId: (id: string | null) => void;
+  fetchResumes: () => Promise<void>;
+  syncResume: (id: string, data: Resume) => Promise<void>;
 }
 
 export const useResumeStore = create<ResumeStore>()(
@@ -203,90 +22,248 @@ export const useResumeStore = create<ResumeStore>()(
       currentResumeId: null,
       resumes: [],
 
+      fetchResumes: async () => {
+        try {
+          const response = await resumeApi.getResumes();
+          if (
+            (response.success || response.status === "success") &&
+            response.data
+          ) {
+            const fetchedResumes: Resume[] = response.data.map((r: any) => {
+              const content = r.content || {};
+
+              // Helper to normalize dates
+              const normalizeDate = (
+                date: string | undefined,
+                type: "month" | "date" = "date"
+              ) => {
+                if (!date) return "";
+                const d = date.includes("T") ? date.split("T")[0] : date;
+                // For month input, we want YYYY-MM
+                if (type === "month") return d.slice(0, 7);
+                // For date input, we want YYYY-MM-DD
+                return d;
+              };
+
+              // Normalize Experience dates (type="month")
+              if (content.experience) {
+                content.experience = content.experience.map((exp: any) => ({
+                  ...exp,
+                  startDate: normalizeDate(exp.startDate, "month"),
+                  endDate: normalizeDate(exp.endDate, "month"),
+                }));
+              }
+
+              // Normalize Education dates (type="date")
+              if (content.education) {
+                content.education = content.education.map((edu: any) => ({
+                  ...edu,
+                  startDate: normalizeDate(edu.startDate, "month"),
+                  endDate: normalizeDate(edu.endDate, "month"),
+                }));
+              }
+
+              // Normalize Internships dates (type="date")
+              if (content.internships) {
+                content.internships = content.internships.map((int: any) => ({
+                  ...int,
+                  startDate: normalizeDate(int.startDate, "date"),
+                  endDate: normalizeDate(int.endDate, "date"),
+                }));
+              }
+
+              // Normalize Projects dates (type="date")
+              if (content.projects) {
+                content.projects = content.projects.map((proj: any) => ({
+                  ...proj,
+                  startDate: normalizeDate(proj.startDate, "date"),
+                  endDate: normalizeDate(proj.endDate, "date"),
+                }));
+              }
+
+              // Normalize Certifications dates (type="date")
+              if (content.certifications) {
+                content.certifications = content.certifications.map(
+                  (cert: any) => ({
+                    ...cert,
+                    issueDate: normalizeDate(cert.issueDate, "date"),
+                    expirationDate: normalizeDate(cert.expirationDate, "date"),
+                  })
+                );
+              }
+
+              // Normalize Courses dates (type="date")
+              if (content.courses) {
+                content.courses = content.courses.map((course: any) => ({
+                  ...course,
+                  completionDate: normalizeDate(course.completionDate, "date"),
+                }));
+              }
+
+              return {
+                id: r.id,
+                userId: r.userId,
+                title: r.title || "Untitled Resume",
+                template: r.template || "default",
+                content,
+                createdAt: r.createdAt,
+                updatedAt: r.updatedAt,
+              };
+            });
+
+            set({ resumes: fetchedResumes });
+          }
+        } catch (error) {
+          console.error("Failed to fetch resumes:", error);
+        }
+      },
+
+      syncResume: async (id: string, data: Resume | SaveResumeRequest) => {
+        try {
+          const isTempId = id.startsWith("resume_");
+
+          // Convert SaveResumeRequest to Partial<Resume> for local update
+          // We only update fields that are present in Resume interface
+          const localUpdate: Partial<Resume> = {
+            content: data.content,
+            title: data.title,
+            template: data.template,
+          };
+          // Cast data to any to access potentially missing properties safely
+          const safeData = data as any;
+          if (safeData.id) localUpdate.id = safeData.id;
+          if (safeData.userId) localUpdate.userId = safeData.userId;
+
+          // Optimistically update local state (excluding latex/html which are invalid for Resume type)
+          set(state => ({
+            resumes: state.resumes.map(r =>
+              r.id === id
+                ? { ...r, ...localUpdate, updatedAt: new Date().toISOString() }
+                : r
+            ),
+          }));
+
+          // Send to backend (including latex/html if present in data)
+          const response = await resumeApi.createResume({
+            ...data,
+            resumeId: isTempId ? undefined : id,
+          });
+
+          if (response.success && response.data) {
+            const newId = response.data.id || response.data.resumeId;
+            if (newId && newId !== id) {
+              set(state => ({
+                currentResumeId: newId,
+                resumes: state.resumes.map(r =>
+                  r.id === id ? { ...r, id: newId } : r
+                ),
+              }));
+            }
+          }
+        } catch (error) {
+          console.error("Failed to sync resume:", error);
+        }
+      },
+
       createNewResume: () => {
         const newId = `resume_${Date.now()}`;
-        const newResume: ResumeListItem = {
+
+        const newResume: Resume = {
           id: newId,
-          name: 'Untitled Resume',
-          jobTitle: '',
-          lastModified: new Date().toISOString(),
+          title: "Untitled Resume",
+          template: "default",
+          content: {
+            personalInfo: {
+              firstName: "",
+              lastName: "",
+              email: "",
+              phone: "",
+              city: "",
+              country: "",
+              jobTitle: "",
+              linkedinUrl: "",
+              summary: "",
+            },
+            experience: [],
+            education: [],
+            skills: [],
+            courses: [],
+            internships: [],
+            hobbies: [],
+            languages: [],
+            references: [],
+            projects: [],
+            certifications: [],
+          },
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
         };
 
-        set((state) => ({
+        set(state => ({
           resumes: [newResume, ...state.resumes],
           currentResumeId: newId,
         }));
-
-        const emptyData: ResumeData = {
-          personalInfo: {
-            firstName: '',
-            lastName: '',
-            email: '',
-            phone: '',
-            city: '',
-            country: '',
-            jobTitle: '',
-            linkedinUrl: '',
-          },
-          summary: '',
-          experience: [],
-          education: [],
-          skills: [],
-          courses: [],
-          internships: [],
-          hobbies: [],
-          languages: [],
-          references: [],
-          projects: [],
-          certifications: [],
-        };
-        localStorage.setItem(`resume_data_${newId}`, JSON.stringify(emptyData));
 
         return newId;
       },
 
       loadResume: (id: string) => {
-        const data = localStorage.getItem(`resume_data_${id}`);
-        if (data) {
-          set({ currentResumeId: id });
-          return JSON.parse(data) as ResumeData;
+        const resume = get().resumes.find(r => r.id === id);
+        if (resume) {
+          return resume;
         }
         return null;
       },
 
-      saveCurrentResume: (id: string, data: ResumeData) => {
-        localStorage.setItem(`resume_data_${id}`, JSON.stringify(data));
-
+      saveCurrentResume: (id: string, data: Resume) => {
         const name =
-          data.personalInfo.firstName && data.personalInfo.lastName
-            ? `${data.personalInfo.firstName} ${data.personalInfo.lastName}`
-            : 'Untitled Resume';
+          data.content?.personalInfo?.firstName &&
+          data.content?.personalInfo?.lastName
+            ? `${data.content.personalInfo.firstName} ${data.content.personalInfo.lastName}`
+            : "Untitled Resume";
 
-        set((state) => ({
-          resumes: state.resumes.map((resume) =>
-            resume.id === id
-              ? {
-                  ...resume,
-                  name,
-                  jobTitle: data.personalInfo.jobTitle || '',
-                  lastModified: new Date().toISOString(),
-                }
-              : resume
+        const updatedData = {
+          ...data,
+          title: name,
+          updatedAt: new Date().toISOString(),
+        };
+
+        set(state => ({
+          resumes: state.resumes.map(resume =>
+            resume.id === id ? updatedData : resume
           ),
         }));
       },
 
-      deleteResume: (id: string) => {
-        localStorage.removeItem(`resume_data_${id}`);
+      deleteResume: async (id: string) => {
+        try {
+          if (!id.startsWith("resume_")) {
+            await resumeApi.deleteResume(id);
+          }
 
-        set((state) => ({
-          resumes: state.resumes.filter((r) => r.id !== id),
-          currentResumeId: state.currentResumeId === id ? null : state.currentResumeId,
-        }));
+          set(state => ({
+            resumes: state.resumes.filter(r => r.id !== id),
+            currentResumeId:
+              state.currentResumeId === id ? null : state.currentResumeId,
+          }));
+        } catch (error) {
+          console.error("Failed to delete resume:", error);
+        }
       },
 
       getAllResumes: () => {
-        return get().resumes;
+        // Map the full Resume objects to the lightweight list item format
+        return get().resumes.map(r => ({
+          id: r.id || "",
+          name: r.title || "Untitled Resume",
+          jobTitle: r.content.personalInfo?.jobTitle || "",
+          lastModified:
+            typeof r.updatedAt === "string"
+              ? r.updatedAt
+              : new Date(
+                  ((r.updatedAt as any)?._seconds || 0) * 1000
+                ).toISOString(),
+        }));
       },
 
       setCurrentResumeId: (id: string | null) => {
@@ -294,76 +271,11 @@ export const useResumeStore = create<ResumeStore>()(
       },
     }),
     {
-      name: 'resume-storage',
-      partialize: (state) => ({
+      name: "resume-storage",
+      partialize: state => ({
         resumes: state.resumes,
         currentResumeId: state.currentResumeId,
       }),
     }
   )
 );
-
-// Helper function to transform ResumeData to BackendResumePayload
-export const transformToBackendPayload = (
-  data: ResumeData,
-  resumeId?: string
-): BackendResumePayload => {
-  const links: Record<string, string> = {};
-
-  if (data.personalInfo?.linkedinUrl) {
-    links.linkedin = data.personalInfo.linkedinUrl;
-  }
-
-  const additionalSections: Record<string, unknown> = {};
-
-  if ((data.courses ?? []).length > 0) {
-    additionalSections.courses = (data.courses ?? []).map(course => ({ ...course }));
-  }
-
-  if ((data.internships ?? []).length > 0) {
-    additionalSections.internships = (data.internships ?? []).map(internship => ({ ...internship }));
-  }
-
-  if ((data.hobbies ?? []).length > 0) {
-    additionalSections.hobbies = (data.hobbies ?? []).map(hobby => ({ ...hobby }));
-  }
-
-  if ((data.references ?? []).length > 0) {
-    additionalSections.references = (data.references ?? []).map(ref => ({ ...ref }));
-  }
-
-  return {
-    resumeId,
-    title:
-      `${data.personalInfo?.firstName ?? ''} ${data.personalInfo?.lastName ?? ''} - ${data.personalInfo?.jobTitle ?? ''}`.trim() ||
-      'Untitled Resume',
-    template: 'default',
-    content: {
-      personalInfo: {
-        firstName: data.personalInfo?.firstName ?? '',
-        lastName: data.personalInfo?.lastName ?? '',
-        email: data.personalInfo?.email ?? '',
-        phone: data.personalInfo?.phone ?? '',
-        city: data.personalInfo?.city ?? '',
-        country: data.personalInfo?.country ?? '',
-        summary: data.summary ?? '',
-        jobTitle: data.personalInfo?.jobTitle ?? '',
-        links: Object.keys(links).length > 0 ? links : undefined,
-      },
-      education: (data.education ?? []).map(edu => ({
-        ...edu,
-        fieldOfStudy: edu.fieldOfStudy || '',
-      })),
-      experience: (data.experience ?? []).map(exp => ({ ...exp })),
-      skills: (data.skills ?? []).map(skill => ({ ...skill })),
-      projects: (data.projects ?? []).map(project => ({ ...project })),
-      languages: (data.languages ?? []).map(({ name, proficiency }) => ({
-        name,
-        level: proficiency,
-      })),
-      certifications: (data.certifications ?? []).map(cert => ({ ...cert })),
-      additionalProp1:
-        Object.keys(additionalSections).length > 0 ? additionalSections : {},
-    },
-  };
-};
