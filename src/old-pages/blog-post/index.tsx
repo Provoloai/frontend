@@ -8,8 +8,8 @@ import {
   Twitter,
   Linkedin,
 } from "lucide-react";
-import Header from "@/components/landing/Header";
-import Footer from "@/components/landing/Footer";
+import Header from "@/old-components/landing/Header";
+import Footer from "@/old-components/landing/Footer";
 import { useParams } from "@tanstack/react-router";
 import { blogPosts } from "@/data";
 import { motion } from "motion/react";

@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
-import UsernameDialog from "@/components/auth/UsernameDialog";
-import UsernameForm from "@/components/auth/UsernameForm";
+import UsernameDialog from "@/old-components/auth/UsernameDialog";
+import UsernameForm from "@/old-components/auth/UsernameForm";
 import { useUsername } from "@/hooks/useUsername";
 import { validateUsername, sanitizeUsername } from "@/utils/usernameValidation.util";
 import type { UsernameFormData, UsernameTouchedFields } from "@/types/auth";

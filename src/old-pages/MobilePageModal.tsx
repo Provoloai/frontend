@@ -1,4 +1,4 @@
-import MobileModalContent from "@/components/mobile/MobileModalContent";
+import MobileModalContent from "@/old-components/mobile/MobileModalContent";
 import { useMobileModal } from "@/hooks/useMobileModal";
 import type { MobileModalProps } from "@/types/mobileModal";
 

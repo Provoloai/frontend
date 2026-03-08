@@ -1,6 +1,6 @@
 import { useFeatures } from "@/hooks/useFeatures";
 import { FEATURES_CONFIG } from "@/constants/features";
-import FeaturesContent from "@/components/features/FeaturesContent";
+import FeaturesContent from "@/old-components/features/FeaturesContent";
 
 const Features = () => {
   const { videoRefs, handleVideoLoad } = useFeatures();

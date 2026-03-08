@@ -1,6 +1,6 @@
 import { useState } from "react";
-import ConfettiCanvas from "@/components/welcome/ConfettiCanvas";
-import WelcomeDialog from "@/components/welcome/WelcomeDialog";
+import ConfettiCanvas from "@/old-components/welcome/ConfettiCanvas";
+import WelcomeDialog from "@/old-components/welcome/WelcomeDialog";
 
 export default function Welcome() {
   const [isOpen, setIsOpen] = useState(true);

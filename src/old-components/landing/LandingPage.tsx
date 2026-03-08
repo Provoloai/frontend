@@ -3,10 +3,10 @@ import {
   LANDING_PAGE_CONFIG,
   LANDING_PAGE_STYLES,
 } from "@/constants/landingPage";
-import { Hero } from "@/components/landing/Hero";
-import Header from "@/components/landing/Header";
-import Features from "@/components/landing/Features";
-import Footer from "@/components/landing/Footer";
+import { Hero } from "@/old-components/landing/Hero";
+import Header from "@/old-components/landing/Header";
+import Features from "@/old-components/landing/Features";
+import Footer from "@/old-components/landing/Footer";
 import type { LandingPageProps } from "@/types/landingPage";
 import Faqs from "./Faqs";
 import { useSEO, SEO_CONFIGS } from "@/hooks/useSEO";

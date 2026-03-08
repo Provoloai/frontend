@@ -1,4 +1,4 @@
-import TermsConditionPage from '@/pages/TermsConditionPage'
+import TermsConditionPage from '@/old-pages/TermsConditionPage'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/terms')({

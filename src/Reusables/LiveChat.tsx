@@ -3,11 +3,11 @@ import { motion, AnimatePresence } from "motion/react";
 import { FormData, ChatTab } from "@/types/liveChat";
 import { FAQs } from "@/constants/liveChat";
 import { useTicketMutation } from "@/hooks/useTicketMutation";
-import ChatHeader from "@/components/liveChat/ChatHeader";
-import FAQAccordion from "@/components/liveChat/FAQAccordion";
-import ContactForm from "@/components/liveChat/ContactForm";
-import ChatTabs from "@/components/liveChat/ChatTabs";
-import ChatToggleButton from "@/components/liveChat/ChatToggleButton";
+import ChatHeader from "@/old-components/liveChat/ChatHeader";
+import FAQAccordion from "@/old-components/liveChat/FAQAccordion";
+import ContactForm from "@/old-components/liveChat/ContactForm";
+import ChatTabs from "@/old-components/liveChat/ChatTabs";
+import ChatToggleButton from "@/old-components/liveChat/ChatToggleButton";
 
 export default function LiveChat() {
   const [isOpen, setIsOpen] = useState<boolean>(false);

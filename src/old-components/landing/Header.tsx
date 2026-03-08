@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "motion/react";
-import HeaderContent from "@/components/header/HeaderContent";
+import HeaderContent from "@/old-components/header/HeaderContent";
 import { HEADER_CONFIG, HEADER_STYLES } from "@/constants/header";
 
 export default function Header() {

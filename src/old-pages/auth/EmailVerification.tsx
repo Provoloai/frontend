@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback } from "react";
-import VerificationDialog from "@/components/auth/VerificationDialog";
-import VerificationForm from "@/components/auth/VerificationForm";
+import VerificationDialog from "@/old-components/auth/VerificationDialog";
+import VerificationForm from "@/old-components/auth/VerificationForm";
 import CustomSnackbar from "@/Reusables/CustomSnackbar";
 import { authApi } from "@/api";
 import { auth } from "@/lib/firebase";

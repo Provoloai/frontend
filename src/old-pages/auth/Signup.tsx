@@ -10,9 +10,9 @@ import type {
   SignupTouchedFields,
   PasswordRequirements,
 } from "@/types/auth";
-import SignupForm from "@/components/auth/SignupForm";
+import SignupForm from "@/old-components/auth/SignupForm";
 import { SIGNUP_CONFIG } from "@/constants/auth";
-import AuthLayout from "@/components/auth/AuthLayout";
+import AuthLayout from "@/old-components/auth/AuthLayout";
 
 export default function Signup() {
   // Form state

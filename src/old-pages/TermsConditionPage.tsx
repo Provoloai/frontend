@@ -1,6 +1,6 @@
-import TermsConditions from "@/components/terms";
-import Footer from "@/components/landing/Footer";
-import Header from "@/components/landing/Header";
+import TermsConditions from "@/old-components/terms";
+import Footer from "@/old-components/landing/Footer";
+import Header from "@/old-components/landing/Header";
 
 const TermsConditionPage = () => {
   return (

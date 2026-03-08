@@ -10,8 +10,8 @@ import {
 } from "@/constants/animations";
 import type { OptimizerResults, AccordionSection } from "@/types/optimizer";
 import type { PortfolioFormData } from "@/schemas/portfolioSchema";
-import OptimizerForm from "@/components/optimizer/OptimizerForm";
-import OptimizerResultsComponent from "@/components/optimizer/OptimizerResults";
+import OptimizerForm from "@/old-components/optimizer/OptimizerForm";
+import OptimizerResultsComponent from "@/old-components/optimizer/OptimizerResults";
 import { useSEO, SEO_CONFIGS } from "@/hooks/useSEO";
 
 const PortfolioOptimizer = () => {

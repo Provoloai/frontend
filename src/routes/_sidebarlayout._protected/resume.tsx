@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Resume } from '../../pages/resume-generator/Resume'
+import { Resume } from '../../old-pages/resume-generator/Resume'
 
 export const Route = createFileRoute('/_sidebarlayout/_protected/resume')({
     component: RouteComponent,

@@ -17,7 +17,7 @@ import {
 } from "@/constants/animations";
 import { Link } from "@tanstack/react-router";
 import { useGetProposal } from "@/api";
-import SidebarBadge from "@/components/sidebar/SidebarBadge";
+import SidebarBadge from "@/old-components/sidebar/SidebarBadge";
 
 const ProposalHistory: React.FC = () => {
   const { proposalId } = useParams({

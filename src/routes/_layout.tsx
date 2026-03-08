@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router'
-import Header from '@/components/landing/Header'
+import Header from '@/old-components/landing/Header'
 
 export const Route = createFileRoute('/_layout')({
     component: RouteComponent,

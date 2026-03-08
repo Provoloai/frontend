@@ -1,4 +1,4 @@
-import BlogPostSingle from '@/pages/blog-post'
+import BlogPostSingle from '@/old-pages/blog-post'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/blogPost/$blogpostId')({

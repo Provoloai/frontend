@@ -2,7 +2,7 @@ import React from "react";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import useSession from "../../hooks/useSession";
 import VerifyingAuth from "../../Reusables/VerifyingAuth";
-import UnderMaintenance from "../../pages/UnderMaintenance";
+import UnderMaintenance from "../../old-pages/UnderMaintenance";
 
 export const Route = createFileRoute("/_auth/_protect")({
   component: ProtectComponent,

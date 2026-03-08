@@ -1,14 +1,14 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import Sidebar from "../Reusables/Sidebar";
-import { MobilePageModal } from "../pages/MobilePageModal";
+import { MobilePageModal } from "../old-pages/MobilePageModal";
 import { detectSystem } from "../utils/detectSystem.util";
 import { useEffect, useState } from "react";
-import UserName from "../pages/auth/UserName";
-import EmailVerification from "../pages/auth/EmailVerification";
+import UserName from "../old-pages/auth/UserName";
+import EmailVerification from "../old-pages/auth/EmailVerification";
 import VerifyingAuth from "../Reusables/VerifyingAuth";
 import useSession from "../hooks/useSession";
-import Notifications from "@/components/sidebar/Notifications";
-import UnderMaintenance from "../pages/UnderMaintenance";
+import Notifications from "@/old-components/sidebar/Notifications";
+import UnderMaintenance from "../old-pages/UnderMaintenance";
 
 export const Route = createFileRoute("/_sidebarlayout")({
   component: RouteComponent,

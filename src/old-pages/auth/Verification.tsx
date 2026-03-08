@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import CustomButton from "@/Reusables/CustomButton";
 import { authApi } from "@/api";
-import AuthLayout from "@/components/auth/AuthLayout";
+import AuthLayout from "@/old-components/auth/AuthLayout";
 import CustomSnackbar from "@/Reusables/CustomSnackbar";
 
 const VerificationPage: React.FC = () => {

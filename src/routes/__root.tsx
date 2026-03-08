@@ -1,8 +1,8 @@
 import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { Beta } from "../Reusables/Beta";
-import ErrorPage from "../pages/ErrorPage";
-import NotFound from "../pages/NotFound";
+import ErrorPage from "../old-pages/ErrorPage";
+import NotFound from "../old-pages/NotFound";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 function RootComponent() {

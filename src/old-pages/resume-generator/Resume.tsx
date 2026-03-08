@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "motion/react";
-import { ResumeEditor } from "@/components/resumeBuilder/ResumeEditor";
+import { ResumeEditor } from "@/old-components/resumeBuilder/ResumeEditor";
 import CustomButton from "@/Reusables/CustomButton";
 import { useResumeStore } from "@/stores/resumeStore";
 import {

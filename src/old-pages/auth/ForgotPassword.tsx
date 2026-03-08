@@ -1,10 +1,10 @@
 import { useState, useCallback } from "react";
-import ForgotPasswordLayout from "@/components/auth/ForgotPasswordLayout";
-import ForgotPasswordForm from "@/components/auth/ForgotPasswordForm";
+import ForgotPasswordLayout from "@/old-components/auth/ForgotPasswordLayout";
+import ForgotPasswordForm from "@/old-components/auth/ForgotPasswordForm";
 import { useForgotPassword } from "@/hooks/useForgotPassword";
 import { validateForgotPasswordField, validateForgotPasswordForm } from "@/utils/forgotPasswordValidation.util";
 import type { ForgotPasswordFormData, ForgotPasswordTouchedFields } from "@/types/auth";
-import AuthLayout from "@/components/auth/AuthLayout";
+import AuthLayout from "@/old-components/auth/AuthLayout";
 
 const ForgotPassword = () => {
   const [formData, setFormData] = useState<ForgotPasswordFormData>({

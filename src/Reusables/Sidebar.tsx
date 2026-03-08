@@ -7,14 +7,14 @@ import { useGetOptimizerList, useGetProposalList } from "@/api";
 import { useRouterState } from "@tanstack/react-router";
 import { NAV_ITEMS, UPSKILL_ITEMS, FEEDBACK_ITEMS } from "@/constants/sidebar";
 import { OptimizerHistoryItem, ProposalHistoryItem } from "@/types/sidebar";
-import SidebarToggle from "@/components/sidebar/SidebarToggle";
-import SidebarLogo from "@/components/sidebar/SidebarLogo";
-import SidebarSection from "@/components/sidebar/SidebarSection";
-import SidebarSectionTitle from "@/components/sidebar/SidebarSectionTitle";
-import ProposalDropdown from "@/components/sidebar/ProposalDropdown";
-import UserProfile from "../pages/user/User";
-import OptimizerDropdown from "@/components/sidebar/OptimizerDropdown";
-import Notifications from "@/components/sidebar/Notifications";
+import SidebarToggle from "@/old-components/sidebar/SidebarToggle";
+import SidebarLogo from "@/old-components/sidebar/SidebarLogo";
+import SidebarSection from "@/old-components/sidebar/SidebarSection";
+import SidebarSectionTitle from "@/old-components/sidebar/SidebarSectionTitle";
+import ProposalDropdown from "@/old-components/sidebar/ProposalDropdown";
+import UserProfile from "../old-pages/user/User";
+import OptimizerDropdown from "@/old-components/sidebar/OptimizerDropdown";
+import Notifications from "@/old-components/sidebar/Notifications";
 
 const Sidebar = () => {
   const location = useRouterState({ select: s => s.location });

@@ -29,13 +29,13 @@ import {
 import type { ProposalData, ImprovementOption } from "@/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSEO, SEO_CONFIGS } from "@/hooks/useSEO";
-// import Banner from "@/components/dashboard/Banner";
+// import Banner from "@/old-components/dashboard/Banner";
 import { Link } from "@tanstack/react-router";
 import {
   proposalFormSchema,
   type ProposalFormData,
 } from "@/schemas/proposalSchema";
-import SidebarBadge from "@/components/sidebar/SidebarBadge";
+import SidebarBadge from "@/old-components/sidebar/SidebarBadge";
 
 const PortfolioOptimizer: React.FC = () => {
   useSEO(SEO_CONFIGS.proposal);

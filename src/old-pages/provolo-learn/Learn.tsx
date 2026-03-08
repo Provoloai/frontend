@@ -3,8 +3,8 @@ import learn from "../../assets/img/learn.png";
 import { learnContainerVariants } from "@/constants/animations";
 import { LEARN_CONFIG, VIEWPORT_CONFIG } from "@/constants/learn";
 import type { LearnImageProps } from "@/types/learn";
-import LearnHeader from "@/components/learn/LearnHeader";
-import LearnContent from "@/components/learn/LearnContent";
+import LearnHeader from "@/old-components/learn/LearnHeader";
+import LearnContent from "@/old-components/learn/LearnContent";
 import { useSEO, SEO_CONFIGS } from "@/hooks/useSEO";
 
 export default function Learn() {

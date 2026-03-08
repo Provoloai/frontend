@@ -1,6 +1,6 @@
-import Footer from "@/components/landing/Footer";
-import Header from "@/components/landing/Header";
-import PrivacyPolicy from "@/components/privacy";
+import Footer from "@/old-components/landing/Footer";
+import Header from "@/old-components/landing/Header";
+import PrivacyPolicy from "@/old-components/privacy";
 import { useSEO, SEO_CONFIGS } from "@/hooks/useSEO";
 
 const PrivacyPolicyPage = () => {

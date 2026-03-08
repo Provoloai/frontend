@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import Proposal from "../../pages/proposal/Proposal";
+import Proposal from "../../old-pages/proposal/Proposal";
 import useSession from "../../hooks/useSession";
 import VerifyingAuth from "../../Reusables/VerifyingAuth";
 import { useEffect } from "react";

@@ -1,5 +1,5 @@
 import { Construction } from "lucide-react";
-import Header from "@/components/landing/Header";
+import Header from "@/old-components/landing/Header";
 
 export default function UnderMaintenance() {
   return (

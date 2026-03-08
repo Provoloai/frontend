@@ -1,8 +1,8 @@
 import { useState, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import type { LoginFormData, LoginTouchedFields } from "@/types/auth";
-import LoginForm from "@/components/auth/LoginForm";
-import AuthLayout from "@/components/auth/AuthLayout";
+import LoginForm from "@/old-components/auth/LoginForm";
+import AuthLayout from "@/old-components/auth/AuthLayout";
 // import { LOGIN_CONFIG } from "@/constants/auth";
 // import { Link } from "@tanstack/react-router";
 

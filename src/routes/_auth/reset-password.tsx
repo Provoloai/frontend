@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import ResetPassword from '../../pages/auth/ResetPassword'
+import ResetPassword from '../../old-pages/auth/ResetPassword'
 import { z } from 'zod'
 
 // Define search params schema for Firebase password reset
