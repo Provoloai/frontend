@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import Authentication from "../../old-pages/auth/Signup";
+import Authentication from "../../pages/auth/Signup";
 import useSession from "../../hooks/useSession";
 import VerifyingAuth from "../../Reusables/VerifyingAuth";
 
