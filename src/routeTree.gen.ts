@@ -23,6 +23,7 @@ import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-pass
 import { Route as AuthOnboardingRouteImport } from './routes/_auth/onboarding'
 import { Route as AuthForgotPasswordRouteImport } from './routes/_auth/forgot-password'
 import { Route as AuthProtectRouteImport } from './routes/_auth/_protect'
+import { Route as AuthOnboardingIndexRouteImport } from './routes/_auth/onboarding.index'
 import { Route as SidebarlayoutProtectedUserprofileRouteImport } from './routes/_sidebarlayout._protected/userprofile'
 import { Route as SidebarlayoutProtectedResumeRouteImport } from './routes/_sidebarlayout._protected/resume'
 import { Route as SidebarlayoutProtectedProposalRouteImport } from './routes/_sidebarlayout._protected/proposal'
@@ -31,6 +32,7 @@ import { Route as SidebarlayoutProtectedOptimizerRouteImport } from './routes/_s
 import { Route as SidebarlayoutProtectedNotificationsRouteImport } from './routes/_sidebarlayout._protected/notifications'
 import { Route as SidebarlayoutProtectedLearnRouteImport } from './routes/_sidebarlayout._protected/learn'
 import { Route as SidebarlayoutProtectedExampleRouteImport } from './routes/_sidebarlayout._protected/example'
+import { Route as AuthOnboardingReviewRouteImport } from './routes/_auth/onboarding.review'
 import { Route as AuthProtectSignupRouteImport } from './routes/_auth/_protect.signup'
 import { Route as AuthProtectLoginRouteImport } from './routes/_auth/_protect.login'
 import { Route as SidebarlayoutProtectedProposalHistoryProposalIdRouteImport } from './routes/_sidebarlayout._protected/proposalHistory/$proposalId'
@@ -103,6 +105,11 @@ const AuthProtectRoute = AuthProtectRouteImport.update({
   id: '/_auth/_protect',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthOnboardingIndexRoute = AuthOnboardingIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthOnboardingRoute,
+} as any)
 const SidebarlayoutProtectedUserprofileRoute =
   SidebarlayoutProtectedUserprofileRouteImport.update({
     id: '/_protected/userprofile',
@@ -151,6 +158,11 @@ const SidebarlayoutProtectedExampleRoute =
     path: '/example',
     getParentRoute: () => SidebarlayoutRoute,
   } as any)
+const AuthOnboardingReviewRoute = AuthOnboardingReviewRouteImport.update({
+  id: '/review',
+  path: '/review',
+  getParentRoute: () => AuthOnboardingRoute,
+} as any)
 const AuthProtectSignupRoute = AuthProtectSignupRouteImport.update({
   id: '/signup',
   path: '/signup',
@@ -182,12 +194,13 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/welcome': typeof WelcomeRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
-  '/onboarding': typeof AuthOnboardingRoute
+  '/onboarding': typeof AuthOnboardingRouteWithChildren
   '/reset-password': typeof AuthResetPasswordRoute
   '/blogPost/$blogpostId': typeof BlogPostBlogpostIdRoute
   '/': typeof LayoutIndexRoute
   '/login': typeof AuthProtectLoginRoute
   '/signup': typeof AuthProtectSignupRoute
+  '/onboarding/review': typeof AuthOnboardingReviewRoute
   '/example': typeof SidebarlayoutProtectedExampleRoute
   '/learn': typeof SidebarlayoutProtectedLearnRoute
   '/notifications': typeof SidebarlayoutProtectedNotificationsRoute
@@ -196,6 +209,7 @@ export interface FileRoutesByFullPath {
   '/proposal': typeof SidebarlayoutProtectedProposalRoute
   '/resume': typeof SidebarlayoutProtectedResumeRoute
   '/userprofile': typeof SidebarlayoutProtectedUserprofileRoute
+  '/onboarding/': typeof AuthOnboardingIndexRoute
   '/optimizerHistory/$optimizerId': typeof SidebarlayoutProtectedOptimizerHistoryOptimizerIdRoute
   '/proposalHistory/$proposalId': typeof SidebarlayoutProtectedProposalHistoryProposalIdRoute
 }
@@ -207,12 +221,12 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/welcome': typeof WelcomeRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
-  '/onboarding': typeof AuthOnboardingRoute
   '/reset-password': typeof AuthResetPasswordRoute
   '/blogPost/$blogpostId': typeof BlogPostBlogpostIdRoute
   '/': typeof LayoutIndexRoute
   '/login': typeof AuthProtectLoginRoute
   '/signup': typeof AuthProtectSignupRoute
+  '/onboarding/review': typeof AuthOnboardingReviewRoute
   '/example': typeof SidebarlayoutProtectedExampleRoute
   '/learn': typeof SidebarlayoutProtectedLearnRoute
   '/notifications': typeof SidebarlayoutProtectedNotificationsRoute
@@ -221,6 +235,7 @@ export interface FileRoutesByTo {
   '/proposal': typeof SidebarlayoutProtectedProposalRoute
   '/resume': typeof SidebarlayoutProtectedResumeRoute
   '/userprofile': typeof SidebarlayoutProtectedUserprofileRoute
+  '/onboarding': typeof AuthOnboardingIndexRoute
   '/optimizerHistory/$optimizerId': typeof SidebarlayoutProtectedOptimizerHistoryOptimizerIdRoute
   '/proposalHistory/$proposalId': typeof SidebarlayoutProtectedProposalHistoryProposalIdRoute
 }
@@ -236,12 +251,13 @@ export interface FileRoutesById {
   '/welcome': typeof WelcomeRoute
   '/_auth/_protect': typeof AuthProtectRouteWithChildren
   '/_auth/forgot-password': typeof AuthForgotPasswordRoute
-  '/_auth/onboarding': typeof AuthOnboardingRoute
+  '/_auth/onboarding': typeof AuthOnboardingRouteWithChildren
   '/_auth/reset-password': typeof AuthResetPasswordRoute
   '/blogPost/$blogpostId': typeof BlogPostBlogpostIdRoute
   '/_layout/': typeof LayoutIndexRoute
   '/_auth/_protect/login': typeof AuthProtectLoginRoute
   '/_auth/_protect/signup': typeof AuthProtectSignupRoute
+  '/_auth/onboarding/review': typeof AuthOnboardingReviewRoute
   '/_sidebarlayout/_protected/example': typeof SidebarlayoutProtectedExampleRoute
   '/_sidebarlayout/_protected/learn': typeof SidebarlayoutProtectedLearnRoute
   '/_sidebarlayout/_protected/notifications': typeof SidebarlayoutProtectedNotificationsRoute
@@ -250,6 +266,7 @@ export interface FileRoutesById {
   '/_sidebarlayout/_protected/proposal': typeof SidebarlayoutProtectedProposalRoute
   '/_sidebarlayout/_protected/resume': typeof SidebarlayoutProtectedResumeRoute
   '/_sidebarlayout/_protected/userprofile': typeof SidebarlayoutProtectedUserprofileRoute
+  '/_auth/onboarding/': typeof AuthOnboardingIndexRoute
   '/_sidebarlayout/_protected/optimizerHistory/$optimizerId': typeof SidebarlayoutProtectedOptimizerHistoryOptimizerIdRoute
   '/_sidebarlayout/_protected/proposalHistory/$proposalId': typeof SidebarlayoutProtectedProposalHistoryProposalIdRoute
 }
@@ -269,6 +286,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/signup'
+    | '/onboarding/review'
     | '/example'
     | '/learn'
     | '/notifications'
@@ -277,6 +295,7 @@ export interface FileRouteTypes {
     | '/proposal'
     | '/resume'
     | '/userprofile'
+    | '/onboarding/'
     | '/optimizerHistory/$optimizerId'
     | '/proposalHistory/$proposalId'
   fileRoutesByTo: FileRoutesByTo
@@ -288,12 +307,12 @@ export interface FileRouteTypes {
     | '/terms'
     | '/welcome'
     | '/forgot-password'
-    | '/onboarding'
     | '/reset-password'
     | '/blogPost/$blogpostId'
     | '/'
     | '/login'
     | '/signup'
+    | '/onboarding/review'
     | '/example'
     | '/learn'
     | '/notifications'
@@ -302,6 +321,7 @@ export interface FileRouteTypes {
     | '/proposal'
     | '/resume'
     | '/userprofile'
+    | '/onboarding'
     | '/optimizerHistory/$optimizerId'
     | '/proposalHistory/$proposalId'
   id:
@@ -322,6 +342,7 @@ export interface FileRouteTypes {
     | '/_layout/'
     | '/_auth/_protect/login'
     | '/_auth/_protect/signup'
+    | '/_auth/onboarding/review'
     | '/_sidebarlayout/_protected/example'
     | '/_sidebarlayout/_protected/learn'
     | '/_sidebarlayout/_protected/notifications'
@@ -330,6 +351,7 @@ export interface FileRouteTypes {
     | '/_sidebarlayout/_protected/proposal'
     | '/_sidebarlayout/_protected/resume'
     | '/_sidebarlayout/_protected/userprofile'
+    | '/_auth/onboarding/'
     | '/_sidebarlayout/_protected/optimizerHistory/$optimizerId'
     | '/_sidebarlayout/_protected/proposalHistory/$proposalId'
   fileRoutesById: FileRoutesById
@@ -345,7 +367,7 @@ export interface RootRouteChildren {
   WelcomeRoute: typeof WelcomeRoute
   AuthProtectRoute: typeof AuthProtectRouteWithChildren
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
-  AuthOnboardingRoute: typeof AuthOnboardingRoute
+  AuthOnboardingRoute: typeof AuthOnboardingRouteWithChildren
   AuthResetPasswordRoute: typeof AuthResetPasswordRoute
   BlogPostBlogpostIdRoute: typeof BlogPostBlogpostIdRoute
 }
@@ -450,6 +472,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthProtectRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_auth/onboarding/': {
+      id: '/_auth/onboarding/'
+      path: '/'
+      fullPath: '/onboarding/'
+      preLoaderRoute: typeof AuthOnboardingIndexRouteImport
+      parentRoute: typeof AuthOnboardingRoute
+    }
     '/_sidebarlayout/_protected/userprofile': {
       id: '/_sidebarlayout/_protected/userprofile'
       path: '/userprofile'
@@ -505,6 +534,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/example'
       preLoaderRoute: typeof SidebarlayoutProtectedExampleRouteImport
       parentRoute: typeof SidebarlayoutRoute
+    }
+    '/_auth/onboarding/review': {
+      id: '/_auth/onboarding/review'
+      path: '/review'
+      fullPath: '/onboarding/review'
+      preLoaderRoute: typeof AuthOnboardingReviewRouteImport
+      parentRoute: typeof AuthOnboardingRoute
     }
     '/_auth/_protect/signup': {
       id: '/_auth/_protect/signup'
@@ -596,6 +632,20 @@ const AuthProtectRouteWithChildren = AuthProtectRoute._addFileChildren(
   AuthProtectRouteChildren,
 )
 
+interface AuthOnboardingRouteChildren {
+  AuthOnboardingReviewRoute: typeof AuthOnboardingReviewRoute
+  AuthOnboardingIndexRoute: typeof AuthOnboardingIndexRoute
+}
+
+const AuthOnboardingRouteChildren: AuthOnboardingRouteChildren = {
+  AuthOnboardingReviewRoute: AuthOnboardingReviewRoute,
+  AuthOnboardingIndexRoute: AuthOnboardingIndexRoute,
+}
+
+const AuthOnboardingRouteWithChildren = AuthOnboardingRoute._addFileChildren(
+  AuthOnboardingRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   LayoutRoute: LayoutRouteWithChildren,
   SidebarlayoutRoute: SidebarlayoutRouteWithChildren,
@@ -607,7 +657,7 @@ const rootRouteChildren: RootRouteChildren = {
   WelcomeRoute: WelcomeRoute,
   AuthProtectRoute: AuthProtectRouteWithChildren,
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
-  AuthOnboardingRoute: AuthOnboardingRoute,
+  AuthOnboardingRoute: AuthOnboardingRouteWithChildren,
   AuthResetPasswordRoute: AuthResetPasswordRoute,
   BlogPostBlogpostIdRoute: BlogPostBlogpostIdRoute,
 }
