@@ -45,6 +45,7 @@ const apiRequest = async <T>(
           "/signup",
           "/forgot-password",
           "/reset-password",
+          "/onboarding",
         ];
         const currentPath = window.location.pathname;
 

@@ -20,6 +20,7 @@ import { Route as LayoutRouteImport } from './routes/_layout'
 import { Route as LayoutIndexRouteImport } from './routes/_layout.index'
 import { Route as BlogPostBlogpostIdRouteImport } from './routes/blogPost/$blogpostId'
 import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-password'
+import { Route as AuthOnboardingRouteImport } from './routes/_auth/onboarding'
 import { Route as AuthForgotPasswordRouteImport } from './routes/_auth/forgot-password'
 import { Route as AuthProtectRouteImport } from './routes/_auth/_protect'
 import { Route as SidebarlayoutProtectedUserprofileRouteImport } from './routes/_sidebarlayout._protected/userprofile'
@@ -86,6 +87,11 @@ const BlogPostBlogpostIdRoute = BlogPostBlogpostIdRouteImport.update({
 const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
   id: '/_auth/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthOnboardingRoute = AuthOnboardingRouteImport.update({
+  id: '/_auth/onboarding',
+  path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
@@ -176,6 +182,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/welcome': typeof WelcomeRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
+  '/onboarding': typeof AuthOnboardingRoute
   '/reset-password': typeof AuthResetPasswordRoute
   '/blogPost/$blogpostId': typeof BlogPostBlogpostIdRoute
   '/': typeof LayoutIndexRoute
@@ -200,6 +207,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/welcome': typeof WelcomeRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
+  '/onboarding': typeof AuthOnboardingRoute
   '/reset-password': typeof AuthResetPasswordRoute
   '/blogPost/$blogpostId': typeof BlogPostBlogpostIdRoute
   '/': typeof LayoutIndexRoute
@@ -228,6 +236,7 @@ export interface FileRoutesById {
   '/welcome': typeof WelcomeRoute
   '/_auth/_protect': typeof AuthProtectRouteWithChildren
   '/_auth/forgot-password': typeof AuthForgotPasswordRoute
+  '/_auth/onboarding': typeof AuthOnboardingRoute
   '/_auth/reset-password': typeof AuthResetPasswordRoute
   '/blogPost/$blogpostId': typeof BlogPostBlogpostIdRoute
   '/_layout/': typeof LayoutIndexRoute
@@ -254,6 +263,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/welcome'
     | '/forgot-password'
+    | '/onboarding'
     | '/reset-password'
     | '/blogPost/$blogpostId'
     | '/'
@@ -278,6 +288,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/welcome'
     | '/forgot-password'
+    | '/onboarding'
     | '/reset-password'
     | '/blogPost/$blogpostId'
     | '/'
@@ -305,6 +316,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/_auth/_protect'
     | '/_auth/forgot-password'
+    | '/_auth/onboarding'
     | '/_auth/reset-password'
     | '/blogPost/$blogpostId'
     | '/_layout/'
@@ -333,6 +345,7 @@ export interface RootRouteChildren {
   WelcomeRoute: typeof WelcomeRoute
   AuthProtectRoute: typeof AuthProtectRouteWithChildren
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
+  AuthOnboardingRoute: typeof AuthOnboardingRoute
   AuthResetPasswordRoute: typeof AuthResetPasswordRoute
   BlogPostBlogpostIdRoute: typeof BlogPostBlogpostIdRoute
 }
@@ -414,6 +427,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof AuthResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_auth/onboarding': {
+      id: '/_auth/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof AuthOnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth/forgot-password': {
@@ -587,6 +607,7 @@ const rootRouteChildren: RootRouteChildren = {
   WelcomeRoute: WelcomeRoute,
   AuthProtectRoute: AuthProtectRouteWithChildren,
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
+  AuthOnboardingRoute: AuthOnboardingRoute,
   AuthResetPasswordRoute: AuthResetPasswordRoute,
   BlogPostBlogpostIdRoute: BlogPostBlogpostIdRoute,
 }

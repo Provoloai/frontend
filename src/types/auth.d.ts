@@ -148,3 +148,7 @@ export interface ForgotPasswordFormProps {
 export interface ForgotPasswordLayoutProps {
   children: React.ReactNode;
 }
+
+export interface OnboardingPortfolioFormData {
+  portfolioUrl: string;
+}
