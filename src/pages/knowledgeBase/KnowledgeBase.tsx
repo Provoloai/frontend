@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Download } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+
 import { PLACEHOLDER_PROFILE } from "@/constants/reviewPlaceholder";
 import type {
   ReviewProfileData,
@@ -29,12 +30,34 @@ import { useToast } from "@/components/knowledgeBase/useToast";
 
 const PLACEHOLDER_USER = {
   displayName: "Shakirat Akanji",
-  role: "Design Engineer / UX Designer",
+  role: "Design Engineer | UX Designer",
   location: "Lagos, Nigeria",
   experience: "3 Years",
   email: "akanjiishakirat@gmail.com",
   portfolio: "sakunli.framer.website",
 };
+
+/** Empty profile — new user starts with nothing */
+const EMPTY_PROFILE: ReviewProfileData = {
+  summary: { text: "" },
+  experience: [],
+  skills: [],
+  education: [],
+  certifications: [],
+  projects: [],
+};
+
+/** Calculate profile completion as a percentage (6 sections) */
+function getProfileCompletion(p: ReviewProfileData): number {
+  let filled = 0;
+  if (p.summary.text) filled++;
+  if (p.experience.length > 0) filled++;
+  if (p.skills.length > 0) filled++;
+  if (p.education.length > 0) filled++;
+  if (p.certifications.length > 0) filled++;
+  if (p.projects.length > 0) filled++;
+  return Math.round((filled / 6) * 100);
+}
 
 type SheetState =
   | { type: "none" }
@@ -57,7 +80,8 @@ export default function KnowledgeBase() {
 function KnowledgeBaseContent() {
   const { toast } = useToast();
   const [profile, setProfile] =
-    useState<ReviewProfileData>(PLACEHOLDER_PROFILE);
+    // useState<ReviewProfileData>(PLACEHOLDER_PROFILE);
+    useState<ReviewProfileData>(EMPTY_PROFILE);
   const [sheet, setSheet] = useState<SheetState>({ type: "none" });
   const [deleteDialog, setDeleteDialog] = useState<DeleteState>({
     type: "none",
@@ -157,6 +181,10 @@ function KnowledgeBaseContent() {
     .join("")
     .toUpperCase();
 
+  const completion = getProfileCompletion(profile);
+  const hasDetails =
+    user.location || user.experience || user.email || user.portfolio;
+
   return (
     <div className="min-h-full">
       {/* Page header */}
@@ -177,7 +205,7 @@ function KnowledgeBaseContent() {
       <div className="flex gap-6 px-10 py-6">
         {/* Left — User profile card */}
         <div className="w-[17.5rem] shrink-0">
-          <div className="sticky top-8 space-y-4 rounded-2xl bg-white shadow-[0_1px_0.5px_0.05px_rgba(29,41,61,0.02) p-6">
+          <div className="sticky top-8 space-y-4 rounded-2xl bg-white shadow-[0_1px_0.5px_0.05px_rgba(29,41,61,0.02)] p-6">
             {/* Avatar + name */}
             <div>
               <Avatar className="size-20 mb-3">
@@ -193,30 +221,62 @@ function KnowledgeBaseContent() {
               </p>
             </div>
 
-            {/* Details */}
-            <div className="space-y-4 text-sm">
-              <div>
-                <p className="text-xs  text-secondary ">Location</p>
-                <p className="text-sm text-secondary">{user.location}</p>
+            {/* Profile completion (always visible) */}
+            <div>
+              <div className="flex items-center justify-between text-xs text-secondary mb-1.5">
+                <span>Profile completion</span>
+                <span>{completion}%</span>
               </div>
-
-              <div>
-                <p className="text-xs  text-secondary ">Experience</p>
-                <p className="text-sm text-secondary">{user.experience}</p>
-              </div>
-              <div className="border-t border-[#F3F4F6] h-[1px]" />
-              <div>
-                <p className="text-xs  text-secondary ">Email</p>
-                <p className="text-sm text-secondary break-all">{user.email}</p>
-              </div>
-
-              <div>
-                <p className="text-xs  text-secondary ">Portfolio</p>
-                <p className="text-sm text-secondary break-all">
-                  {user.portfolio}
-                </p>
+              <div className="h-2 w-full rounded-full bg-[#E5E7EB]">
+                <div
+                  className="h-2 rounded-full bg-primary transition-all duration-500"
+                  style={{ width: `${completion}%` }}
+                />
               </div>
             </div>
+
+            {/* Details — shown when user has data */}
+            {hasDetails && (
+              <div className="space-y-4 text-sm">
+                {user.location && (
+                  <div>
+                    <p className="text-xs text-secondary">Location</p>
+                    <p className="text-sm text-secondary flex items-center gap-1.5">
+                      {user.location}
+                    </p>
+                  </div>
+                )}
+
+                {user.experience && (
+                  <div>
+                    <p className="text-xs text-secondary">Experience</p>
+                    <p className="text-sm text-secondary flex items-center gap-1.5">
+                      {user.experience}
+                    </p>
+                  </div>
+                )}
+
+                <div className="border-t border-[#F3F4F6]" />
+
+                {user.email && (
+                  <div>
+                    <p className="text-xs text-secondary">Email</p>
+                    <p className="text-sm text-secondary break-all flex items-center gap-1.5">
+                      {user.email}
+                    </p>
+                  </div>
+                )}
+
+                {user.portfolio && (
+                  <div>
+                    <p className="text-xs text-secondary">Portfolio</p>
+                    <p className="text-sm text-secondary break-all flex items-center gap-1.5">
+                      {user.portfolio}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
