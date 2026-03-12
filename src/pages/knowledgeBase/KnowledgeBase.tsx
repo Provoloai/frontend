@@ -1,9 +1,14 @@
 import { useState } from "react";
+import { motion } from "motion/react";
 import { Download } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-
-import { PLACEHOLDER_PROFILE } from "@/constants/reviewPlaceholder";
+import {
+  v2ContainerVariants,
+  v2ItemVariants,
+  v2PageVariants,
+  v2Spring,
+} from "@/constants/v2Motion";
 import type {
   ReviewProfileData,
   ExperienceEntry,
@@ -25,6 +30,7 @@ import EditEducationSheet from "@/components/knowledgeBase/EditEducationSheet";
 import EditCertificationSheet from "@/components/knowledgeBase/EditCertificationSheet";
 import EditProjectSheet from "@/components/knowledgeBase/EditProjectSheet";
 import DeleteConfirmDialog from "@/components/knowledgeBase/DeleteConfirmDialog";
+import ImportDataDialog from "@/components/knowledgeBase/ImportDataDialog";
 import ToastProvider from "@/components/knowledgeBase/ToastProvider";
 import { useToast } from "@/components/knowledgeBase/useToast";
 
@@ -86,6 +92,7 @@ function KnowledgeBaseContent() {
   const [deleteDialog, setDeleteDialog] = useState<DeleteState>({
     type: "none",
   });
+  const [importOpen, setImportOpen] = useState(false);
 
   const closeSheet = () => setSheet({ type: "none" });
 
@@ -186,26 +193,50 @@ function KnowledgeBaseContent() {
     user.location || user.experience || user.email || user.portfolio;
 
   return (
-    <div className="min-h-full">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={v2PageVariants}
+      className="min-h-full"
+    >
       {/* Page header */}
-      <div className="flex items-center justify-between  px-10 pt-6">
+      <motion.div
+        variants={v2ItemVariants}
+        className="flex items-center justify-between  px-10 pt-6"
+      >
         <div>
           <h1 className="text-2xl font-medium text-dark">Knowledge Base</h1>
           <p className="text-secondary">
             You can find all your profile data here.
           </p>
         </div>
-        <Button className="gap-2 rounded-xl py-2.5 px-4">
-          <Download size={16} />
-          Import data
-        </Button>
-      </div>
+        <motion.div
+          whileHover={{ y: -1 }}
+          whileTap={{ scale: 0.98 }}
+          transition={v2Spring}
+        >
+          <Button
+            className="gap-2 rounded-xl py-2.5 px-4"
+            onClick={() => setImportOpen(true)}
+          >
+            <Download size={16} />
+            Import data
+          </Button>
+        </motion.div>
+      </motion.div>
 
       {/* Body */}
-      <div className="flex gap-6 px-10 py-6">
+      <motion.div
+        variants={v2ContainerVariants}
+        className="flex gap-6 px-10 py-6"
+      >
         {/* Left — User profile card */}
-        <div className="w-[17.5rem] shrink-0">
-          <div className="sticky top-8 space-y-4 rounded-2xl bg-white shadow-[0_1px_0.5px_0.05px_rgba(29,41,61,0.02)] p-6">
+        <motion.div variants={v2ItemVariants} className="w-[17.5rem] shrink-0">
+          <motion.div
+            layout
+            transition={v2Spring}
+            className="sticky top-8 space-y-4 rounded-2xl bg-white shadow-[0_1px_0.5px_0.05px_rgba(29,41,61,0.02)] p-6"
+          >
             {/* Avatar + name */}
             <div>
               <Avatar className="size-20 mb-3">
@@ -228,8 +259,9 @@ function KnowledgeBaseContent() {
                 <span>{completion}%</span>
               </div>
               <div className="h-2 w-full rounded-full bg-[#E5E7EB]">
-                <div
+                <motion.div
                   className="h-2 rounded-full bg-primary transition-all duration-500"
+                  transition={v2Spring}
                   style={{ width: `${completion}%` }}
                 />
               </div>
@@ -277,44 +309,59 @@ function KnowledgeBaseContent() {
                 )}
               </div>
             )}
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         {/* Right — Sections */}
-        <div className="flex-1 min-w-0 space-y-6">
-          <ProfessionalSummarySection
-            summary={profile.summary}
-            onEdit={() => setSheet({ type: "summary" })}
-          />
+        <motion.div
+          variants={v2ContainerVariants}
+          className="flex-1 min-w-0 space-y-6"
+        >
+          <motion.div layout variants={v2ItemVariants} transition={v2Spring}>
+            <ProfessionalSummarySection
+              summary={profile.summary}
+              onEdit={() => setSheet({ type: "summary" })}
+            />
+          </motion.div>
 
-          <ExperienceSection
-            entries={profile.experience}
-            onAdd={() => setSheet({ type: "experience", entry: null })}
-            onEdit={entry => setSheet({ type: "experience", entry })}
-          />
+          <motion.div layout variants={v2ItemVariants} transition={v2Spring}>
+            <ExperienceSection
+              entries={profile.experience}
+              onAdd={() => setSheet({ type: "experience", entry: null })}
+              onEdit={entry => setSheet({ type: "experience", entry })}
+            />
+          </motion.div>
 
-          <SkillsSection skills={profile.skills} />
+          <motion.div layout variants={v2ItemVariants} transition={v2Spring}>
+            <SkillsSection skills={profile.skills} />
+          </motion.div>
 
-          <EducationSection
-            entries={profile.education}
-            onAdd={() => setSheet({ type: "education", entry: null })}
-            onEdit={entry => setSheet({ type: "education", entry })}
-          />
+          <motion.div layout variants={v2ItemVariants} transition={v2Spring}>
+            <EducationSection
+              entries={profile.education}
+              onAdd={() => setSheet({ type: "education", entry: null })}
+              onEdit={entry => setSheet({ type: "education", entry })}
+            />
+          </motion.div>
 
-          <CertificationsSection
-            entries={profile.certifications}
-            onAdd={() => setSheet({ type: "certification", entry: null })}
-            onEdit={entry => setSheet({ type: "certification", entry })}
-          />
+          <motion.div layout variants={v2ItemVariants} transition={v2Spring}>
+            <CertificationsSection
+              entries={profile.certifications}
+              onAdd={() => setSheet({ type: "certification", entry: null })}
+              onEdit={entry => setSheet({ type: "certification", entry })}
+            />
+          </motion.div>
 
-          <ProjectsSection
-            entries={profile.projects}
-            onAdd={() => setSheet({ type: "project", entry: null })}
-            onEdit={entry => setSheet({ type: "project", entry })}
-            onDelete={entry => setDeleteDialog({ type: "project", entry })}
-          />
-        </div>
-      </div>
+          <motion.div layout variants={v2ItemVariants} transition={v2Spring}>
+            <ProjectsSection
+              entries={profile.projects}
+              onAdd={() => setSheet({ type: "project", entry: null })}
+              onEdit={entry => setSheet({ type: "project", entry })}
+              onDelete={entry => setDeleteDialog({ type: "project", entry })}
+            />
+          </motion.div>
+        </motion.div>
+      </motion.div>
 
       {/* Sheet modals */}
       <EditSummarySheet
@@ -359,6 +406,16 @@ function KnowledgeBaseContent() {
         onConfirm={handleConfirmDeleteProject}
         itemType={deleteDialog.type === "none" ? undefined : deleteDialog.type}
       />
-    </div>
+
+      {/* Import data dialog */}
+      <ImportDataDialog
+        open={importOpen}
+        onClose={() => setImportOpen(false)}
+        onImport={(data: ReviewProfileData) => {
+          setProfile(data);
+          toast("Profile data imported successfully!");
+        }}
+      />
+    </motion.div>
   );
 }

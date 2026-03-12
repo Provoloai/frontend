@@ -1,4 +1,5 @@
 import { type UseFormReturn } from "react-hook-form";
+import { motion } from "motion/react";
 import {
   Form,
   FormControl,
@@ -9,6 +10,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Link } from "@tanstack/react-router";
 import isURL from "validator/es/lib/isURL";
+import {
+  v2ContainerVariants,
+  v2ItemVariants,
+  v2Spring,
+} from "@/constants/v2Motion";
 import type { OnboardingPortfolioFormData } from "@/types/auth";
 
 type OnboardingPortfolioFormProps = {
@@ -48,9 +54,13 @@ const UrlInput = ({
 );
 
 const ApiErrorBanner = ({ message }: { message: string }) => (
-  <div className="mt-3 rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-600">
+  <motion.div
+    initial={{ opacity: 0, y: -6 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="mt-3 rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-600"
+  >
     {message}
-  </div>
+  </motion.div>
 );
 
 export default function OnboardingPortfolioForm({
@@ -69,29 +79,47 @@ export default function OnboardingPortfolioForm({
     });
 
   return (
-    <div className="w-full max-w-[36rem] rounded-3xl bg-white p-8 shadow-[0_1px_3px_0_rgba(0,0,0,0.10),_0_1px_2px_-1px_rgba(0,0,0,0.10)] mobile:rounded-none mobile:shadow-none mobile:p-6">
-      <h1 className="mb-1 text-[1.875rem] font-semibold text-dark">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={v2ContainerVariants}
+      className="w-full max-w-[36rem] rounded-3xl bg-white p-8 shadow-[0_1px_3px_0_rgba(0,0,0,0.10),_0_1px_2px_-1px_rgba(0,0,0,0.10)] mobile:rounded-none mobile:shadow-none mobile:p-6"
+    >
+      <motion.h1
+        variants={v2ItemVariants}
+        className="mb-1 text-[1.875rem] font-semibold text-dark"
+      >
         Where can I learn about your work?
-      </h1>
-      <p className="mb-8 text-base text-secondary">
+      </motion.h1>
+      <motion.p
+        variants={v2ItemVariants}
+        className="mb-8 text-base text-secondary"
+      >
         Enter the link to your portfolio or any of your public profile like
         LinkedIn, GitHub, Twitter, etc.
-      </p>
+      </motion.p>
 
       <Form {...form}>
-        <form onSubmit={onSubmit} noValidate className="space-y-4">
+        <motion.form
+          variants={v2ContainerVariants}
+          onSubmit={onSubmit}
+          noValidate
+          className="space-y-4"
+        >
           <FormField
             control={form.control}
             name="portfolioUrl"
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <UrlInput
-                    value={field.value}
-                    onChange={field.onChange}
-                    onBlur={field.onBlur}
-                    disabled={isLoading}
-                  />
+                  <motion.div variants={v2ItemVariants}>
+                    <UrlInput
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      disabled={isLoading}
+                    />
+                  </motion.div>
                 </FormControl>
                 <FormMessage className="text-xs" />
               </FormItem>
@@ -100,24 +128,31 @@ export default function OnboardingPortfolioForm({
 
           {error && <ApiErrorBanner message={error} />}
 
-          <Button
-            type="submit"
-            disabled={!isValidUrl || isLoading}
-            className="w-full rounded-xl"
+          <motion.div
+            variants={v2ItemVariants}
+            whileHover={{ y: -1 }}
+            whileTap={{ scale: 0.985 }}
+            transition={v2Spring}
           >
-            {isLoading ? "Saving..." : "Next"}
-          </Button>
-        </form>
+            <Button
+              type="submit"
+              disabled={!isValidUrl || isLoading}
+              className="w-full rounded-xl"
+            >
+              {isLoading ? "Saving..." : "Next"}
+            </Button>
+          </motion.div>
+        </motion.form>
       </Form>
 
-      <div className="mt-4 text-center">
+      <motion.div variants={v2ItemVariants} className="mt-4 text-center">
         <Link
           to="/optimizer"
           className="text-sm text-primary hover:underline font-medium"
         >
           Skip for now
         </Link>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

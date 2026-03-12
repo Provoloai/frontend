@@ -6,6 +6,7 @@ import {
   Info,
   X,
 } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 import {
   ToastContext,
   type ToastItem,
@@ -57,26 +58,6 @@ const variantConfig: Record<
 };
 
 /* ------------------------------------------------------------------ */
-/*  Keyframe style (injected once)                                     */
-/* ------------------------------------------------------------------ */
-
-const KEYFRAME_STYLE = `
-@keyframes toast-slide-in {
-  from { opacity: 0; transform: translateX(16px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-`;
-
-let styleInjected = false;
-function injectKeyframes() {
-  if (styleInjected) return;
-  const style = document.createElement("style");
-  style.textContent = KEYFRAME_STYLE;
-  document.head.appendChild(style);
-  styleInjected = true;
-}
-
-/* ------------------------------------------------------------------ */
 /*  Single toast                                                       */
 /* ------------------------------------------------------------------ */
 
@@ -90,10 +71,14 @@ function ToastCard({
   const config = variantConfig[t.variant];
 
   return (
-    <div
+    <motion.div
+      layout
+      initial={{ opacity: 0, x: 24, scale: 0.95 }}
+      animate={{ opacity: 1, x: 0, scale: 1 }}
+      exit={{ opacity: 0, x: 24, scale: 0.95 }}
+      transition={{ type: "spring", damping: 25, stiffness: 350 }}
       className={`flex items-center gap-3 rounded-xl border px-4 py-3 shadow-lg ${config.bg} ${config.border}`}
       role="alert"
-      style={{ animation: "toast-slide-in 0.3s ease-out" }}
     >
       <span className={`shrink-0 ${config.iconColor}`}>{config.icon}</span>
 
@@ -106,7 +91,7 @@ function ToastCard({
       >
         <X size={16} />
       </button>
-    </div>
+    </motion.div>
   );
 }
 
@@ -118,9 +103,6 @@ const TOAST_DURATION = 5000;
 
 export default function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
-
-  // inject keyframes on first mount
-  useState(() => injectKeyframes());
 
   const dismiss = useCallback((id: string) => {
     setToasts(prev => prev.filter(t => t.id !== id));
@@ -144,11 +126,13 @@ export default function ToastProvider({ children }: { children: ReactNode }) {
 
       {/* Toast container — bottom-right */}
       <div className="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3 w-full max-w-sm pointer-events-none">
-        {toasts.map(t => (
-          <div key={t.id} className="pointer-events-auto">
-            <ToastCard toast={t} onDismiss={dismiss} />
-          </div>
-        ))}
+        <AnimatePresence mode="popLayout">
+          {toasts.map(t => (
+            <div key={t.id} className="pointer-events-auto">
+              <ToastCard toast={t} onDismiss={dismiss} />
+            </div>
+          ))}
+        </AnimatePresence>
       </div>
     </ToastContext.Provider>
   );

@@ -1,6 +1,12 @@
 import { Link, useRouterState } from "@tanstack/react-router";
+import { motion } from "motion/react";
 import { ChevronDown } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  v2NavItemVariants,
+  v2SidebarVariants,
+  v2Spring,
+} from "@/constants/v2Motion";
 import desktopLogo from "/src/assets/v2/svg/desktop-logo.svg";
 import homeLogo from "/src/assets/v2/svg/nav-home.svg";
 import profileLogo from "/src/assets/v2/svg/nav-profile.svg";
@@ -91,11 +97,19 @@ export default function Sidebar() {
       : pathname === item.to;
 
   return (
-    <aside className="flex h-dvh w-[16rem] py-6 px-5 shrink-0 flex-col border-r border-gray-200 bg-white">
+    <motion.aside
+      initial="hidden"
+      animate="visible"
+      variants={v2SidebarVariants}
+      className="flex h-dvh w-[16rem] py-6 px-5 shrink-0 flex-col border-r border-gray-200 bg-white"
+    >
       {/* Logo */}
-      <div className=" pb-5 border-b border-[#E5E7EB]">
+      <motion.div
+        variants={v2NavItemVariants}
+        className=" pb-5 border-b border-[#E5E7EB]"
+      >
         <img src={desktopLogo} alt="Provolo" className="h-7" />
-      </div>
+      </motion.div>
 
       {/* Main nav */}
       <nav className=" space-y-1 pb-4 pt-5 border-b border-[#E5E7EB]">
@@ -103,21 +117,35 @@ export default function Sidebar() {
           const active = isActive(item);
 
           return (
-            <Link
+            <motion.div
               key={item.to}
-              to={item.to}
-              className={`flex items-center gap-3 rounded-xl px-2 py-1.5  font-medium transition-colors ${
-                active
-                  ? "bg-[#EEF6FF] text-primary"
-                  : "text-secondary hover:bg-light hover:text-dark"
-              }`}
+              variants={v2NavItemVariants}
+              whileHover={{ x: active ? 0 : 2 }}
+              transition={v2Spring}
             >
-              <img
-                src={active ? item.activeIcon : item.icon}
-                alt={`${item.label} icon`}
-              />
-              {item.label}
-            </Link>
+              <Link
+                to={item.to}
+                className={`relative flex items-center gap-3 overflow-hidden rounded-xl px-2 py-1.5 font-medium transition-colors ${
+                  active
+                    ? "text-primary"
+                    : "text-secondary hover:bg-light hover:text-dark"
+                }`}
+              >
+                {active && (
+                  <motion.span
+                    layoutId="sidebar-active-pill"
+                    transition={v2Spring}
+                    className="absolute inset-0 rounded-xl bg-[#EEF6FF]"
+                  />
+                )}
+                <img
+                  src={active ? item.activeIcon : item.icon}
+                  alt={`${item.label} icon`}
+                  className="relative z-10"
+                />
+                <span className="relative z-10">{item.label}</span>
+              </Link>
+            </motion.div>
           );
         })}
       </nav>
@@ -128,27 +156,44 @@ export default function Sidebar() {
           const active = isActive(item);
 
           return (
-            <Link
+            <motion.div
               key={item.to}
-              to={item.to}
-              className={`flex items-center gap-3 rounded-xl px-2 py-1.5  font-medium transition-colors ${
-                active
-                  ? "bg-[#EEF6FF] text-primary"
-                  : "text-secondary hover:bg-light hover:text-dark"
-              }`}
+              variants={v2NavItemVariants}
+              whileHover={{ x: active ? 0 : 2 }}
+              transition={v2Spring}
             >
-              <img
-                src={active ? item.activeIcon : item.icon}
-                alt={`${item.label} icon`}
-              />
-              {item.label}
-            </Link>
+              <Link
+                to={item.to}
+                className={`relative flex items-center gap-3 overflow-hidden rounded-xl px-2 py-1.5 font-medium transition-colors ${
+                  active
+                    ? "text-primary"
+                    : "text-secondary hover:bg-light hover:text-dark"
+                }`}
+              >
+                {active && (
+                  <motion.span
+                    layoutId="sidebar-active-pill"
+                    transition={v2Spring}
+                    className="absolute inset-0 rounded-xl bg-[#EEF6FF]"
+                  />
+                )}
+                <img
+                  src={active ? item.activeIcon : item.icon}
+                  alt={`${item.label} icon`}
+                  className="relative z-10"
+                />
+                <span className="relative z-10">{item.label}</span>
+              </Link>
+            </motion.div>
           );
         })}
       </div>
 
       {/* User footer */}
-      <div className="border-t border-[#E5E7EB] pt-4 mt-auto">
+      <motion.div
+        variants={v2NavItemVariants}
+        className="border-t border-[#E5E7EB] pt-4 mt-auto"
+      >
         <div className="flex items-center gap-3">
           <Avatar className="size-9">
             <AvatarFallback className="bg-primary text-xs font-semibold text-white">
@@ -163,7 +208,7 @@ export default function Sidebar() {
           </div>
           <ChevronDown size={16} className="shrink-0 text-secondary" />
         </div>
-      </div>
-    </aside>
+      </motion.div>
+    </motion.aside>
   );
 }

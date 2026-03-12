@@ -3,10 +3,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import isURL from "validator/es/lib/isURL";
+import { motion } from "motion/react";
 import { ChevronDown } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import OnboardingPortfolioForm from "@/components/auth/OnboardingPortfolioForm";
 import type { OnboardingPortfolioFormData } from "@/types/auth";
+import { v2ItemVariants, v2PageVariants } from "@/constants/v2Motion";
 import desktopLogo from "/src/assets/v2/svg/desktop-logo.svg";
 
 const portfolioSchema = z.object({
@@ -59,9 +61,17 @@ export default function Onboarding() {
     .toUpperCase();
 
   return (
-    <div className="flex min-h-dvh flex-col bg-gray-50">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={v2PageVariants}
+      className="flex min-h-dvh flex-col bg-gray-50"
+    >
       {/* Top header bar */}
-      <header className="flex items-center justify-between border-b border-gray-200 bg-white px-8 py-4 mobile:px-4">
+      <motion.header
+        variants={v2ItemVariants}
+        className="flex items-center justify-between border-b border-gray-200 bg-white px-8 py-4 mobile:px-4"
+      >
         {/* Logo */}
         <img src={desktopLogo} alt="Provolo" className="h-7" />
 
@@ -78,17 +88,20 @@ export default function Onboarding() {
           </div>
           <ChevronDown size={16} className="text-secondary mobile:hidden" />
         </div>
-      </header>
+      </motion.header>
 
       {/* Centered card */}
-      <main className="flex flex-1 items-center justify-center px-4 py-12 mobile:p-0 mobile:items-start">
+      <motion.main
+        variants={v2ItemVariants}
+        className="flex flex-1 items-center justify-center px-4 py-12 mobile:p-0 mobile:items-start"
+      >
         <OnboardingPortfolioForm
           form={form}
           onSubmit={onSubmit}
           isLoading={isLoading}
           error={error}
         />
-      </main>
-    </div>
+      </motion.main>
+    </motion.div>
   );
 }

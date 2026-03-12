@@ -1,8 +1,15 @@
 import { useState } from "react";
 import { Link, useRouter } from "@tanstack/react-router";
+import { motion } from "motion/react";
 import { ChevronDown } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import {
+  v2ContainerVariants,
+  v2ItemVariants,
+  v2PageVariants,
+  v2Spring,
+} from "@/constants/v2Motion";
 import { PLACEHOLDER_PROFILE } from "@/constants/reviewPlaceholder";
 import type {
   ReviewProfileData,
@@ -162,9 +169,17 @@ function OnboardingReviewContent() {
     .toUpperCase();
 
   return (
-    <div className="flex min-h-dvh flex-col bg-[#F3F4F6]">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={v2PageVariants}
+      className="flex min-h-dvh flex-col bg-[#F3F4F6]"
+    >
       {/* Header */}
-      <header className="flex items-center justify-between border-b border-gray-200 bg-white px-8 py-4 mobile:px-4">
+      <motion.header
+        variants={v2ItemVariants}
+        className="flex items-center justify-between border-b border-gray-200 bg-white px-8 py-4 mobile:px-4"
+      >
         <img src={desktopLogo} alt="Provolo" className="h-7" />
 
         <div className="flex items-center gap-2">
@@ -179,72 +194,105 @@ function OnboardingReviewContent() {
           </div>
           <ChevronDown size={16} className="text-secondary mobile:hidden" />
         </div>
-      </header>
+      </motion.header>
 
       {/* Content */}
-      <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-8 mobile:px-4 mobile:py-6">
-        <h1 className="mb-6 text-2xl font-semibold text-dark">
+      <motion.main
+        variants={v2ContainerVariants}
+        className="mx-auto w-full max-w-3xl flex-1 px-4 py-8 mobile:px-4 mobile:py-6"
+      >
+        <motion.h1
+          variants={v2ItemVariants}
+          className="mb-6 text-2xl font-semibold text-dark"
+        >
           Review Profile Information
-        </h1>
+        </motion.h1>
 
-        <div className="space-y-6">
-          <ProfessionalSummarySection
-            summary={profile.summary}
-            onEdit={() => setSheet({ type: "summary" })}
-          />
+        <motion.div variants={v2ContainerVariants} className="space-y-6">
+          <motion.div layout variants={v2ItemVariants} transition={v2Spring}>
+            <ProfessionalSummarySection
+              summary={profile.summary}
+              onEdit={() => setSheet({ type: "summary" })}
+            />
+          </motion.div>
 
-          <ExperienceSection
-            entries={profile.experience}
-            onAdd={() => setSheet({ type: "experience", entry: null })}
-            onEdit={entry => setSheet({ type: "experience", entry })}
-          />
+          <motion.div layout variants={v2ItemVariants} transition={v2Spring}>
+            <ExperienceSection
+              entries={profile.experience}
+              onAdd={() => setSheet({ type: "experience", entry: null })}
+              onEdit={entry => setSheet({ type: "experience", entry })}
+            />
+          </motion.div>
 
-          <SkillsSection skills={profile.skills} />
+          <motion.div layout variants={v2ItemVariants} transition={v2Spring}>
+            <SkillsSection skills={profile.skills} />
+          </motion.div>
 
-          <EducationSection
-            entries={profile.education}
-            onAdd={() => setSheet({ type: "education", entry: null })}
-            onEdit={entry => setSheet({ type: "education", entry })}
-          />
+          <motion.div layout variants={v2ItemVariants} transition={v2Spring}>
+            <EducationSection
+              entries={profile.education}
+              onAdd={() => setSheet({ type: "education", entry: null })}
+              onEdit={entry => setSheet({ type: "education", entry })}
+            />
+          </motion.div>
 
-          <CertificationsSection
-            entries={profile.certifications}
-            onAdd={() => setSheet({ type: "certification", entry: null })}
-            onEdit={entry => setSheet({ type: "certification", entry })}
-          />
+          <motion.div layout variants={v2ItemVariants} transition={v2Spring}>
+            <CertificationsSection
+              entries={profile.certifications}
+              onAdd={() => setSheet({ type: "certification", entry: null })}
+              onEdit={entry => setSheet({ type: "certification", entry })}
+            />
+          </motion.div>
 
-          <ProjectsSection
-            entries={profile.projects}
-            onAdd={() => setSheet({ type: "project", entry: null })}
-            onEdit={entry => setSheet({ type: "project", entry })}
-            onDelete={entry => setDeleteDialog({ type: "project", entry })}
-          />
-        </div>
-      </main>
+          <motion.div layout variants={v2ItemVariants} transition={v2Spring}>
+            <ProjectsSection
+              entries={profile.projects}
+              onAdd={() => setSheet({ type: "project", entry: null })}
+              onEdit={entry => setSheet({ type: "project", entry })}
+              onDelete={entry => setDeleteDialog({ type: "project", entry })}
+            />
+          </motion.div>
+        </motion.div>
+      </motion.main>
 
       {/* Bottom bar */}
-      <div className="sticky bottom-0 border-t border-gray-200 bg-white px-8 py-4 mobile:px-4">
+      <motion.div
+        variants={v2ItemVariants}
+        className="sticky bottom-0 border-t border-gray-200 bg-white px-8 py-4 mobile:px-4"
+      >
         <div className="mx-auto flex max-w-3xl items-center justify-between">
           <Link to="/knowledge-base">
-            <Button
-              variant="outline"
-              className="py-2.5 px-4 rounded-xl bg-[#f9fafb]"
+            <motion.div
+              whileHover={{ y: -1 }}
+              whileTap={{ scale: 0.98 }}
+              transition={v2Spring}
             >
-              Skip
-            </Button>
+              <Button
+                variant="outline"
+                className="py-2.5 px-4 rounded-xl bg-[#f9fafb]"
+              >
+                Skip
+              </Button>
+            </motion.div>
           </Link>
-          <Button
-            className="py-2.5 px-4 rounded-xl"
-            onClick={() => {
-              // TODO: wire up save API
-              console.log("Save profile:", profile);
-              router.navigate({ to: "/knowledge-base" });
-            }}
+          <motion.div
+            whileHover={{ y: -1 }}
+            whileTap={{ scale: 0.98 }}
+            transition={v2Spring}
           >
-            Save
-          </Button>
+            <Button
+              className="py-2.5 px-4 rounded-xl"
+              onClick={() => {
+                // TODO: wire up save API
+                console.log("Save profile:", profile);
+                router.navigate({ to: "/knowledge-base" });
+              }}
+            >
+              Save
+            </Button>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Sheet modals */}
       <EditSummarySheet
@@ -289,6 +337,6 @@ function OnboardingReviewContent() {
         onConfirm={handleConfirmDeleteProject}
         itemType={deleteDialog.type === "none" ? undefined : deleteDialog.type}
       />
-    </div>
+    </motion.div>
   );
 }
