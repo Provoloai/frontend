@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Link, useRouter } from "@tanstack/react-router";
-import { ChevronDown } from "lucide-react";
+import { Download } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { PLACEHOLDER_PROFILE } from "@/constants/reviewPlaceholder";
@@ -28,12 +27,13 @@ import DeleteConfirmDialog from "@/components/knowledgeBase/DeleteConfirmDialog"
 import ToastProvider from "@/components/knowledgeBase/ToastProvider";
 import { useToast } from "@/components/knowledgeBase/useToast";
 
-import desktopLogo from "/src/assets/v2/svg/desktop-logo.svg";
-
-// TODO: replace with real user data from session
 const PLACEHOLDER_USER = {
-  displayName: "Jese Leos",
-  email: "name@flowbite.com",
+  displayName: "Shakirat Akanji",
+  role: "Design Engineer / UX Designer",
+  location: "Lagos, Nigeria",
+  experience: "3 Years",
+  email: "akanjiishakirat@gmail.com",
+  portfolio: "sakunli.framer.website",
 };
 
 type SheetState =
@@ -46,16 +46,15 @@ type SheetState =
 
 type DeleteState = { type: "none" } | { type: "project"; entry: ProjectEntry };
 
-export default function OnboardingReview() {
+export default function KnowledgeBase() {
   return (
     <ToastProvider>
-      <OnboardingReviewContent />
+      <KnowledgeBaseContent />
     </ToastProvider>
   );
 }
 
-function OnboardingReviewContent() {
-  const router = useRouter();
+function KnowledgeBaseContent() {
   const { toast } = useToast();
   const [profile, setProfile] =
     useState<ReviewProfileData>(PLACEHOLDER_PROFILE);
@@ -66,13 +65,13 @@ function OnboardingReviewContent() {
 
   const closeSheet = () => setSheet({ type: "none" });
 
-  // — Summary handlers —
+  /* ---- CRUD handlers ---- */
+
   const handleSaveSummary = (text: string) => {
     setProfile(prev => ({ ...prev, summary: { text } }));
     toast("Summary updated successfully!");
   };
 
-  // — Experience handlers —
   const handleSaveExperience = (entry: ExperienceEntry) => {
     setProfile(prev => {
       const exists = prev.experience.find(e => e.id === entry.id);
@@ -90,7 +89,6 @@ function OnboardingReviewContent() {
     });
   };
 
-  // — Education handlers —
   const handleSaveEducation = (entry: EducationEntry) => {
     setProfile(prev => {
       const exists = prev.education.find(e => e.id === entry.id);
@@ -108,7 +106,6 @@ function OnboardingReviewContent() {
     });
   };
 
-  // — Certification handlers —
   const handleSaveCertification = (entry: CertificationEntry) => {
     setProfile(prev => {
       const exists = prev.certifications.find(e => e.id === entry.id);
@@ -126,7 +123,6 @@ function OnboardingReviewContent() {
     });
   };
 
-  // — Project handlers —
   const handleSaveProject = (entry: ProjectEntry) => {
     setProfile(prev => {
       const exists = prev.projects.find(e => e.id === entry.id);
@@ -153,8 +149,8 @@ function OnboardingReviewContent() {
     setDeleteDialog({ type: "none" });
   };
 
-  const { displayName, email } = PLACEHOLDER_USER;
-  const initials = displayName
+  const user = PLACEHOLDER_USER;
+  const initials = user.displayName
     .split(" ")
     .map(n => n[0])
     .slice(0, 2)
@@ -162,32 +158,70 @@ function OnboardingReviewContent() {
     .toUpperCase();
 
   return (
-    <div className="flex min-h-dvh flex-col bg-[#F3F4F6]">
-      {/* Header */}
-      <header className="flex items-center justify-between border-b border-gray-200 bg-white px-8 py-4 mobile:px-4">
-        <img src={desktopLogo} alt="Provolo" className="h-7" />
-
-        <div className="flex items-center gap-2">
-          <Avatar className="size-8">
-            <AvatarFallback className="bg-primary text-xs font-semibold text-white">
-              {initials}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col leading-tight mobile:hidden">
-            <span className="font-medium text-dark">{displayName}</span>
-            <span className="text-sm text-secondary">{email}</span>
-          </div>
-          <ChevronDown size={16} className="text-secondary mobile:hidden" />
+    <div className="min-h-full">
+      {/* Page header */}
+      <div className="flex items-center justify-between  px-10 pt-6">
+        <div>
+          <h1 className="text-2xl font-medium text-dark">Knowledge Base</h1>
+          <p className="text-secondary">
+            You can find all your profile data here.
+          </p>
         </div>
-      </header>
+        <Button className="gap-2 rounded-xl py-2.5 px-4">
+          <Download size={16} />
+          Import data
+        </Button>
+      </div>
 
-      {/* Content */}
-      <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-8 mobile:px-4 mobile:py-6">
-        <h1 className="mb-6 text-2xl font-semibold text-dark">
-          Review Profile Information
-        </h1>
+      {/* Body */}
+      <div className="flex gap-6 px-10 py-6">
+        {/* Left — User profile card */}
+        <div className="w-[17.5rem] shrink-0">
+          <div className="sticky top-8 space-y-4 rounded-2xl bg-white shadow-[0_1px_0.5px_0.05px_rgba(29,41,61,0.02) p-6">
+            {/* Avatar + name */}
+            <div>
+              <Avatar className="size-20 mb-3">
+                <AvatarFallback className="bg-primary text-xl font-semibold text-white">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+              <h2 className="text-lg font-semibold text-dark">
+                {user.displayName}
+              </h2>
+              <p className="text-sm text-secondary pb-4 border-b border-[#f3f4f6]">
+                {user.role}
+              </p>
+            </div>
 
-        <div className="space-y-6">
+            {/* Details */}
+            <div className="space-y-4 text-sm">
+              <div>
+                <p className="text-xs  text-secondary ">Location</p>
+                <p className="text-sm text-secondary">{user.location}</p>
+              </div>
+
+              <div>
+                <p className="text-xs  text-secondary ">Experience</p>
+                <p className="text-sm text-secondary">{user.experience}</p>
+              </div>
+              <div className="border-t border-[#F3F4F6] h-[1px]" />
+              <div>
+                <p className="text-xs  text-secondary ">Email</p>
+                <p className="text-sm text-secondary break-all">{user.email}</p>
+              </div>
+
+              <div>
+                <p className="text-xs  text-secondary ">Portfolio</p>
+                <p className="text-sm text-secondary break-all">
+                  {user.portfolio}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right — Sections */}
+        <div className="flex-1 min-w-0 space-y-6">
           <ProfessionalSummarySection
             summary={profile.summary}
             onEdit={() => setSheet({ type: "summary" })}
@@ -219,30 +253,6 @@ function OnboardingReviewContent() {
             onEdit={entry => setSheet({ type: "project", entry })}
             onDelete={entry => setDeleteDialog({ type: "project", entry })}
           />
-        </div>
-      </main>
-
-      {/* Bottom bar */}
-      <div className="sticky bottom-0 border-t border-gray-200 bg-white px-8 py-4 mobile:px-4">
-        <div className="mx-auto flex max-w-3xl items-center justify-between">
-          <Link to="/knowledge-base">
-            <Button
-              variant="outline"
-              className="py-2.5 px-4 rounded-xl bg-[#f9fafb]"
-            >
-              Skip
-            </Button>
-          </Link>
-          <Button
-            className="py-2.5 px-4 rounded-xl"
-            onClick={() => {
-              // TODO: wire up save API
-              console.log("Save profile:", profile);
-              router.navigate({ to: "/knowledge-base" });
-            }}
-          >
-            Save
-          </Button>
         </div>
       </div>
 

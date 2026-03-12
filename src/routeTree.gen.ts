@@ -15,10 +15,12 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ErrorRouteImport } from './routes/error'
 import { Route as BlogRouteImport } from './routes/blog'
+import { Route as V2layoutRouteImport } from './routes/_v2layout'
 import { Route as SidebarlayoutRouteImport } from './routes/_sidebarlayout'
 import { Route as LayoutRouteImport } from './routes/_layout'
 import { Route as LayoutIndexRouteImport } from './routes/_layout.index'
 import { Route as BlogPostBlogpostIdRouteImport } from './routes/blogPost/$blogpostId'
+import { Route as V2layoutKnowledgeBaseRouteImport } from './routes/_v2layout/knowledge-base'
 import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-password'
 import { Route as AuthOnboardingRouteImport } from './routes/_auth/onboarding'
 import { Route as AuthForgotPasswordRouteImport } from './routes/_auth/forgot-password'
@@ -68,6 +70,10 @@ const BlogRoute = BlogRouteImport.update({
   path: '/blog',
   getParentRoute: () => rootRouteImport,
 } as any)
+const V2layoutRoute = V2layoutRouteImport.update({
+  id: '/_v2layout',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SidebarlayoutRoute = SidebarlayoutRouteImport.update({
   id: '/_sidebarlayout',
   getParentRoute: () => rootRouteImport,
@@ -85,6 +91,11 @@ const BlogPostBlogpostIdRoute = BlogPostBlogpostIdRouteImport.update({
   id: '/blogPost/$blogpostId',
   path: '/blogPost/$blogpostId',
   getParentRoute: () => rootRouteImport,
+} as any)
+const V2layoutKnowledgeBaseRoute = V2layoutKnowledgeBaseRouteImport.update({
+  id: '/knowledge-base',
+  path: '/knowledge-base',
+  getParentRoute: () => V2layoutRoute,
 } as any)
 const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
   id: '/_auth/reset-password',
@@ -196,6 +207,7 @@ export interface FileRoutesByFullPath {
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/onboarding': typeof AuthOnboardingRouteWithChildren
   '/reset-password': typeof AuthResetPasswordRoute
+  '/knowledge-base': typeof V2layoutKnowledgeBaseRoute
   '/blogPost/$blogpostId': typeof BlogPostBlogpostIdRoute
   '/': typeof LayoutIndexRoute
   '/login': typeof AuthProtectLoginRoute
@@ -222,6 +234,7 @@ export interface FileRoutesByTo {
   '/welcome': typeof WelcomeRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/reset-password': typeof AuthResetPasswordRoute
+  '/knowledge-base': typeof V2layoutKnowledgeBaseRoute
   '/blogPost/$blogpostId': typeof BlogPostBlogpostIdRoute
   '/': typeof LayoutIndexRoute
   '/login': typeof AuthProtectLoginRoute
@@ -243,6 +256,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_layout': typeof LayoutRouteWithChildren
   '/_sidebarlayout': typeof SidebarlayoutRouteWithChildren
+  '/_v2layout': typeof V2layoutRouteWithChildren
   '/blog': typeof BlogRoute
   '/error': typeof ErrorRoute
   '/faq': typeof FaqRoute
@@ -253,6 +267,7 @@ export interface FileRoutesById {
   '/_auth/forgot-password': typeof AuthForgotPasswordRoute
   '/_auth/onboarding': typeof AuthOnboardingRouteWithChildren
   '/_auth/reset-password': typeof AuthResetPasswordRoute
+  '/_v2layout/knowledge-base': typeof V2layoutKnowledgeBaseRoute
   '/blogPost/$blogpostId': typeof BlogPostBlogpostIdRoute
   '/_layout/': typeof LayoutIndexRoute
   '/_auth/_protect/login': typeof AuthProtectLoginRoute
@@ -282,6 +297,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/onboarding'
     | '/reset-password'
+    | '/knowledge-base'
     | '/blogPost/$blogpostId'
     | '/'
     | '/login'
@@ -308,6 +324,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/forgot-password'
     | '/reset-password'
+    | '/knowledge-base'
     | '/blogPost/$blogpostId'
     | '/'
     | '/login'
@@ -328,6 +345,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_layout'
     | '/_sidebarlayout'
+    | '/_v2layout'
     | '/blog'
     | '/error'
     | '/faq'
@@ -338,6 +356,7 @@ export interface FileRouteTypes {
     | '/_auth/forgot-password'
     | '/_auth/onboarding'
     | '/_auth/reset-password'
+    | '/_v2layout/knowledge-base'
     | '/blogPost/$blogpostId'
     | '/_layout/'
     | '/_auth/_protect/login'
@@ -359,6 +378,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   LayoutRoute: typeof LayoutRouteWithChildren
   SidebarlayoutRoute: typeof SidebarlayoutRouteWithChildren
+  V2layoutRoute: typeof V2layoutRouteWithChildren
   BlogRoute: typeof BlogRoute
   ErrorRoute: typeof ErrorRoute
   FaqRoute: typeof FaqRoute
@@ -416,6 +436,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_v2layout': {
+      id: '/_v2layout'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof V2layoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_sidebarlayout': {
       id: '/_sidebarlayout'
       path: ''
@@ -443,6 +470,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/blogPost/$blogpostId'
       preLoaderRoute: typeof BlogPostBlogpostIdRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_v2layout/knowledge-base': {
+      id: '/_v2layout/knowledge-base'
+      path: '/knowledge-base'
+      fullPath: '/knowledge-base'
+      preLoaderRoute: typeof V2layoutKnowledgeBaseRouteImport
+      parentRoute: typeof V2layoutRoute
     }
     '/_auth/reset-password': {
       id: '/_auth/reset-password'
@@ -618,6 +652,18 @@ const SidebarlayoutRouteWithChildren = SidebarlayoutRoute._addFileChildren(
   SidebarlayoutRouteChildren,
 )
 
+interface V2layoutRouteChildren {
+  V2layoutKnowledgeBaseRoute: typeof V2layoutKnowledgeBaseRoute
+}
+
+const V2layoutRouteChildren: V2layoutRouteChildren = {
+  V2layoutKnowledgeBaseRoute: V2layoutKnowledgeBaseRoute,
+}
+
+const V2layoutRouteWithChildren = V2layoutRoute._addFileChildren(
+  V2layoutRouteChildren,
+)
+
 interface AuthProtectRouteChildren {
   AuthProtectLoginRoute: typeof AuthProtectLoginRoute
   AuthProtectSignupRoute: typeof AuthProtectSignupRoute
@@ -649,6 +695,7 @@ const AuthOnboardingRouteWithChildren = AuthOnboardingRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   LayoutRoute: LayoutRouteWithChildren,
   SidebarlayoutRoute: SidebarlayoutRouteWithChildren,
+  V2layoutRoute: V2layoutRouteWithChildren,
   BlogRoute: BlogRoute,
   ErrorRoute: ErrorRoute,
   FaqRoute: FaqRoute,
