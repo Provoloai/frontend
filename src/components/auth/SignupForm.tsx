@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { CircleCheck, Eye, EyeOff, Info, Lock, Mail } from "lucide-react";
+import { CircleCheck, Eye, EyeOff, Info, Lock, Mail, User } from "lucide-react";
 import { useState } from "react";
 import { type UseFormReturn } from "react-hook-form";
 import { FcGoogle } from "react-icons/fc";
@@ -97,18 +97,22 @@ const SignupForm: React.FC<SignupFormProps> = ({
   onGoogleSignup,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const [isFullNameFocused, setIsFullNameFocused] = useState(false);
   const [isEmailFocused, setIsEmailFocused] = useState(false);
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
 
+  const fullNameValue = form.watch("fullName");
   const passwordValue = form.watch("password");
   const emailValue = form.watch("email");
 
   const passwordRequirements = checkPasswordRequirements(passwordValue);
   const allPasswordRequirementsMet =
     Object.values(passwordRequirements).every(Boolean);
+  const isFullNameValid = !!fullNameValue && !form.formState.errors.fullName;
   const isEmailValid = !!emailValue && !form.formState.errors.email;
 
-  const canSubmit = isEmailValid && allPasswordRequirementsMet && !isLoading;
+  const canSubmit =
+    isFullNameValid && isEmailValid && allPasswordRequirementsMet && !isLoading;
 
   return (
     <section className="flex w-full flex-col justify-center bg-white px-20 tablet:pt-8 tablet:px-10 mobile:px-6">
@@ -126,6 +130,38 @@ const SignupForm: React.FC<SignupFormProps> = ({
           <GoogleSignupButton onClick={onGoogleSignup} disabled={isLoading} />
 
           <OrDivider />
+
+          <FormField
+            control={form.control}
+            name="fullName"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <div className="relative">
+                    <User
+                      size={16}
+                      className={cn(
+                        "pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 transition-colors",
+                        isFullNameFocused ? "text-primary" : "text-secondary"
+                      )}
+                    />
+                    <Input
+                      {...field}
+                      type="text"
+                      autoComplete="name"
+                      placeholder="Full name"
+                      className="pl-9"
+                      onFocus={() => setIsFullNameFocused(true)}
+                      onBlur={() => {
+                        setIsFullNameFocused(false);
+                        field.onBlur();
+                      }}
+                    />
+                  </div>
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
           <FormField
             control={form.control}

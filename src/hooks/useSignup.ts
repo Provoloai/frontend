@@ -4,6 +4,7 @@ import {
   getIdToken,
   GoogleAuthProvider,
   signInWithPopup,
+  updateProfile,
 } from "firebase/auth";
 import { useNavigate } from "@tanstack/react-router";
 import { auth } from "@/lib/firebase";
@@ -17,6 +18,7 @@ export const useSignup = () => {
   const [error, setError] = useState("");
   const [validationErrors, setValidationErrors] =
     useState<SignupValidationErrors>({
+      fullName: "",
       email: "",
       password: "",
     });
@@ -40,7 +42,11 @@ export const useSignup = () => {
   }, [navigate]);
 
   const signUpWithEmail = useCallback(
-    async (formData: SignupFormData) => {
+    async (
+      formData: SignupFormData,
+      options?: { navigateOnSuccess?: boolean }
+    ) => {
+      const navigateOnSuccess = options?.navigateOnSuccess ?? true;
       try {
         setIsLoading(true);
         setError("");
@@ -52,14 +58,24 @@ export const useSignup = () => {
           formData.password
         );
         const user = userCredential.user;
+
+        if (formData.fullName.trim()) {
+          await updateProfile(user, { displayName: formData.fullName.trim() });
+        }
+
         const idToken = await getIdToken(user, true);
 
         await authApi.signup(idToken);
-        // Always navigate to optimizer - email verification check happens in layout
-        navigate({ to: "/optimizer", replace: true });
+
+        if (navigateOnSuccess) {
+          navigate({ to: "/optimizer", replace: true });
+        }
+
+        return user;
       } catch (err: unknown) {
         const error = err as Error;
         setError(getCleanErrorMessage(error));
+        throw error;
       } finally {
         setIsLoading(false);
       }
@@ -72,7 +88,7 @@ export const useSignup = () => {
   }, []);
 
   const clearValidationErrors = useCallback(() => {
-    setValidationErrors({ email: "", password: "" });
+    setValidationErrors({ fullName: "", email: "", password: "" });
   }, []);
 
   const setValidationError = useCallback(

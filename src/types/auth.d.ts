@@ -10,16 +10,19 @@ export interface LoginTouchedFields {
 }
 
 export interface SignupFormData {
+  fullName: string;
   email: string;
   password: string;
 }
 
 export interface SignupTouchedFields {
+  fullName: boolean;
   email: boolean;
   password: boolean;
 }
 
 export interface SignupValidationErrors {
+  fullName: string;
   email: string;
   password: string;
 }

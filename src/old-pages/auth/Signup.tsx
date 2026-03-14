@@ -17,11 +17,13 @@ import AuthLayout from "@/old-components/auth/AuthLayout";
 export default function Signup() {
   // Form state
   const [formData, setFormData] = useState<SignupFormData>({
+    fullName: "",
     email: "",
     password: "",
   });
 
   const [touched, setTouched] = useState<SignupTouchedFields>({
+    fullName: false,
     email: false,
     password: false,
   });
@@ -66,6 +68,7 @@ export default function Signup() {
       const validationResult = validateForm(formData);
 
       if (!validationResult.success) {
+        setValidationError("fullName", validationResult.errors?.fullName || "");
         setValidationError("email", validationResult.errors?.email || "");
         setValidationError("password", validationResult.errors?.password || "");
         return;
