@@ -51,7 +51,12 @@ type SheetState =
   | { type: "certification"; entry: CertificationEntry | null }
   | { type: "project"; entry: ProjectEntry | null };
 
-type DeleteState = { type: "none" } | { type: "project"; entry: ProjectEntry };
+type DeleteState =
+  | { type: "none" }
+  | { type: "experience"; entry: ExperienceEntry }
+  | { type: "education"; entry: EducationEntry }
+  | { type: "certification"; entry: CertificationEntry }
+  | { type: "project"; entry: ProjectEntry };
 
 export default function OnboardingReview() {
   return (
@@ -149,7 +154,33 @@ function OnboardingReviewContent() {
     });
   };
 
-  const handleConfirmDeleteProject = () => {
+  const handleConfirmDeleteItem = () => {
+    if (deleteDialog.type === "experience") {
+      setProfile(prev => ({
+        ...prev,
+        experience: prev.experience.filter(e => e.id !== deleteDialog.entry.id),
+      }));
+      toast("Experience deleted successfully!");
+    }
+
+    if (deleteDialog.type === "education") {
+      setProfile(prev => ({
+        ...prev,
+        education: prev.education.filter(e => e.id !== deleteDialog.entry.id),
+      }));
+      toast("Education deleted successfully!");
+    }
+
+    if (deleteDialog.type === "certification") {
+      setProfile(prev => ({
+        ...prev,
+        certifications: prev.certifications.filter(
+          c => c.id !== deleteDialog.entry.id
+        ),
+      }));
+      toast("Certification deleted successfully!");
+    }
+
     if (deleteDialog.type === "project") {
       setProfile(prev => ({
         ...prev,
@@ -221,6 +252,7 @@ function OnboardingReviewContent() {
               entries={profile.experience}
               onAdd={() => setSheet({ type: "experience", entry: null })}
               onEdit={entry => setSheet({ type: "experience", entry })}
+              onDelete={entry => setDeleteDialog({ type: "experience", entry })}
             />
           </motion.div>
 
@@ -233,6 +265,7 @@ function OnboardingReviewContent() {
               entries={profile.education}
               onAdd={() => setSheet({ type: "education", entry: null })}
               onEdit={entry => setSheet({ type: "education", entry })}
+              onDelete={entry => setDeleteDialog({ type: "education", entry })}
             />
           </motion.div>
 
@@ -241,6 +274,9 @@ function OnboardingReviewContent() {
               entries={profile.certifications}
               onAdd={() => setSheet({ type: "certification", entry: null })}
               onEdit={entry => setSheet({ type: "certification", entry })}
+              onDelete={entry =>
+                setDeleteDialog({ type: "certification", entry })
+              }
             />
           </motion.div>
 
@@ -334,7 +370,7 @@ function OnboardingReviewContent() {
       <DeleteConfirmDialog
         open={deleteDialog.type !== "none"}
         onClose={() => setDeleteDialog({ type: "none" })}
-        onConfirm={handleConfirmDeleteProject}
+        onConfirm={handleConfirmDeleteItem}
         itemType={deleteDialog.type === "none" ? undefined : deleteDialog.type}
       />
     </motion.div>

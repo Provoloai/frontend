@@ -130,6 +130,7 @@ export const PLACEHOLDER_PROFILE: ReviewProfileData = {
       endMonth: "Feb",
       endYear: "2024",
       projectLink: "",
+      files: [],
     },
     {
       id: "proj-2",
@@ -142,6 +143,7 @@ export const PLACEHOLDER_PROFILE: ReviewProfileData = {
       endMonth: "",
       endYear: "",
       projectLink: "",
+      files: [],
     },
   ],
 };

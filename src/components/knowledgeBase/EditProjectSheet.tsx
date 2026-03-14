@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Upload } from "lucide-react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { Upload, Search, X } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -32,6 +32,7 @@ const emptyEntry: ProjectEntry = {
   endMonth: "",
   endYear: "",
   projectLink: "",
+  files: [],
 };
 
 export default function EditProjectSheet({
@@ -41,6 +42,8 @@ export default function EditProjectSheet({
   onSave,
 }: Props) {
   const [form, setForm] = useState<ProjectEntry>(emptyEntry);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const isAdding = !entry;
 
   useEffect(() => {
@@ -49,6 +52,37 @@ export default function EditProjectSheet({
 
   const update = (field: keyof ProjectEntry, value: string | boolean) => {
     setForm(prev => ({ ...prev, [field]: value }));
+  };
+
+  const addFiles = useCallback((fileList: FileList | null) => {
+    if (!fileList) return;
+    const newFiles = Array.from(fileList).map(file => ({
+      id: crypto.randomUUID(),
+      name: file.name,
+      url: URL.createObjectURL(file),
+      size: file.size,
+    }));
+    setForm(prev => ({ ...prev, files: [...prev.files, ...newFiles] }));
+  }, []);
+
+  const removeFile = (id: string) => {
+    setForm(prev => ({
+      ...prev,
+      files: prev.files.filter(f => f.id !== id),
+    }));
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => setIsDragging(false);
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    addFiles(e.dataTransfer.files);
   };
 
   const handleSave = () => {
@@ -146,15 +180,73 @@ export default function EditProjectSheet({
             <Label>
               Upload file <span className="text-red-500">*</span>
             </Label>
-            <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-200 p-6 text-center cursor-pointer hover:border-gray-300 transition-colors">
-              <Upload size={24} className="mb-2 text-secondary" />
-              <p className="text-sm text-secondary">
+
+            {/* Drop zone */}
+            <div
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              onClick={() => fileInputRef.current?.click()}
+              className={`mt-1.5 flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 text-center cursor-pointer transition-colors bg-[#F9FAFB] ${
+                isDragging
+                  ? "border-primary bg-primary/5"
+                  : "border-[#E5E7EB] hover:border-gray-300"
+              }`}
+            >
+              <Upload size={24} className="mb-2 text-[#6A7282]" />
+              <p className="text-sm text-[#6A7282]">
                 Click to upload or drag and drop
               </p>
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="mt-1 text-xs text-[#6A7282]">
                 Max. File Size: 30MB
               </p>
+              <Button
+                type="button"
+                className="mt-4 gap-1.5 pointer-events-none rounded-xl py-1.5 px-3"
+              >
+                <Search size={13} />
+                Browse file
+              </Button>
             </div>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/jpg"
+              multiple
+              className="hidden"
+              onChange={e => addFiles(e.target.files)}
+            />
+
+            <p className="mt-1.5 text-xs text-secondary">
+              JPEG, PNG, or JPG (MAX. 800×400px).
+            </p>
+
+            {/* Thumbnails */}
+            {form.files.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {form.files.map(file => (
+                  <div key={file.id} className="relative">
+                    <img
+                      src={file.url}
+                      alt={file.name}
+                      className="h-16 w-24 rounded-md object-cover border border-gray-200"
+                    />
+                    <button
+                      type="button"
+                      onClick={e => {
+                        e.stopPropagation();
+                        removeFile(file.id);
+                      }}
+                      className="absolute -top-1.5 -right-1.5 flex size-4 items-center justify-center rounded-full bg-gray-700 text-white hover:bg-gray-900 transition-colors"
+                      aria-label="Remove file"
+                    >
+                      <X size={10} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

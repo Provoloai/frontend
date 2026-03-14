@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "motion/react";
-import { Download } from "lucide-react";
+import { Download, Pencil, SquarePen } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,6 +25,9 @@ import CertificationsSection from "@/components/knowledgeBase/CertificationsSect
 import ProjectsSection from "@/components/knowledgeBase/ProjectsSection";
 
 import EditSummarySheet from "@/components/knowledgeBase/EditSummarySheet";
+import EditPersonalInfoSheet, {
+  type PersonalInfoData,
+} from "@/components/knowledgeBase/EditPersonalInfoSheet";
 import EditExperienceSheet from "@/components/knowledgeBase/EditExperienceSheet";
 import EditEducationSheet from "@/components/knowledgeBase/EditEducationSheet";
 import EditCertificationSheet from "@/components/knowledgeBase/EditCertificationSheet";
@@ -38,6 +41,7 @@ import { PLACEHOLDER_PROFILE } from "@/constants/reviewPlaceholder";
 const PLACEHOLDER_USER = {
   displayName: "Shakirat Akanji",
   role: "Design Engineer | UX Designer",
+  school: "",
   location: "Lagos, Nigeria",
   experience: "3 Years",
   email: "akanjiishakirat@gmail.com",
@@ -99,6 +103,12 @@ function KnowledgeBaseContent() {
     type: "none",
   });
   const [importOpen, setImportOpen] = useState(false);
+  const [personalInfoOpen, setPersonalInfoOpen] = useState(false);
+  const [personalInfo, setPersonalInfo] = useState<PersonalInfoData>({
+    displayName: PLACEHOLDER_USER.displayName,
+    role: PLACEHOLDER_USER.role,
+    school: PLACEHOLDER_USER.school,
+  });
 
   const closeSheet = () => setSheet({ type: "none" });
 
@@ -213,7 +223,7 @@ function KnowledgeBaseContent() {
     setDeleteDialog({ type: "none" });
   };
 
-  const user = PLACEHOLDER_USER;
+  const user = { ...PLACEHOLDER_USER, ...personalInfo };
   const initials = user.displayName
     .split(" ")
     .map(n => n[0])
@@ -270,6 +280,18 @@ function KnowledgeBaseContent() {
             transition={v2Spring}
             className="sticky top-8 space-y-4 rounded-2xl bg-white shadow-[0_1px_0.5px_0.05px_rgba(29,41,61,0.02)] p-6"
           >
+            {/* Edit button */}
+            <div className="flex justify-end">
+              <Button
+                variant="outline"
+                onClick={() => setPersonalInfoOpen(true)}
+                className="flex items-center gap-1.5 py-1 px-1.5 text-sm/4 text-secondary hover:text-dark rounded-[0.75rem]"
+              >
+                <SquarePen className="size-3" />
+                Edit
+              </Button>
+            </div>
+
             {/* Avatar + name */}
             <div>
               <Avatar className="size-20 mb-3">
@@ -443,6 +465,17 @@ function KnowledgeBaseContent() {
         onClose={() => setDeleteDialog({ type: "none" })}
         onConfirm={handleConfirmDeleteItem}
         itemType={deleteDialog.type === "none" ? undefined : deleteDialog.type}
+      />
+
+      {/* Personal info sheet */}
+      <EditPersonalInfoSheet
+        open={personalInfoOpen}
+        onClose={() => setPersonalInfoOpen(false)}
+        initialData={personalInfo}
+        onSave={data => {
+          setPersonalInfo(data);
+          toast("Personal information updated successfully!");
+        }}
       />
 
       {/* Import data dialog */}

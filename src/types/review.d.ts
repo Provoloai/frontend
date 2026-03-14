@@ -54,6 +54,14 @@ export interface ProjectEntry {
   endMonth: string;
   endYear: string;
   projectLink: string;
+  files: UploadedFile[];
+}
+
+export interface UploadedFile {
+  id: string;
+  name: string;
+  url: string;
+  size: number;
 }
 
 export interface ReviewProfileData {
