@@ -25,12 +25,11 @@ export default function DeleteConfirmDialog({
 }: DeleteConfirmDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-sm text-center">
+      <DialogContent className="max-w-sm text-center border-[#E5E7EB] border rounded-[0.75rem] p-6">
         <DialogHeader className="items-center gap-3">
-          <div className="flex size-12 items-center justify-center rounded-full bg-gray-100">
-            <Trash2 size={22} className="text-secondary" />
-          </div>
-          <DialogTitle className="text-base font-semibold text-dark">
+          <Trash2 size={48} className="text-[#99A1AF]" />
+
+          <DialogTitle className="text-center font-normal text-base text-secondary pt-3 pb-6">
             Are you sure you want to delete this {itemType} from your knowledge
             base?
           </DialogTitle>
@@ -38,15 +37,15 @@ export default function DeleteConfirmDialog({
             Confirm deletion
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter className="flex-row gap-3 sm:justify-center mt-2">
+        <DialogFooter className="flex-row gap-3 sm:justify-center">
           <Button
             variant="outline"
             onClick={onClose}
-            className="flex-1 rounded-lg"
+            className="flex-1 rounded-xl py-2.5"
           >
             No, cancel
           </Button>
-          <Button onClick={onConfirm} className="flex-1 rounded-lg">
+          <Button onClick={onConfirm} className="flex-1 rounded-xl py-2.5">
             Yes, delete
           </Button>
         </DialogFooter>

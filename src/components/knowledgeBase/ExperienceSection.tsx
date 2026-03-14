@@ -1,4 +1,4 @@
-import { Plus, SquarePen } from "lucide-react";
+import { Plus, SquarePen, Trash2 } from "lucide-react";
 import type { ExperienceEntry } from "@/types/review";
 import { Button } from "@/components/ui/button";
 import experienceImage from "/src/assets/v2/svg/experience.svg";
@@ -7,6 +7,7 @@ type Props = {
   entries: ExperienceEntry[];
   onAdd: () => void;
   onEdit: (entry: ExperienceEntry) => void;
+  onDelete: (entry: ExperienceEntry) => void;
 };
 
 function formatDateRange(entry: ExperienceEntry) {
@@ -16,7 +17,12 @@ function formatDateRange(entry: ExperienceEntry) {
   return `${start} - ${end}`;
 }
 
-export default function ExperienceSection({ entries, onAdd, onEdit }: Props) {
+export default function ExperienceSection({
+  entries,
+  onAdd,
+  onEdit,
+  onDelete,
+}: Props) {
   const isEmpty = entries.length === 0;
 
   return (
@@ -53,7 +59,7 @@ export default function ExperienceSection({ entries, onAdd, onEdit }: Props) {
       ) : (
         <div className="divide-y divide-gray-100">
           {entries.map(entry => (
-            <div key={entry.id} className="py-4 first:pt-0 last:pb-0">
+            <div key={entry.id} className="group py-4 first:pt-0 last:pb-0">
               <div className="mb-1 flex items-start justify-between">
                 <div>
                   <p className="text-xs text-[#6a7282] uppercase">
@@ -66,14 +72,23 @@ export default function ExperienceSection({ entries, onAdd, onEdit }: Props) {
                     {entry.company}, {entry.location}
                   </p>
                 </div>
-                <Button
-                  variant="outline"
-                  onClick={() => onEdit(entry)}
-                  className="flex items-center gap-1.5 text-sm text-secondary hover:text-dark transition-colors py-1 px-1.5"
-                >
-                  <SquarePen size={14} />
-                  Edit
-                </Button>
+                <div className="flex shrink-0 items-center gap-3 opacity-0 pointer-events-none transition-all group-hover:opacity-100 group-hover:pointer-events-auto group-focus-within:opacity-100 group-focus-within:pointer-events-auto">
+                  <Button
+                    variant="outline"
+                    onClick={() => onEdit(entry)}
+                    className="flex items-center gap-1.5 py-1.5 px-3 text-sm text-secondary hover:text-dark rounded-[0.75rem]"
+                  >
+                    <SquarePen size={14} />
+                    Edit
+                  </Button>
+                  <button
+                    onClick={() => onDelete(entry)}
+                    className="flex items-center gap-1.5 text-sm py-1.5 px-3 text-[#8B0836] transition-colors hover:text-red-700 border border-[#FFCCD3] bg-[#FEF0F2] shadow-[0_1px_0.5px_0.05px_rgba(29,41,61,0.02)] rounded-[0.75rem]"
+                  >
+                    <Trash2 size={14} />
+                    Delete
+                  </button>
+                </div>
               </div>
               <p className="mt-3 text-sm leading-relaxed text-dark line-clamp-2">
                 {entry.description}

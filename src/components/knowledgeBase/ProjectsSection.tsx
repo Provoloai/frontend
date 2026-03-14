@@ -39,15 +39,6 @@ export default function ProjectsSection({
             <Plus size={14} />
             Add
           </Button>
-          {!isEmpty && (
-            <Button
-              variant="outline"
-              className="flex items-center gap-1.5 text-sm text-secondary hover:text-dark transition-colors py-1 px-1.5"
-            >
-              <SquarePen size={14} />
-              Edit
-            </Button>
-          )}
         </div>
       </div>
 
@@ -68,7 +59,7 @@ export default function ProjectsSection({
       ) : (
         <div className="divide-y divide-gray-100">
           {entries.map(entry => (
-            <div key={entry.id} className="py-4 first:pt-0 last:pb-0">
+            <div key={entry.id} className="group py-4 first:pt-0 last:pb-0">
               <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0 pr-4">
                   <h3 className="text-sm font-semibold text-dark">
@@ -81,18 +72,18 @@ export default function ProjectsSection({
                     {formatDateRange(entry)}
                   </p>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex shrink-0 items-center gap-3 opacity-0 pointer-events-none transition-all group-hover:opacity-100 group-hover:pointer-events-auto group-focus-within:opacity-100 group-focus-within:pointer-events-auto">
                   <Button
                     variant="outline"
                     onClick={() => onEdit(entry)}
-                    className="flex items-center gap-1.5 text-sm text-secondary hover:text-dark transition-colors py-1 px-1.5"
+                    className="flex items-center gap-1.5 py-1.5 px-3 text-sm text-secondary hover:text-dark rounded-[0.75rem]"
                   >
                     <SquarePen size={14} />
                     Edit
                   </Button>
                   <button
                     onClick={() => onDelete(entry)}
-                    className="flex items-center gap-1.5 text-sm text-red-500 hover:text-red-700 transition-colors"
+                    className="flex items-center gap-1.5 text-sm py-1.5 px-3 text-[#8B0836] transition-colors hover:text-red-700 border border-[#FFCCD3] bg-[#FEF0F2] shadow-[0_1px_0.5px_0.05px_rgba(29,41,61,0.02)] rounded-[0.75rem]"
                   >
                     <Trash2 size={14} />
                     Delete
