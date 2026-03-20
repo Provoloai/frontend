@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "motion/react";
-import { Download, Pencil, SquarePen } from "lucide-react";
+import { Download, SquarePen } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +15,7 @@ import type {
   EducationEntry,
   CertificationEntry,
   ProjectEntry,
+  SkillEntry,
 } from "@/types/review";
 
 import ProfessionalSummarySection from "@/components/knowledgeBase/ProfessionalSummarySection";
@@ -32,6 +33,7 @@ import EditExperienceSheet from "@/components/knowledgeBase/EditExperienceSheet"
 import EditEducationSheet from "@/components/knowledgeBase/EditEducationSheet";
 import EditCertificationSheet from "@/components/knowledgeBase/EditCertificationSheet";
 import EditProjectSheet from "@/components/knowledgeBase/EditProjectSheet";
+import AddSkillDialog from "@/components/knowledgeBase/AddSkillDialog";
 import DeleteConfirmDialog from "@/components/knowledgeBase/DeleteConfirmDialog";
 import ImportDataDialog from "@/components/knowledgeBase/ImportDataDialog";
 import ToastProvider from "@/components/knowledgeBase/ToastProvider";
@@ -46,16 +48,6 @@ const PLACEHOLDER_USER = {
   experience: "3 Years",
   email: "akanjiishakirat@gmail.com",
   portfolio: "sakunli.framer.website",
-};
-
-/** Empty profile — new user starts with nothing */
-const EMPTY_PROFILE: ReviewProfileData = {
-  summary: { text: "" },
-  experience: [],
-  skills: [],
-  education: [],
-  certifications: [],
-  projects: [],
 };
 
 /** Calculate profile completion as a percentage (6 sections) */
@@ -73,6 +65,7 @@ function getProfileCompletion(p: ReviewProfileData): number {
 type SheetState =
   | { type: "none" }
   | { type: "summary" }
+  | { type: "skills" }
   | { type: "experience"; entry: ExperienceEntry | null }
   | { type: "education"; entry: EducationEntry | null }
   | { type: "certification"; entry: CertificationEntry | null }
@@ -183,6 +176,11 @@ function KnowledgeBaseContent() {
           : [...prev.projects, entry],
       };
     });
+  };
+
+  const handleSaveSkills = (skills: SkillEntry[]) => {
+    setProfile(prev => ({ ...prev, skills }));
+    toast("Skills updated successfully!");
   };
 
   const handleConfirmDeleteItem = () => {
@@ -389,7 +387,10 @@ function KnowledgeBaseContent() {
           </motion.div>
 
           <motion.div layout variants={v2ItemVariants} transition={v2Spring}>
-            <SkillsSection skills={profile.skills} />
+            <SkillsSection
+              skills={profile.skills}
+              onAdd={() => setSheet({ type: "skills" })}
+            />
           </motion.div>
 
           <motion.div layout variants={v2ItemVariants} transition={v2Spring}>
@@ -457,6 +458,13 @@ function KnowledgeBaseContent() {
         onClose={closeSheet}
         entry={sheet.type === "project" ? sheet.entry : null}
         onSave={handleSaveProject}
+      />
+
+      <AddSkillDialog
+        open={sheet.type === "skills"}
+        onClose={closeSheet}
+        initialSkills={profile.skills}
+        onSave={handleSaveSkills}
       />
 
       {/* Delete confirmation */}
