@@ -206,7 +206,7 @@ export interface SaveResumeRequest {
   title?: string;
   template?: string;
   content: ResumeContent;
-  sectionOrder?: string[]; // Custom section arrangement
+  sectionOrder?: string[];
   latex?: string;
   html?: string;
 }

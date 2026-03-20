@@ -9,6 +9,7 @@ import {
 } from "@/types";
 import { apiGet } from "@/utils/api.util";
 import { useQuery } from "@tanstack/react-query";
+import { auth } from "@/lib/firebase";
 
 // Generic API request function
 const apiRequest = async <T>(
@@ -29,12 +30,21 @@ const apiRequest = async <T>(
   const defaultOptions: RequestInit = {
     headers: {
       "Content-Type": "application/json",
+      ...options.headers,
     },
     credentials: "include",
     ...options,
   };
 
   try {
+    const token = auth.currentUser ? await auth.currentUser.getIdToken() : null;
+    if (token) {
+      defaultOptions.headers = {
+        ...defaultOptions.headers,
+        Authorization: `Bearer ${token}`,
+      };
+    }
+
     const response = await fetch(url, defaultOptions);
 
     if (!response.ok) {
@@ -360,6 +370,13 @@ export const resumeApi = {
       },
       "blob"
     );
+  },
+
+  scrapeLinkedIn: async (url: string): Promise<{ data: any }> => {
+    return apiRequest<{ data: any }>("/resumes/scrape-linkedin", {
+      method: "POST",
+      body: JSON.stringify({ url }),
+    });
   },
 };
 

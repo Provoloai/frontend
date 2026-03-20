@@ -161,7 +161,7 @@ export const useResumeStore = create<ResumeStore>()(
             }
           }
         } catch (error) {
-          console.error("Failed to sync resume:", error);
+          throw error;
         }
       },
 
