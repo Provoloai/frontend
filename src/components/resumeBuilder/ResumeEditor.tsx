@@ -298,7 +298,7 @@ export const ResumeEditor: React.FC<ResumeEditorProps> = ({ onBack }) => {
               />
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div className="bg-white rounded-lg shadow-sm overflow-hidden flex flex-col h-full">
               <ResumePreview formData={formData} sectionOrder={sectionOrder} />
             </div>
           </div>

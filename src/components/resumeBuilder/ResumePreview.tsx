@@ -386,7 +386,7 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-10 text-gray-800">
+    <div className="flex-1 overflow-y-auto p-10 text-gray-800 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent hover:scrollbar-thumb-gray-300">
       {sectionOrder
         .filter(id => id !== "additional")
         .map(sectionId => (

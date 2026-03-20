@@ -1,7 +1,9 @@
 import { motion, AnimatePresence } from "motion/react";
 import { ResumeEditor } from "@/components/resumeBuilder/ResumeEditor";
+import { LinkedInImportModal } from "@/components/resumeBuilder/LinkedInImportModal";
 import CustomButton from "@/Reusables/CustomButton";
 import { useResumeStore } from "@/stores/resumeStore";
+import { resumeApi } from "@/api";
 import {
   FileText,
   ChevronRight,
@@ -20,6 +22,7 @@ import CustomSnackbar from "@/Reusables/CustomSnackbar";
 export const Resume: React.FC = () => {
   const [step, setStep] = useState<"method" | "builder">("method");
   const [showModal, setShowModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [resumeToDeleteId, setResumeToDeleteId] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState("");
@@ -53,11 +56,94 @@ export const Resume: React.FC = () => {
       setShowModal(false);
       setStep("builder");
     } else if (method === "linkedin") {
-      alert(
-        "LinkedIn integration requires OAuth setup. This is a demo placeholder."
-      );
       setShowModal(false);
+      setShowImportModal(true);
     }
+  };
+
+  const handleLinkedInImport = async (url: string) => {
+    const response = await resumeApi.scrapeLinkedIn(url);
+
+    // We assume data has { firstName, lastName, headline, summary, email, etc }
+    const linkedInData = response.data;
+
+    const newId = createNewResume();
+    const currentResume = getAllResumes().find(r => r.id === newId);
+
+    if (currentResume) {
+      // Find full resume from store
+      const { resumes, saveCurrentResume, syncResume } =
+        useResumeStore.getState();
+      const fullResume = resumes.find(r => r.id === newId);
+
+      if (fullResume) {
+        const updatedContent = {
+          ...fullResume.content,
+          personalInfo: {
+            ...fullResume.content.personalInfo,
+            firstName: linkedInData.firstName || "",
+            lastName: linkedInData.lastName || "",
+            jobTitle: linkedInData.headline || "",
+            summary: linkedInData.summary || "",
+            linkedinUrl: `https://www.linkedin.com/in/${linkedInData.username}`,
+            email: linkedInData.email || "",
+            country: linkedInData.country || "",
+            city: linkedInData.locationName?.split(",")[0] || "",
+          },
+          experience:
+            linkedInData.experience?.map((exp: any) => ({
+              id: Date.now().toString() + Math.random(),
+              position: exp.position || "", // Corrected
+              company: exp.company || "", // Corrected
+              startDate: exp.startDate || "",
+              endDate: exp.endDate || "",
+              description: exp.description || "",
+              location: exp.location || "", // Corrected
+              current: exp.current || !exp.endDate, // Set current to true if no endDate
+            })) || [],
+          education:
+            linkedInData.education
+              ?.filter(
+                (edu: any) =>
+                  // Filter out empty education entries - keep if any field has content
+                  edu.institution?.trim() ||
+                  edu.degree?.trim() ||
+                  edu.fieldOfStudy?.trim() ||
+                  edu.description?.trim()
+              )
+              .map((edu: any) => ({
+                id: Date.now().toString() + Math.random(),
+                institution: edu.institution || "", // Corrected
+                degree: edu.degree || "",
+                fieldOfStudy: edu.fieldOfStudy || "",
+                startDate: edu.startDate || "",
+                endDate: edu.endDate || "",
+                description: edu.description || "",
+                location: edu.location || "", // Corrected
+                current: edu.current || !edu.endDate, // Set current to true if no endDate
+              })) || [],
+        };
+
+        // Store raw DataMagnet data in metadata if it exists
+        if (linkedInData.raw) {
+          (updatedContent as any).metadata = {
+            ...(updatedContent as any).metadata,
+            scrapedData: linkedInData.raw,
+          };
+        }
+
+        const finalResume = {
+          ...fullResume,
+          content: updatedContent,
+          title: `${linkedInData.firstName || "Untitled"} ${linkedInData.lastName || "Resume"}`,
+        };
+
+        saveCurrentResume(newId, finalResume);
+        await syncResume(newId, finalResume);
+      }
+    }
+
+    setStep("builder");
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -143,6 +229,12 @@ export const Resume: React.FC = () => {
             </CustomButton>
           </div> */}
         </div>
+
+        <LinkedInImportModal
+          isOpen={showImportModal}
+          onClose={() => setShowImportModal(false)}
+          onSubmit={handleLinkedInImport}
+        />
 
         {/* Content Area - Hybrid Approach */}
         {resumes.length === 0 ? (
@@ -890,20 +982,20 @@ export const Resume: React.FC = () => {
 
                   <div
                     onClick={() => handleMethodSelect("linkedin")}
-                    className="flex items-center gap-4 p-4 rounded-lg cursor-pointer transition-colors hover:bg-gray-50 border border-transparent hover:border-gray-200 group"
+                    className="flex items-center gap-4 p-4 rounded-xl cursor-pointer bg-gray-50/50 border border-gray-100 hover:bg-gray-50 transition-colors group"
                   >
-                    <div className="shrink-0">
-                      <Linkedin className="w-5 h-5 text-gray-400 group-hover:text-blue-600 transition-colors" />
+                    <div className="shrink-0 w-10 h-10 bg-white rounded-lg flex items-center justify-center border border-gray-100 shadow-sm">
+                      <Linkedin className="w-5 h-5 text-[#0A66C2]" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-sm font-medium text-gray-900">
+                      <h3 className="text-[15px] font-semibold text-gray-900 leading-tight">
                         Import from LinkedIn
                       </h3>
-                      <p className="text-xs text-gray-500 mt-0.5">
+                      <p className="text-[13px] text-gray-500 mt-0.5">
                         Quickly sync your profile data
                       </p>
                     </div>
-                    <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-gray-400" />
+                    <ChevronRight className="w-4 h-4 text-gray-400 group-hover:translate-x-0.5 transition-transform" />
                   </div>
                 </div>
               </div>

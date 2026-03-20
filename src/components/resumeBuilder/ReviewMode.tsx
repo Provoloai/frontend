@@ -79,7 +79,7 @@ export const ReviewMode: React.FC<ReviewModeProps> = ({
             </Reorder.Group>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm overflow-y-auto">
+          <div className="bg-white rounded-lg shadow-sm overflow-hidden flex flex-col h-full">
             <ResumePreview formData={formData} sectionOrder={sectionOrder} />
           </div>
         </div>
