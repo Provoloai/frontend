@@ -170,7 +170,7 @@ export default function VerifyEmailForm({
   };
 
   return (
-    <section className="w-full max-w-xl">
+    <section className="w-full max-w-[30.5rem]">
       <div className="mt-7 w-full rounded-2xl border border-[#E5E7EB] bg-white p-5 shadow-[0_1px_0.5px_0.05px_rgba(29,41,61,0.02)]">
         <div className="mb-4 inline-flex size-10 items-center justify-center rounded-full bg-[#DBEAFE] text-primary">
           <Mail size={18} />
@@ -199,7 +199,7 @@ export default function VerifyEmailForm({
               onChange={e => handleOtpChange(index, e.target.value)}
               onKeyDown={e => handleKeyDown(index, e)}
               onPaste={handlePaste}
-              className={`h-10 w-10 rounded-lg border text-center text-sm font-semibold transition-colors outline-none ${getOtpClassName(digit)}`}
+              className={`size-[3.25rem] bg-[#f9fafb] border-[#E5E7EB] rounded-lg border text-center text-2xl text-dark font-semibold transition-colors outline-none ${getOtpClassName(digit)}`}
             />
           ))}
         </div>
