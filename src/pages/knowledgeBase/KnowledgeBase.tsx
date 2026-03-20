@@ -100,7 +100,9 @@ function KnowledgeBaseContent() {
   const [personalInfo, setPersonalInfo] = useState<PersonalInfoData>({
     displayName: PLACEHOLDER_USER.displayName,
     role: PLACEHOLDER_USER.role,
-    school: PLACEHOLDER_USER.school,
+    country: "",
+    state: "",
+    website: "",
   });
 
   const closeSheet = () => setSheet({ type: "none" });
@@ -221,7 +223,16 @@ function KnowledgeBaseContent() {
     setDeleteDialog({ type: "none" });
   };
 
-  const user = { ...PLACEHOLDER_USER, ...personalInfo };
+  const selectedLocation = [personalInfo.state, personalInfo.country]
+    .filter(Boolean)
+    .join(", ");
+
+  const user = {
+    ...PLACEHOLDER_USER,
+    ...personalInfo,
+    location: selectedLocation || PLACEHOLDER_USER.location,
+    portfolio: personalInfo.website || PLACEHOLDER_USER.portfolio,
+  };
   const initials = user.displayName
     .split(" ")
     .map(n => n[0])
