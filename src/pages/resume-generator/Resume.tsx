@@ -779,6 +779,35 @@ export const Resume: React.FC = () => {
         ) : (
           /* Resume Grid - Visible when resumes exist */
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6">
+             {/* Add New Card */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className={`"group relative  rounded-2xl border-2 border-dashed border-gray-200 hover:border-blue-400 hover:bg-blue-50/30 transition-all duration-300 overflow-hidden flex items-center p-6 cursor-pointer min-h-[200px] shadow-sm " ${resumes.length === 0 &&"col-span-2"}`}
+              onClick={() => setShowModal(true)}
+            >
+              <div className={`${resumes.length === 0 && "flex items-center gap-6 "} w-full space-y-3`}>
+                {/* Left: Plus Icon */}
+                <div className="shrink-0 w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center group-hover:scale-110 group-hover:bg-blue-100 transition-all duration-300">
+                  <Plus className="w-8 h-8 text-blue-600" />
+                </div>
+
+                {/* Right: Instructions */}
+                <div className="flex items-center gap-6 w-full">
+                  <div className="flex-1">
+                  <h3 className="text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                    Create New Resume
+                  </h3>
+                  <p className="text-xs text-gray-500 mt-1 leading-relaxed max-w-[280px]">
+                    Build your professional profile in minutes. Choose from
+                    multiple methods to get started.
+                  </p>
+                </div>
+
+                <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-blue-400 transform group-hover:translate-x-1 transition-all" />
+                </div>
+              </div>
+            </motion.div>
             {/* Existing Resume Cards - AnimatePresence follows */}
             <AnimatePresence mode="popLayout">
               {resumes.map((resume, index) => (
@@ -867,33 +896,7 @@ export const Resume: React.FC = () => {
                 </motion.div>
               ))}
             </AnimatePresence>
-            {/* Add New Card */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="group relative  rounded-2xl border-2 border-dashed border-gray-200 hover:border-blue-400 hover:bg-blue-50/30 transition-all duration-300 overflow-hidden flex items-center p-6 cursor-pointer min-h-[200px] lg:col-span-2 shadow-sm "
-              onClick={() => setShowModal(true)}
-            >
-              <div className="flex items-center gap-6 w-full">
-                {/* Left: Plus Icon */}
-                <div className="shrink-0 w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center group-hover:scale-110 group-hover:bg-blue-100 transition-all duration-300">
-                  <Plus className="w-8 h-8 text-blue-600" />
-                </div>
-
-                {/* Right: Instructions */}
-                <div className="flex-1">
-                  <h3 className="text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
-                    Create New Resume
-                  </h3>
-                  <p className="text-xs text-gray-500 mt-1 leading-relaxed max-w-[280px]">
-                    Build your professional profile in minutes. Choose from
-                    multiple methods to get started.
-                  </p>
-                </div>
-
-                <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-blue-400 transform group-hover:translate-x-1 transition-all" />
-              </div>
-            </motion.div>
+           
           </div>
         )}
       </div>
