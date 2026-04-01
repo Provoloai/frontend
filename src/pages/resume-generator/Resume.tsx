@@ -9,6 +9,7 @@ import {
   ChevronRight,
   Upload,
   Linkedin,
+  Loader2,
   X,
   Plus,
   Edit,
@@ -16,8 +17,119 @@ import {
   Clock,
   AlertTriangle,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import CustomSnackbar from "@/Reusables/CustomSnackbar";
+import type {
+  Certification,
+  Course,
+  Education,
+  Experience,
+  Hobby,
+  ImportResumePdfData,
+  Internship,
+  Language,
+  Project,
+  Reference,
+  Resume as ResumeType,
+  Skill,
+} from "@/types";
+
+interface LinkedInExperienceData {
+  position?: string;
+  company?: string;
+  startDate?: string;
+  endDate?: string;
+  description?: string;
+  location?: string;
+  current?: boolean;
+}
+
+interface LinkedInEducationData {
+  institution?: string;
+  degree?: string;
+  fieldOfStudy?: string;
+  startDate?: string;
+  endDate?: string;
+  description?: string;
+  location?: string;
+  current?: boolean;
+}
+
+interface LinkedInImportData {
+  firstName?: string;
+  lastName?: string;
+  headline?: string;
+  summary?: string;
+  username?: string;
+  email?: string;
+  country?: string;
+  locationName?: string;
+  experience?: LinkedInExperienceData[];
+  education?: LinkedInEducationData[];
+  raw?: Record<string, unknown>;
+}
+
+function ensureArrayItemIds<T extends { id?: string }>(
+  items: T[] | undefined
+): T[] {
+  return (items ?? []).map(item => ({
+    ...item,
+    id: item.id ?? `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+  }));
+}
+
+function buildImportedResume(
+  baseResume: ResumeType,
+  importedResume: ImportResumePdfData
+): ResumeType {
+  const personalInfo = importedResume.content.personalInfo;
+
+  return {
+    ...baseResume,
+    title:
+      importedResume.title ||
+      `${personalInfo.firstName || ""} ${personalInfo.lastName || ""}`.trim() ||
+      baseResume.title,
+    content: {
+      ...baseResume.content,
+      ...importedResume.content,
+      personalInfo: {
+        ...baseResume.content.personalInfo,
+        ...personalInfo,
+      },
+      experience: ensureArrayItemIds(
+        importedResume.content.experience as Experience[] | undefined
+      ),
+      education: ensureArrayItemIds(
+        importedResume.content.education as Education[] | undefined
+      ),
+      skills: ensureArrayItemIds(
+        importedResume.content.skills as Skill[] | undefined
+      ),
+      languages: ensureArrayItemIds(
+        importedResume.content.languages as Language[] | undefined
+      ),
+      courses: ensureArrayItemIds(
+        baseResume.content.courses as Course[] | undefined
+      ),
+      internships: ensureArrayItemIds(
+        baseResume.content.internships as Internship[] | undefined
+      ),
+      hobbies: ensureArrayItemIds(
+        baseResume.content.hobbies as Hobby[] | undefined
+      ),
+      references: ensureArrayItemIds(
+        baseResume.content.references as Reference[] | undefined
+      ),
+      projects: ensureArrayItemIds(
+        importedResume.content.projects as Project[] | undefined
+      ),
+      certifications: ensureArrayItemIds(
+        importedResume.content.certifications as Certification[] | undefined
+      ),
+    },
+  };
+}
 
 export const Resume: React.FC = () => {
   const [step, setStep] = useState<"method" | "builder">("method");
@@ -26,6 +138,7 @@ export const Resume: React.FC = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [resumeToDeleteId, setResumeToDeleteId] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState("");
+  const [isImportingPdf, setIsImportingPdf] = useState(false);
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
     message: string;
@@ -45,6 +158,7 @@ export const Resume: React.FC = () => {
   } = useResumeStore();
 
   const resumes = getAllResumes();
+  const isImportBusy = isImportingPdf;
 
   useEffect(() => {
     fetchResumes();
@@ -65,7 +179,7 @@ export const Resume: React.FC = () => {
     const response = await resumeApi.scrapeLinkedIn(url);
 
     // We assume data has { firstName, lastName, headline, summary, email, etc }
-    const linkedInData = response.data;
+    const linkedInData = response.data as LinkedInImportData;
 
     const newId = createNewResume();
     const currentResume = getAllResumes().find(r => r.id === newId);
@@ -77,7 +191,9 @@ export const Resume: React.FC = () => {
       const fullResume = resumes.find(r => r.id === newId);
 
       if (fullResume) {
-        const updatedContent = {
+        const updatedContent: ResumeType["content"] & {
+          metadata?: Record<string, unknown>;
+        } = {
           ...fullResume.content,
           personalInfo: {
             ...fullResume.content.personalInfo,
@@ -91,43 +207,41 @@ export const Resume: React.FC = () => {
             city: linkedInData.locationName?.split(",")[0] || "",
           },
           experience:
-            linkedInData.experience?.map((exp: any) => ({
+            linkedInData.experience?.map((exp: LinkedInExperienceData) => ({
               id: Date.now().toString() + Math.random(),
-              position: exp.position || "", // Corrected
-              company: exp.company || "", // Corrected
+              position: exp.position || "",
+              company: exp.company || "",
               startDate: exp.startDate || "",
               endDate: exp.endDate || "",
               description: exp.description || "",
-              location: exp.location || "", // Corrected
-              current: exp.current || !exp.endDate, // Set current to true if no endDate
+              location: exp.location || "",
+              current: exp.current || !exp.endDate,
             })) || [],
           education:
             linkedInData.education
               ?.filter(
-                (edu: any) =>
-                  // Filter out empty education entries - keep if any field has content
+                (edu: LinkedInEducationData) =>
                   edu.institution?.trim() ||
                   edu.degree?.trim() ||
                   edu.fieldOfStudy?.trim() ||
                   edu.description?.trim()
               )
-              .map((edu: any) => ({
+              .map((edu: LinkedInEducationData) => ({
                 id: Date.now().toString() + Math.random(),
-                institution: edu.institution || "", // Corrected
+                institution: edu.institution || "",
                 degree: edu.degree || "",
                 fieldOfStudy: edu.fieldOfStudy || "",
                 startDate: edu.startDate || "",
                 endDate: edu.endDate || "",
                 description: edu.description || "",
-                location: edu.location || "", // Corrected
-                current: edu.current || !edu.endDate, // Set current to true if no endDate
+                location: edu.location || "",
+                current: edu.current || !edu.endDate,
               })) || [],
         };
 
-        // Store raw DataMagnet data in metadata if it exists
         if (linkedInData.raw) {
-          (updatedContent as any).metadata = {
-            ...(updatedContent as any).metadata,
+          updatedContent.metadata = {
+            ...updatedContent.metadata,
             scrapedData: linkedInData.raw,
           };
         }
@@ -146,8 +260,10 @@ export const Resume: React.FC = () => {
     setStep("builder");
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    e.target.value = "";
+
     if (!file) return;
 
     if (file.type !== "application/pdf") {
@@ -156,10 +272,41 @@ export const Resume: React.FC = () => {
     }
 
     setUploadError("");
-    setShowModal(false);
-    alert(
-      "PDF parsing requires a backend service. This is a demo placeholder."
-    );
+    setIsImportingPdf(true);
+
+    try {
+      const response = await resumeApi.importResumePdf(file);
+      const importedResume = response.data;
+      const newId = createNewResume();
+      const { resumes, saveCurrentResume, syncResume } =
+        useResumeStore.getState();
+      const baseResume = resumes.find(r => r.id === newId);
+
+      if (!baseResume) {
+        throw new Error("Failed to create a new resume draft for import");
+      }
+
+      const finalResume = buildImportedResume(baseResume, importedResume);
+      saveCurrentResume(newId, finalResume);
+      await syncResume(newId, finalResume);
+
+      setShowModal(false);
+      setStep("builder");
+      setSnackbar({
+        open: true,
+        message:
+          "Resume imported. Review the extracted fields before exporting.",
+        color: "success",
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Failed to import and extract your resume PDF";
+      setUploadError(message);
+    } finally {
+      setIsImportingPdf(false);
+    }
   };
 
   const handleEditResume = (id: string) => {
@@ -930,8 +1077,13 @@ export const Resume: React.FC = () => {
                   </p>
                 </div>
                 <button
-                  onClick={() => setShowModal(false)}
-                  className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+                  onClick={() => {
+                    if (!isImportBusy) {
+                      setShowModal(false);
+                    }
+                  }}
+                  disabled={isImportBusy}
+                  className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <X className="w-4 h-4 text-gray-400" />
                 </button>
@@ -940,8 +1092,16 @@ export const Resume: React.FC = () => {
               <div className="p-4 overflow-y-auto">
                 <div className="space-y-2">
                   <div
-                    onClick={() => handleMethodSelect("manual")}
-                    className="flex items-center gap-4 p-4 rounded-lg cursor-pointer transition-colors hover:bg-gray-50 border border-transparent hover:border-gray-200 group"
+                    onClick={() => {
+                      if (!isImportBusy) {
+                        handleMethodSelect("manual");
+                      }
+                    }}
+                    className={`flex items-center gap-4 p-4 rounded-lg border border-transparent group ${
+                      isImportBusy
+                        ? "cursor-not-allowed opacity-60"
+                        : "cursor-pointer transition-colors hover:bg-gray-50 hover:border-gray-200"
+                    }`}
                   >
                     <div className="shrink-0">
                       <FileText className="w-5 h-5 text-gray-400 group-hover:text-blue-600 transition-colors" />
@@ -957,7 +1117,13 @@ export const Resume: React.FC = () => {
                     <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-gray-400" />
                   </div>
 
-                  <label className="flex items-center gap-4 p-4 rounded-lg cursor-pointer transition-colors hover:bg-gray-50 border border-transparent hover:border-gray-200 group">
+                  <label
+                    className={`flex items-center gap-4 p-4 rounded-lg border border-transparent group ${
+                      isImportBusy
+                        ? "cursor-wait bg-gray-50"
+                        : "cursor-pointer transition-colors hover:bg-gray-50 hover:border-gray-200"
+                    }`}
+                  >
                     <div className="shrink-0">
                       <Upload className="w-5 h-5 text-gray-400 group-hover:text-blue-600 transition-colors" />
                     </div>
@@ -966,7 +1132,9 @@ export const Resume: React.FC = () => {
                         Upload Existing PDF
                       </h3>
                       <p className="text-xs text-gray-500 mt-0.5">
-                        Import and edit your current resume
+                        {isImportBusy
+                          ? "Fetching PDF info and extracting resume details..."
+                          : "Import and edit your current resume"}
                       </p>
                       {uploadError && (
                         <p className="text-xs text-red-500 mt-1">
@@ -974,18 +1142,31 @@ export const Resume: React.FC = () => {
                         </p>
                       )}
                     </div>
-                    <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-gray-400" />
+                    {isImportBusy ? (
+                      <Loader2 className="w-4 h-4 text-blue-500 animate-spin" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-gray-400" />
+                    )}
                     <input
                       type="file"
                       accept=".pdf"
+                      disabled={isImportBusy}
                       onChange={handleFileUpload}
                       className="hidden"
                     />
                   </label>
 
                   <div
-                    onClick={() => handleMethodSelect("linkedin")}
-                    className="flex items-center gap-4 p-4 rounded-xl cursor-pointer bg-gray-50/50 border border-gray-100 hover:bg-gray-50 transition-colors group"
+                    onClick={() => {
+                      if (!isImportBusy) {
+                        handleMethodSelect("linkedin");
+                      }
+                    }}
+                    className={`flex items-center gap-4 p-4 rounded-xl border border-gray-100 group ${
+                      isImportBusy
+                        ? "cursor-not-allowed opacity-60 bg-gray-50/40"
+                        : "cursor-pointer bg-gray-50/50 hover:bg-gray-50 transition-colors"
+                    }`}
                   >
                     <div className="shrink-0 w-10 h-10 bg-white rounded-lg flex items-center justify-center border border-gray-100 shadow-sm">
                       <Linkedin className="w-5 h-5 text-[#0A66C2]" />
@@ -1004,9 +1185,16 @@ export const Resume: React.FC = () => {
               </div>
 
               <div className="p-4 border-t border-gray-100 bg-gray-50/30">
-                <p className="text-[10px] text-gray-400 text-center">
-                  You can further customize your resume later
-                </p>
+                {isImportBusy ? (
+                  <div className="flex items-center justify-center gap-2 text-[11px] text-blue-600">
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Fetching PDF info...</span>
+                  </div>
+                ) : (
+                  <p className="text-[10px] text-gray-400 text-center">
+                    You can further customize your resume later
+                  </p>
+                )}
               </div>
             </motion.div>
           </motion.div>

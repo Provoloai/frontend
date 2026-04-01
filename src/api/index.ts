@@ -5,6 +5,7 @@ import {
   CreateResumeResponse,
   GetResumesResponse,
   DeleteResumeResponse,
+  ImportResumePdfResponse,
   SaveResumeRequest,
 } from "@/types";
 import { apiGet } from "@/utils/api.util";
@@ -27,11 +28,15 @@ const apiRequest = async <T>(
 
   const url = `${apiBase}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
 
+  const headers = new Headers(options.headers ?? {});
+  const isFormDataBody = options.body instanceof FormData;
+
+  if (!isFormDataBody && !headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
+  }
+
   const defaultOptions: RequestInit = {
-    headers: {
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
+    headers,
     credentials: "include",
     ...options,
   };
@@ -39,10 +44,8 @@ const apiRequest = async <T>(
   try {
     const token = auth.currentUser ? await auth.currentUser.getIdToken() : null;
     if (token) {
-      defaultOptions.headers = {
-        ...defaultOptions.headers,
-        Authorization: `Bearer ${token}`,
-      };
+      headers.set("Authorization", `Bearer ${token}`);
+      defaultOptions.headers = headers;
     }
 
     const response = await fetch(url, defaultOptions);
@@ -376,6 +379,16 @@ export const resumeApi = {
     return apiRequest<{ data: any }>("/resumes/scrape-linkedin", {
       method: "POST",
       body: JSON.stringify({ url }),
+    });
+  },
+
+  importResumePdf: async (file: File): Promise<ImportResumePdfResponse> => {
+    const formData = new FormData();
+    formData.append("resume", file);
+
+    return apiRequest<ImportResumePdfResponse>("/resumes/import-pdf", {
+      method: "POST",
+      body: formData,
     });
   },
 };

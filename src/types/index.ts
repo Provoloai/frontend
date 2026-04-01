@@ -234,3 +234,17 @@ export interface DeleteResumeResponse {
   status?: string;
   message: string;
 }
+
+export interface ImportResumePdfData {
+  title: string;
+  rawText: string;
+  detectedSections: string[];
+  content: ResumeContent;
+}
+
+export interface ImportResumePdfResponse {
+  success?: boolean;
+  status?: string;
+  message: string;
+  data: ImportResumePdfData;
+}
