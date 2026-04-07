@@ -1,10 +1,13 @@
 // Generic API utility functions for all API calls
 
-/** Base URL for `/api/v1` routes. Set `VITE_SERVER_URL` in env (no trailing slash), e.g. `https://api.example.com/api/v1`. If unset, uses `/api` (Vite proxy or hosting rewrite). */
 export function getBackendBaseUrl(): string {
-  const url = (import.meta.env.VITE_SERVER_URL as string | undefined)?.trim();
-  if (url) return url.replace(/\/$/, "");
-  return "/api";
+  const NODE_ENV = (import.meta.env.VITE_NODE_ENV as string) || "";
+  const SERVER_URL = (import.meta.env.VITE_SERVER_URL as string) || "";
+  const apiBase =
+    NODE_ENV === "development" && SERVER_URL
+      ? SERVER_URL.replace(/\/$/, "")
+      : "/api";
+  return apiBase;
 }
 
 const sanitizeInput = (input: string): string => {

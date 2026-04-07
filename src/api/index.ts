@@ -47,7 +47,7 @@ const apiRequest = async <T>(
     if (!response.ok) {
       if (response.status === 503 && endpoint.includes("import-pdf")) {
         throw new Error(
-          "Upload failed (service unavailable). In production, set VITE_SERVER_URL to your API base URL (e.g. https://your-app.fly.dev/api/v1) so uploads go directly to the server instead of through the site proxy. Then redeploy the frontend."
+          "Upload failed (service unavailable). The request goes through your site’s /api proxy; large uploads sometimes fail at the edge. Check hosting rewrite limits, or that the backend (e.g. Fly) is up and listening on the expected port."
         );
       }
       if (response.status === 401) {
