@@ -1,5 +1,12 @@
 // Generic API utility functions for all API calls
 
+/** Base URL for `/api/v1` routes. Set `VITE_SERVER_URL` in env (no trailing slash), e.g. `https://api.example.com/api/v1`. If unset, uses `/api` (Vite proxy or hosting rewrite). */
+export function getBackendBaseUrl(): string {
+  const url = (import.meta.env.VITE_SERVER_URL as string | undefined)?.trim();
+  if (url) return url.replace(/\/$/, "");
+  return "/api";
+}
+
 const sanitizeInput = (input: string): string => {
   if (typeof input !== "string") return "";
 
@@ -44,15 +51,7 @@ const makeApiRequest = async (
   endpoint: string,
   options: ApiRequestOptions = {}
 ): Promise<any> => {
-  const NODE_ENV = (import.meta.env.VITE_NODE_ENV as string) || "";
-  const SERVER_URL = (import.meta.env.VITE_SERVER_URL as string) || "";
-
-  // If running in development and a server URL is provided, call the remote backend directly.
-  // Otherwise default to '/api' so production (Vercel) rewrites/proxies will handle requests.
-  const apiBase =
-    NODE_ENV === "development" && SERVER_URL
-      ? SERVER_URL.replace(/\/$/, "")
-      : "/api";
+  const apiBase = getBackendBaseUrl();
 
   const url = `${apiBase}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
 

@@ -8,7 +8,7 @@ import {
   ImportResumePdfResponse,
   SaveResumeRequest,
 } from "@/types";
-import { apiGet } from "@/utils/api.util";
+import { apiGet, getBackendBaseUrl } from "@/utils/api.util";
 import { useQuery } from "@tanstack/react-query";
 import { auth } from "@/lib/firebase";
 
@@ -18,13 +18,7 @@ const apiRequest = async <T>(
   options: RequestInit = {},
   responseType: "json" | "blob" = "json"
 ): Promise<T> => {
-  const NODE_ENV = (import.meta.env.VITE_NODE_ENV as string) || "";
-  const SERVER_URL = (import.meta.env.VITE_SERVER_URL as string) || "";
-
-  const apiBase =
-    NODE_ENV === "development" && SERVER_URL
-      ? SERVER_URL.replace(/\/$/, "")
-      : "/api";
+  const apiBase = getBackendBaseUrl();
 
   const url = `${apiBase}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
 
@@ -51,6 +45,11 @@ const apiRequest = async <T>(
     const response = await fetch(url, defaultOptions);
 
     if (!response.ok) {
+      if (response.status === 503 && endpoint.includes("import-pdf")) {
+        throw new Error(
+          "Upload failed (service unavailable). In production, set VITE_SERVER_URL to your API base URL (e.g. https://your-app.fly.dev/api/v1) so uploads go directly to the server instead of through the site proxy. Then redeploy the frontend."
+        );
+      }
       if (response.status === 401) {
         // Redirect to login on 401, but only if not already on a public auth route
         const publicAuthRoutes = [
@@ -71,10 +70,20 @@ const apiRequest = async <T>(
         }
       }
 
-      const errorData = await response.json();
-      throw new Error(
-        errorData.message || `HTTP error! status: ${response.status}`
-      );
+      const contentType = response.headers.get("content-type") || "";
+      let errorMessage = `HTTP error! status: ${response.status}`;
+
+      if (contentType.includes("application/json")) {
+        const errorData = await response.json().catch(() => ({}));
+        errorMessage = errorData.message || errorData.title || errorMessage;
+      } else {
+        const errorText = (await response.text().catch(() => "")).trim();
+        if (errorText) {
+          errorMessage = errorText;
+        }
+      }
+
+      throw new Error(errorMessage);
     }
 
     return responseType === "blob"
