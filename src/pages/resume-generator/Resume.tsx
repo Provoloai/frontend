@@ -271,6 +271,12 @@ export const Resume: React.FC = () => {
       return;
     }
 
+    const maxPdfBytes = 2 * 1024 * 1024;
+    if (file.size > maxPdfBytes) {
+      setUploadError("PDF must be 2MB or smaller");
+      return;
+    }
+
     setUploadError("");
     setIsImportingPdf(true);
 
@@ -1134,7 +1140,7 @@ export const Resume: React.FC = () => {
                       <p className="text-xs text-gray-500 mt-0.5">
                         {isImportBusy
                           ? "Fetching PDF info and extracting resume details..."
-                          : "Import and edit your current resume"}
+                          : "Import and edit your current resume (PDF, max 2MB)"}
                       </p>
                       {uploadError && (
                         <p className="text-xs text-red-500 mt-1">
