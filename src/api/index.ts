@@ -50,32 +50,16 @@ const apiRequest = async <T>(
           "Upload failed (service unavailable). The request goes through your site’s /api proxy; large uploads sometimes fail at the edge. Check hosting rewrite limits, or that the backend (e.g. Fly) is up and listening on the expected port."
         );
       }
-      if (response.status === 401) {
-        // Redirect to login on 401, but only if not already on a public auth route
-        const publicAuthRoutes = [
-          "/login",
-          "/signup",
-          "/forgot-password",
-          "/reset-password",
-        ];
-        const currentPath = window.location.pathname;
-
-        const isOnPublicAuthRoute = publicAuthRoutes.some(route =>
-          currentPath.startsWith(route)
-        );
-
-        if (!isOnPublicAuthRoute) {
-          window.location.replace("/login?reason=session_expired");
-          throw new Error("Session expired");
-        }
-      }
-
       let errorMessage = `Request failed with status ${response.status}`;
+      let errorTitle = "";
       try {
         const payload = (await response.clone().json()) as {
           message?: string;
           title?: string;
         };
+        if (payload?.title) {
+          errorTitle = payload.title;
+        }
         if (payload?.message) {
           errorMessage = payload.message;
         } else if (payload?.title) {
@@ -89,6 +73,33 @@ const apiRequest = async <T>(
       }
       if (response.status >= 500) {
         errorMessage = "Something went wrong on our side. Please contact support.";
+      }
+
+      if (response.status === 401) {
+        // Only redirect for true auth/session-expired cases.
+        const normalized = `${errorTitle} ${errorMessage}`.toLowerCase();
+        const isSessionAuthFailure =
+          normalized.includes("session expired") ||
+          normalized.includes("invalid or expired token") ||
+          normalized.includes("authentication required") ||
+          normalized.includes("user not authenticated") ||
+          normalized.includes("no authentication provided");
+
+        const publicAuthRoutes = [
+          "/login",
+          "/signup",
+          "/forgot-password",
+          "/reset-password",
+        ];
+        const currentPath = window.location.pathname;
+        const isOnPublicAuthRoute = publicAuthRoutes.some(route =>
+          currentPath.startsWith(route)
+        );
+
+        if (isSessionAuthFailure && !isOnPublicAuthRoute) {
+          window.location.replace("/login?reason=session_expired");
+          throw new Error("Session expired");
+        }
       }
 
       throw new Error(errorMessage);
