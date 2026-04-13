@@ -70,17 +70,25 @@ const apiRequest = async <T>(
         }
       }
 
-      const contentType = response.headers.get("content-type") || "";
-      let errorMessage = `HTTP error! status: ${response.status}`;
-
-      if (contentType.includes("application/json")) {
-        const errorData = await response.json().catch(() => ({}));
-        errorMessage = errorData.message || errorData.title || errorMessage;
-      } else {
-        const errorText = (await response.text().catch(() => "")).trim();
-        if (errorText) {
-          errorMessage = errorText;
+      let errorMessage = `Request failed with status ${response.status}`;
+      try {
+        const payload = (await response.clone().json()) as {
+          message?: string;
+          title?: string;
+        };
+        if (payload?.message) {
+          errorMessage = payload.message;
+        } else if (payload?.title) {
+          errorMessage = payload.title;
         }
+      } catch {
+        errorMessage =
+          response.status >= 500
+            ? "Something went wrong on our side. Please contact support."
+            : errorMessage;
+      }
+      if (response.status >= 500) {
+        errorMessage = "Something went wrong on our side. Please contact support.";
       }
 
       throw new Error(errorMessage);
