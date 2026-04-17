@@ -1,15 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import isURL from "validator/es/lib/isURL";
 import { motion } from "motion/react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Loader2 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import OnboardingPortfolioForm from "@/components/auth/OnboardingPortfolioForm";
 import type { OnboardingPortfolioFormData } from "@/types/auth";
 import { v2ItemVariants, v2PageVariants } from "@/constants/v2Motion";
 import desktopLogo from "/src/assets/v2/svg/desktop-logo.svg";
+import { auth } from "@/lib/firebase";
+import { authApi } from "@/api";
+import { useNavigate } from "@tanstack/react-router";
+import { getCleanErrorMessage } from "@/utils/firebaseError.util";
 
 const portfolioSchema = z.object({
   portfolioUrl: z
@@ -26,15 +30,27 @@ const portfolioSchema = z.object({
     ),
 });
 
-// TODO: replace with real user data from session
-const PLACEHOLDER_USER = {
-  displayName: "Jeese Leos",
-  email: "name@flowbite.com",
-};
-
 export default function Onboarding() {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [userProfile, setUserProfile] = useState<{ displayName: string, email: string } | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setUserProfile({
+          displayName: user.displayName || "New User",
+          email: user.email || ""
+        });
+      } else {
+        // If not logged in, they shouldn't be on the onboarding screen
+        navigate({ to: "/login", replace: true });
+      }
+    });
+
+    return () => unsubscribe();
+  }, [navigate]);
 
   const form = useForm<OnboardingPortfolioFormData>({
     resolver: zodResolver(portfolioSchema),
@@ -46,13 +62,27 @@ export default function Onboarding() {
     async (data: OnboardingPortfolioFormData) => {
       setError("");
       setIsLoading(true);
-      // TODO: wire up authApi.updateProfile
-      console.log("Onboarding submitted:", data);
-      setIsLoading(false);
+      try {
+        await authApi.updateProfile({ portfolio_link: data.portfolioUrl });
+        navigate({ to: "/optimizer", replace: true });
+      } catch (err: unknown) {
+        const _err = err as Error;
+        setError(getCleanErrorMessage(_err));
+      } finally {
+        setIsLoading(false);
+      }
     }
   );
 
-  const { displayName, email } = PLACEHOLDER_USER;
+  if (!userProfile) {
+    return (
+      <div className="flex h-dvh w-full items-center justify-center">
+        <Loader2 className="animate-spin text-primary" size={32} />
+      </div>
+    );
+  }
+
+  const { displayName, email } = userProfile;
   const initials = displayName
     .split(" ")
     .map(n => n[0])

@@ -10,7 +10,7 @@ import { signupSchema } from "@/utils/signupValidation.util";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import type { SignupFormData } from "@/types/auth";
-import { authApi } from "@/api";
+
 import { auth } from "@/lib/firebase";
 
 export default function Signup() {
@@ -24,7 +24,7 @@ export default function Signup() {
 function SignupContent() {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [showVerifyEmail, setShowVerifyEmail] = useState(true);
+  const [showVerifyEmail, setShowVerifyEmail] = useState(false);
   const [verificationEmail, setVerificationEmail] = useState("");
 
   const form = useForm<SignupFormData>({
@@ -51,16 +51,7 @@ function SignupContent() {
       await signUpWithEmail(data, { navigateOnSuccess: false });
       setVerificationEmail(data.email);
       setShowVerifyEmail(true);
-
-      try {
-        const response = await authApi.sendVerificationCode();
-        toast(response?.message || "Verification code sent.", "success");
-      } catch {
-        toast(
-          "Account created. You can still verify with your latest code.",
-          "warning"
-        );
-      }
+      toast("Verification code sent to your email.", "success");
     } catch {
       // Hook already exposes a clean error message via `error`.
     }

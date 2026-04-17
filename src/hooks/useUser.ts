@@ -47,11 +47,13 @@ export const useUser = (userData: any) => {
   const handleSignOut = useCallback(async () => {
     try {
       await logout();
-      navigate({ to: "/login", replace: true });
+      // Force reload the page so react-query and all contexts are thoroughly wiped, 
+      // preventing any cached session data from redirecting them back to the dashboard immediately.
+      window.location.href = "/login";
     } catch {
-      navigate({ to: "/login", replace: true });
+      window.location.href = "/login";
     }
-  }, [navigate]);
+  }, []);
 
   // Optimized snackbar close handler
   const closeSnackbar = useCallback(() => setSnackbarOpen(false), []);

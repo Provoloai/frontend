@@ -1,6 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { motion } from "motion/react";
-import { ChevronDown } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   v2NavItemVariants,
@@ -15,6 +15,9 @@ import resumeLogo from "/src/assets/v2/svg/nav-resume.svg";
 import analyticsLogo from "/src/assets/v2/svg/nav-analytics.svg";
 import activeKnowledgeBaseLogo from "/src/assets/v2/svg/active-nav-knowledge.svg";
 import settingsLogo from "/src/assets/v2/svg/nav-settings.svg";
+import useSession from "@/hooks/useSession";
+import { useUser } from "@/hooks/useUser";
+import { auth } from "@/lib/firebase";
 
 interface NavItem {
   label: string;
@@ -75,21 +78,23 @@ const bottomNavItems: NavItem[] = [
   },
 ];
 
-const PLACEHOLDER_USER = {
-  displayName: "Jese Leos",
-  email: "name@flowbite.com",
-};
-
 export default function Sidebar() {
   const pathname = useRouterState({ select: s => s.location.pathname });
+  const { user: serverUser } = useSession();
+  
+  // Combine server session data with Firebase local data as fallback
+  const user = serverUser || auth.currentUser;
+  const { handleSignOut } = useUser(user);
 
-  const { displayName, email } = PLACEHOLDER_USER;
+  const displayName = user?.displayName || user?.name || "Jese Leos";
+  const email = user?.email || "name@flowbite.com";
+  
   const initials = displayName
     .split(" ")
     .map(n => n[0])
     .slice(0, 2)
     .join("")
-    .toUpperCase();
+    .toUpperCase() || "JI";
 
   const isActive = (item: NavItem) =>
     item.matchPrefix
@@ -206,8 +211,16 @@ export default function Sidebar() {
             </p>
             <p className="truncate text-xs text-secondary">{email}</p>
           </div>
-          <ChevronDown size={16} className="shrink-0 text-secondary" />
         </div>
+
+        <button
+          onClick={handleSignOut}
+          className="mt-3 flex w-full items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50 focus:outline-none"
+          title="Sign out"
+        >
+          <LogOut size={16} />
+          Sign out
+        </button>
       </motion.div>
     </motion.aside>
   );
