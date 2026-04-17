@@ -213,7 +213,8 @@ export interface SaveResumeRequest {
 
 // Resume API Response Types
 export interface CreateResumeResponse {
-  success: boolean;
+  success?: boolean;
+  status?: string;
   data?: {
     id?: string;
     resumeId?: string;

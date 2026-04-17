@@ -8,7 +8,6 @@ import {
   FileText,
   ChevronRight,
   Upload,
-  Linkedin,
   Loader2,
   X,
   Plus,
@@ -1162,7 +1161,7 @@ export const Resume: React.FC = () => {
                     />
                   </label>
 
-                  <div
+                  {/* <div
                     onClick={() => {
                       if (!isImportBusy) {
                         handleMethodSelect("linkedin");
@@ -1186,7 +1185,7 @@ export const Resume: React.FC = () => {
                       </p>
                     </div>
                     <ChevronRight className="w-4 h-4 text-gray-400 group-hover:translate-x-0.5 transition-transform" />
-                  </div>
+                  </div> */}
                 </div>
               </div>
 

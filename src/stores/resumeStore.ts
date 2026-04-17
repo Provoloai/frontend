@@ -119,49 +119,58 @@ export const useResumeStore = create<ResumeStore>()(
       },
 
       syncResume: async (id: string, data: Resume | SaveResumeRequest) => {
-        try {
-          const isTempId = id.startsWith("resume_");
+        const isTempId = id.startsWith("resume_");
 
-          // Convert SaveResumeRequest to Partial<Resume> for local update
-          // We only update fields that are present in Resume interface
-          const localUpdate: Partial<Resume> = {
-            content: data.content,
-            title: data.title,
-            template: data.template,
-          };
-          // Cast data to any to access potentially missing properties safely
-          const safeData = data as any;
-          if (safeData.id) localUpdate.id = safeData.id;
-          if (safeData.userId) localUpdate.userId = safeData.userId;
+        // Convert SaveResumeRequest to Partial<Resume> for local update
+        // We only update fields that are present in Resume interface
+        const localUpdate: Partial<Resume> = {
+          content: data.content,
+          title: data.title,
+          template: data.template,
+        };
+        const safeData = data as Resume & SaveResumeRequest;
+        if (safeData.id) localUpdate.id = safeData.id;
+        if (safeData.userId) localUpdate.userId = safeData.userId;
 
-          // Optimistically update local state (excluding latex/html which are invalid for Resume type)
-          set(state => ({
-            resumes: state.resumes.map(r =>
-              r.id === id
-                ? { ...r, ...localUpdate, updatedAt: new Date().toISOString() }
-                : r
-            ),
-          }));
+        // Optimistically update local state (excluding latex/html which are invalid for Resume type)
+        set(state => ({
+          resumes: state.resumes.map(r =>
+            r.id === id
+              ? { ...r, ...localUpdate, updatedAt: new Date().toISOString() }
+              : r
+          ),
+        }));
 
-          // Send to backend (including latex/html if present in data)
-          const response = await resumeApi.createResume({
-            ...data,
-            resumeId: isTempId ? undefined : id,
-          });
+        // Send to backend (including latex/html if present in data)
+        const response = await resumeApi.createResume({
+          ...data,
+          resumeId: isTempId ? undefined : id,
+        });
 
-          if (response.success && response.data) {
-            const newId = response.data.id || response.data.resumeId;
-            if (newId && newId !== id) {
-              set(state => ({
-                currentResumeId: newId,
-                resumes: state.resumes.map(r =>
-                  r.id === id ? { ...r, id: newId } : r
-                ),
-              }));
-            }
+        const isSuccess =
+          response.success === true || response.status === "success";
+        if (isSuccess && response.data) {
+          const newId = response.data.id || response.data.resumeId;
+          if (newId && newId !== id) {
+            set(state => ({
+              currentResumeId: newId,
+              resumes: state.resumes.reduce<Resume[]>((acc, r) => {
+                if (r.id === id) {
+                  acc.push({ ...r, id: newId });
+                  return acc;
+                }
+
+                // Guard against accidental duplicates when the new id
+                // already exists in state for any reason.
+                if (r.id === newId) {
+                  return acc;
+                }
+
+                acc.push(r);
+                return acc;
+              }, []),
+            }));
           }
-        } catch (error) {
-          throw error;
         }
       },
 
