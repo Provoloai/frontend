@@ -2,7 +2,6 @@ import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'motion/react';
 import { Clock, CheckCircle2, Bell } from "lucide-react";
 import { useNotificationsStore } from '@/stores/notificationsStore';
-import { useNotifications } from '@/hooks/useNotifications';
 
 const NotificationsPage = () => {
     const [expandedId, setExpandedId] = useState<number | string | null>(null);
@@ -13,8 +12,7 @@ const NotificationsPage = () => {
     const markAsReadAsync = useNotificationsStore((state) => state.markAsReadAsync);
     const markAllAsReadAsync = useNotificationsStore((state) => state.markAllAsReadAsync);
 
-    // Fetch all notifications (will fetch more if needed)
-    useNotifications(20);
+    // Notifications are fetched in _sidebarlayout.tsx (shared store).
 
     // Show older notifications (everything after the first 5)
     const olderNotifications = useMemo(() => notifications.slice(5), [notifications]);

@@ -13,6 +13,7 @@ import type { PortfolioFormData } from "@/schemas/portfolioSchema";
 import OptimizerForm from "@/components/optimizer/OptimizerForm";
 import OptimizerResultsComponent from "@/components/optimizer/OptimizerResults";
 import { useSEO, SEO_CONFIGS } from "@/hooks/useSEO";
+import { queryKeys } from "@/lib/queryClient";
 
 const PortfolioOptimizer = () => {
   useSEO(SEO_CONFIGS.optimizer);
@@ -153,11 +154,11 @@ const PortfolioOptimizer = () => {
 
       // Invalidate quota to refresh the count
       await queryClient.invalidateQueries({
-        queryKey: ["quota", "upwork_profile_optimizer"],
+        queryKey: queryKeys.quota("upwork_profile_optimizer"),
       });
 
        await queryClient.invalidateQueries({
-        queryKey: ["proposal-history"],
+        queryKey: queryKeys.optimizerHistory.all(),
       });
     } catch (err: unknown) {
       const error = err as Error;

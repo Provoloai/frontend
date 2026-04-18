@@ -1,6 +1,7 @@
 import { useQuery, QueryObserverResult } from "@tanstack/react-query";
 import { User } from "../types";
 import { apiRequest } from "@/api";
+import { QUERY_STALE_TIMES, queryKeys } from "@/lib/queryClient";
 
 async function fetchSession(): Promise<User | null> {
   try {
@@ -29,9 +30,9 @@ export default function useSession(): UseSessionReturn {
     isFetching,
     refetch,
   } = useQuery({
-    queryKey: ["session"],
+    queryKey: queryKeys.session(),
     queryFn: fetchSession,
-    staleTime: 15 * 60 * 1000, // 15 minutes - standard session cache time
+    staleTime: QUERY_STALE_TIMES.session, // 15 minutes - standard session cache time
     gcTime: 60 * 60 * 1000, // 1 hour - keep in cache for a reasonable time
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,

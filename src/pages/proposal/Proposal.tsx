@@ -29,6 +29,7 @@ import {
 import type { ProposalData, ImprovementOption } from "@/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSEO, SEO_CONFIGS } from "@/hooks/useSEO";
+import { queryKeys } from "@/lib/queryClient";
 // import Banner from "@/components/dashboard/Banner";
 import { Link } from "@tanstack/react-router";
 import {
@@ -158,7 +159,7 @@ const PortfolioOptimizer: React.FC = () => {
         setSelectedImprovement(null); // Reset selected improvement when generating new proposal
 
         await queryClient.invalidateQueries({
-          queryKey: ["proposal-history"],
+          queryKey: queryKeys.proposalHistory.all(),
         });
       } catch (err: unknown) {
         const errorMessage =
@@ -209,7 +210,7 @@ const PortfolioOptimizer: React.FC = () => {
       setSelectedImprovement(null); // Reset selected improvement
 
       await queryClient.invalidateQueries({
-        queryKey: ["proposal-history"],
+        queryKey: queryKeys.proposalHistory.all(),
       });
     } catch (error: unknown) {
       const errorMessage =

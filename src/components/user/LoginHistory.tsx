@@ -11,9 +11,12 @@ import {
 import { deviceApi, useGetDevices } from "@/api";
 import { motion, AnimatePresence } from "motion/react";
 import CustomButton from "@/Reusables/CustomButton";
+import { useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/queryClient";
 
 export default function LoginHistory() {
-  const { data: devicesResponse, isLoading, refetch } = useGetDevices();
+  const { data: devicesResponse, isLoading } = useGetDevices();
+  const queryClient = useQueryClient();
   const [revokingId, setRevokingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -53,7 +56,7 @@ export default function LoginHistory() {
       setRevokingId(id);
       setError(null);
       await deviceApi.revokeDevice(id);
-      await refetch();
+      await queryClient.invalidateQueries({ queryKey: queryKeys.devices() });
     } catch (err) {
       setError("Failed to revoke session. Please try again.");
       console.error(err);

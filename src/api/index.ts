@@ -11,6 +11,7 @@ import {
 import { apiGet, getBackendBaseUrl } from "@/utils/api.util";
 import { useQuery } from "@tanstack/react-query";
 import { auth } from "@/lib/firebase";
+import { QUERY_STALE_TIMES, queryKeys } from "@/lib/queryClient";
 
 // Generic API request function
 const apiRequest = async <T>(
@@ -136,8 +137,9 @@ export const deviceApi = {
 
 export const useGetDevices = () => {
   return useQuery({
-    queryKey: ["devices"],
+    queryKey: queryKeys.devices(),
     queryFn: () => deviceApi.getDevices(),
+    staleTime: QUERY_STALE_TIMES.devices,
   });
 };
 
@@ -262,31 +264,35 @@ export const authApi = {
 
 export const useGetProposalList = (page: number = 1, limit: number = 10) => {
   return useQuery({
-    queryKey: ["proposal-history", page, limit],
+    queryKey: queryKeys.proposalHistory.list(page, limit),
     queryFn: () => apiGet(`/ai/proposal-history?page=${page}&limit=${limit}`),
+    staleTime: QUERY_STALE_TIMES.history,
   });
 };
 
 export const useGetProposal = (id: string) => {
   return useQuery({
-    queryKey: ["proposal-history", id],
+    queryKey: queryKeys.proposalHistory.detail(id),
     queryFn: () => apiGet(`/ai/proposal-history/${id}`),
     enabled: !!id, // Only run query if id exists
+    staleTime: QUERY_STALE_TIMES.detail,
   });
 };
 
 export const useGetOptimizerList = (page: number = 1, limit: number = 10) => {
   return useQuery({
-    queryKey: ["optimizer-history", page, limit],
-    queryFn: () => apiGet(`/ai/optimizer-history`),
+    queryKey: queryKeys.optimizerHistory.list(page, limit),
+    queryFn: () => apiGet(`/ai/optimizer-history?page=${page}&limit=${limit}`),
+    staleTime: QUERY_STALE_TIMES.history,
   });
 };
 
 export const useGetOptimizer = (id: string) => {
   return useQuery({
-    queryKey: ["optimizer-history", id],
+    queryKey: queryKeys.optimizerHistory.detail(id),
     queryFn: () => apiGet(`/ai/optimizer-history/${id}`),
     enabled: !!id, // Only run query if id exists
+    staleTime: QUERY_STALE_TIMES.detail,
   });
 };
 
@@ -310,15 +316,21 @@ export const quotaApi = {
 
 export const useGetQuota = (quotaSlug: string) => {
   return useQuery({
-    queryKey: ["quota", quotaSlug],
+    queryKey: queryKeys.quota(quotaSlug),
     queryFn: () => quotaApi.getQuota(quotaSlug),
     enabled: !!quotaSlug,
+    staleTime: QUERY_STALE_TIMES.quota,
   });
 };
 
 // Notification API functions
+export const NOTIFICATIONS_DEFAULT_LIMIT = 20;
+
 export const notificationApi = {
-  getNotifications: async (limit: number = 20, startAfter?: string) => {
+  getNotifications: async (
+    limit: number = NOTIFICATIONS_DEFAULT_LIMIT,
+    startAfter?: string
+  ) => {
     const queryParams = new URLSearchParams({
       limit: limit.toString(),
     });
@@ -361,12 +373,13 @@ export const notificationApi = {
 };
 
 export const useGetNotifications = (
-  limit: number = 20,
   startAfter?: string
 ) => {
   return useQuery({
-    queryKey: ["notifications", limit, startAfter],
-    queryFn: () => notificationApi.getNotifications(limit, startAfter),
+    queryKey: queryKeys.notifications.list(startAfter),
+    queryFn: () =>
+      notificationApi.getNotifications(NOTIFICATIONS_DEFAULT_LIMIT, startAfter),
+    staleTime: QUERY_STALE_TIMES.notifications,
   });
 };
 
@@ -419,6 +432,14 @@ export const resumeApi = {
       body: formData,
     });
   },
+};
+
+export const useGetResumes = () => {
+  return useQuery({
+    queryKey: queryKeys.resumes.list(),
+    queryFn: () => resumeApi.getResumes(),
+    staleTime: QUERY_STALE_TIMES.history,
+  });
 };
 
 export { apiRequest };

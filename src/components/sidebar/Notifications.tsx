@@ -1,8 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { Bell, Clock, BellRing, ArrowRight, MoveRight } from "lucide-react";
+import { Bell, Clock, BellRing } from "lucide-react";
 import { Link, useNavigate } from '@tanstack/react-router';
 import { useNotificationsStore } from '@/stores/notificationsStore';
-import { useNotifications } from '@/hooks/useNotifications';
 
 export default function Notifications() {
     const [isOpen, setIsOpen] = useState(false);
@@ -14,9 +13,7 @@ export default function Notifications() {
     const markAsReadAsync = useNotificationsStore((state) => state.markAsReadAsync);
     const markAllAsReadAsync = useNotificationsStore((state) => state.markAllAsReadAsync);
 
-    // Fetch first 5 notifications when component mounts
-    useNotifications(5);
-
+    // Data is loaded once in _sidebarlayout.tsx; preview uses first 5.
     // Always show first 5 notifications in sidebar
     const recentNotifications = useMemo(() => notifications.slice(0, 5), [notifications]);
     const unreadCount = useMemo(() => notifications.filter((n) => n.unread).length, [notifications]);

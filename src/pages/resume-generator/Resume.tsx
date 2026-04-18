@@ -16,8 +16,10 @@ import {
   Clock,
   AlertTriangle,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import CustomSnackbar from "@/Reusables/CustomSnackbar";
+import { useQuery } from "@tanstack/react-query";
+import { QUERY_STALE_TIMES, queryKeys } from "@/lib/queryClient";
 import type {
   Certification,
   Course,
@@ -159,9 +161,11 @@ export const Resume: React.FC = () => {
   const resumes = getAllResumes();
   const isImportBusy = isImportingPdf;
 
-  useEffect(() => {
-    fetchResumes();
-  }, [fetchResumes]);
+  useQuery({
+    queryKey: queryKeys.resumes.list(),
+    queryFn: fetchResumes,
+    staleTime: QUERY_STALE_TIMES.history,
+  });
 
   const handleMethodSelect = (method: string) => {
     if (method === "manual") {

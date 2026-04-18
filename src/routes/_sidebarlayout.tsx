@@ -7,6 +7,7 @@ import UserName from "../pages/auth/UserName";
 import EmailVerification from "../pages/auth/EmailVerification";
 import VerifyingAuth from "../Reusables/VerifyingAuth";
 import useSession from "../hooks/useSession";
+import { useNotifications } from "@/hooks/useNotifications";
 import Notifications from "@/components/sidebar/Notifications";
 import UnderMaintenance from "../pages/UnderMaintenance";
 
@@ -47,6 +48,12 @@ function RouteComponent() {
 
   if (!hasDisplayName) return <UserName />;
 
+  return <SidebarLayoutShell />;
+}
+
+/** Single fetch for sidebar + notifications page (shared React Query key + zustand store). */
+function SidebarLayoutShell() {
+  useNotifications();
   return (
     <div className="flex h-screen bg-gray-50 ">
       <Sidebar />
