@@ -28,6 +28,12 @@ export const apiPost = (endpoint: string, data: any): Promise<any> =>
     body: JSON.stringify(data),
   });
 
+export const apiPatch = (endpoint: string, data: any): Promise<any> =>
+  makeApiRequest(endpoint, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  });
+
 export const apiPut = (endpoint: string, data: any): Promise<any> =>
   makeApiRequest(endpoint, {
     method: "PUT",

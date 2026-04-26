@@ -81,20 +81,21 @@ const bottomNavItems: NavItem[] = [
 export default function Sidebar() {
   const pathname = useRouterState({ select: s => s.location.pathname });
   const { user: serverUser } = useSession();
-  
+
   // Combine server session data with Firebase local data as fallback
   const user = serverUser || auth.currentUser;
   const { handleSignOut } = useUser(user);
 
   const displayName = user?.displayName || user?.name || "Jese Leos";
   const email = user?.email || "name@flowbite.com";
-  
-  const initials = displayName
-    .split(" ")
-    .map(n => n[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase() || "JI";
+
+  const initials =
+    displayName
+      .split(" ")
+      .map((n: string) => n[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase() || "JI";
 
   const isActive = (item: NavItem) =>
     item.matchPrefix

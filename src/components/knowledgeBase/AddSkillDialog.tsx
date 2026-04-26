@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { GripVertical, Plus, Search, X } from "lucide-react";
+import { GripVertical, Plus, Search, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -33,7 +33,7 @@ type AddSkillDialogProps = {
   open: boolean;
   onClose: () => void;
   initialSkills: SkillEntry[];
-  onSave: (skills: SkillEntry[]) => void;
+  onSave: (skills: SkillEntry[]) => void | Promise<void>;
 };
 
 export default function AddSkillDialog({
@@ -44,6 +44,7 @@ export default function AddSkillDialog({
 }: AddSkillDialogProps) {
   const [query, setQuery] = useState("");
   const [selectedSkills, setSelectedSkills] = useState<SkillEntry[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -97,9 +98,16 @@ export default function AddSkillDialog({
     setSelectedSkills(prev => prev.filter(skill => skill.id !== id));
   };
 
-  const handleSave = () => {
-    onSave(selectedSkills);
-    onClose();
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      await onSave(selectedSkills);
+      onClose();
+    } catch (e) {
+      // Handled by parent
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -203,15 +211,17 @@ export default function AddSkillDialog({
             variant="outline"
             onClick={onClose}
             className="h-11 flex-1 rounded-xl"
+            disabled={isSaving}
           >
             Cancel
           </Button>
           <Button
             type="button"
             onClick={handleSave}
-            disabled={selectedSkills.length === 0}
-            className="h-11 flex-1 rounded-xl"
+            disabled={selectedSkills.length === 0 || isSaving}
+            className="h-11 flex-1 rounded-xl flex items-center gap-2"
           >
+            {isSaving && <Loader2 className="size-4 animate-spin" />}
             Save
           </Button>
         </SheetFooter>

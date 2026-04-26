@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useRouter } from "@tanstack/react-router";
 import { motion } from "motion/react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Loader2 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,6 +34,7 @@ import EditProjectSheet from "@/components/knowledgeBase/EditProjectSheet";
 import DeleteConfirmDialog from "@/components/knowledgeBase/DeleteConfirmDialog";
 import ToastProvider from "@/components/knowledgeBase/ToastProvider";
 import { useToast } from "@/components/knowledgeBase/useToast";
+import { useManualUpdateKnowledgeBase } from "@/hooks/useKnowledgeBase";
 
 import desktopLogo from "/src/assets/v2/svg/desktop-logo.svg";
 
@@ -69,14 +70,30 @@ export default function OnboardingReview() {
 function OnboardingReviewContent() {
   const router = useRouter();
   const { toast } = useToast();
+  const { mutateAsync: manualUpdateKnowledgeBase } = useManualUpdateKnowledgeBase();
   const [profile, setProfile] =
     useState<ReviewProfileData>(PLACEHOLDER_PROFILE);
   const [sheet, setSheet] = useState<SheetState>({ type: "none" });
   const [deleteDialog, setDeleteDialog] = useState<DeleteState>({
     type: "none",
   });
+  const [isSaving, setIsSaving] = useState(false);
 
   const closeSheet = () => setSheet({ type: "none" });
+
+  const toIsoDateFromMonthYear = (month: string, year: string): string => {
+    const trimmedYear = year.trim();
+    if (!trimmedYear) return "";
+    const monthIndex = month ? new Date(`${month} 1, 2000`).getMonth() : 0;
+    const safeMonthIndex = Number.isNaN(monthIndex) ? 0 : monthIndex;
+    return `${trimmedYear}-${String(safeMonthIndex + 1).padStart(2, "0")}-01`;
+  };
+
+  const normalizeUrl = (value: string): string => {
+    const trimmed = value.trim();
+    if (!trimmed) return "";
+    return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+  };
 
   // — Summary handlers —
   const handleSaveSummary = (text: string) => {
@@ -189,6 +206,58 @@ function OnboardingReviewContent() {
       toast("Project deleted successfully!");
     }
     setDeleteDialog({ type: "none" });
+  };
+
+  const handleSaveAll = async () => {
+    setIsSaving(true);
+    try {
+      const payload = {
+        professionalSummary: profile.summary.text,
+        experience: profile.experience.map(e => ({
+          company: e.company,
+          position: e.title,
+          startDate: toIsoDateFromMonthYear(e.startMonth, e.startYear),
+          endDate: e.currentlyWorking ? "" : toIsoDateFromMonthYear(e.endMonth, e.endYear),
+          current: e.currentlyWorking,
+          description: e.description,
+          location: e.location,
+        })),
+        education: profile.education.map(e => ({
+          institution: e.school,
+          degree: e.degree,
+          fieldOfStudy: e.fieldOfStudy,
+          startDate: e.startDate,
+          endDate: e.endDate,
+          current: false,
+          description: e.description,
+        })),
+        certifications: profile.certifications.map(c => ({
+          name: c.name,
+          issuer: c.issuingOrganization,
+          issueDate: toIsoDateFromMonthYear(c.issueMonth, c.issueYear),
+        })),
+        projects: profile.projects.map(p => ({
+          title: p.title,
+          description: p.description,
+          link: normalizeUrl(p.projectLink),
+          technologies: [],
+          startDate: toIsoDateFromMonthYear(p.startMonth, p.startYear),
+          endDate: p.currentlyWorking ? "" : toIsoDateFromMonthYear(p.endMonth, p.endYear),
+        })),
+        skills: profile.skills.map(s => ({
+          name: s.name,
+          level: "Beginner"
+        }))
+      };
+
+      await manualUpdateKnowledgeBase(payload);
+      toast("Profile saved successfully!");
+      router.navigate({ to: "/knowledge-base" });
+    } catch (error) {
+      toast("Failed to save profile.", "error");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const { displayName, email } = PLACEHOLDER_USER;
@@ -317,13 +386,11 @@ function OnboardingReviewContent() {
             transition={v2Spring}
           >
             <Button
-              className="py-2.5 px-4 rounded-xl"
-              onClick={() => {
-                // TODO: wire up save API
-                console.log("Save profile:", profile);
-                router.navigate({ to: "/knowledge-base" });
-              }}
+              className="py-2.5 px-4 rounded-xl flex items-center gap-2"
+              onClick={handleSaveAll}
+              disabled={isSaving}
             >
+              {isSaving && <Loader2 className="size-4 animate-spin" />}
               Save
             </Button>
           </motion.div>

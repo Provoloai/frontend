@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { useLocation, useNavigate } from "@tanstack/react-router";
 import AuthPanelLeft from "@/components/auth/AuthPanelLeft";
 import SignupForm from "@/components/auth/SignupForm";
 import VerifyEmailForm from "@/components/auth/VerifyEmailForm";
@@ -23,9 +23,11 @@ export default function Signup() {
 
 function SignupContent() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   const [showVerifyEmail, setShowVerifyEmail] = useState(false);
   const [verificationEmail, setVerificationEmail] = useState("");
+  const shouldAutoResendOtp = location.hash === "login-auto-resend";
 
   const form = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
@@ -68,6 +70,7 @@ function SignupContent() {
           email={verificationEmail}
           onVerified={handleVerified}
           onToast={toast}
+          autoResendOnMount={shouldAutoResendOtp}
         />
       </main>
     );

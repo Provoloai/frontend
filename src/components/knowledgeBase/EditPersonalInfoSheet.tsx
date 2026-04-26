@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { Loader2 } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -33,7 +34,7 @@ type Props = {
   open: boolean;
   onClose: () => void;
   initialData: PersonalInfoData;
-  onSave: (data: PersonalInfoData) => void;
+  onSave: (data: PersonalInfoData) => void | Promise<void>;
 };
 
 export default function EditPersonalInfoSheet({
@@ -43,6 +44,7 @@ export default function EditPersonalInfoSheet({
   onSave,
 }: Props) {
   const [form, setForm] = useState<PersonalInfoData>(initialData);
+  const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -60,9 +62,16 @@ export default function EditPersonalInfoSheet({
     setForm(prev => ({ ...prev, photoUrl: url }));
   };
 
-  const handleSave = () => {
-    onSave(form);
-    onClose();
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      await onSave(form);
+      onClose();
+    } catch (e) {
+      // Handled by parent
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const initials = form.displayName
@@ -139,10 +148,16 @@ export default function EditPersonalInfoSheet({
                 value={form.country}
                 onValueChange={value => handleChange("country", value)}
               >
-                <SelectTrigger className="h-10 w-full">
+                <SelectTrigger className="h-10 w-full bg-white">
                   <SelectValue placeholder="Country" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent
+                  position="popper"
+                  side="bottom"
+                  align="start"
+                  sideOffset={6}
+                  className="z-[120] max-h-64"
+                >
                   {COUNTRIES.map(country => (
                     <SelectItem key={country} value={country}>
                       {country}
@@ -155,10 +170,16 @@ export default function EditPersonalInfoSheet({
                 value={form.state}
                 onValueChange={value => handleChange("state", value)}
               >
-                <SelectTrigger className="h-10 w-full">
+                <SelectTrigger className="h-10 w-full bg-white">
                   <SelectValue placeholder="State" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent
+                  position="popper"
+                  side="bottom"
+                  align="start"
+                  sideOffset={6}
+                  className="z-[120] max-h-64"
+                >
                   {STATES.map(state => (
                     <SelectItem key={state} value={state}>
                       {state}
@@ -188,10 +209,11 @@ export default function EditPersonalInfoSheet({
         </div>
 
         <SheetFooter className="flex-row gap-3 border-t border-[#E5E7EB] px-6 py-4 sm:justify-start">
-          <Button variant="outline" onClick={onClose} className="flex-1">
+          <Button variant="outline" onClick={onClose} className="flex-1" disabled={isSaving}>
             Cancel
           </Button>
-          <Button onClick={handleSave} className="flex-1">
+          <Button onClick={handleSave} className="flex-1 flex items-center gap-2" disabled={isSaving}>
+            {isSaving && <Loader2 className="size-4 animate-spin" />}
             Save
           </Button>
         </SheetFooter>

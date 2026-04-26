@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { Download, SquarePen } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -38,16 +38,19 @@ import DeleteConfirmDialog from "@/components/knowledgeBase/DeleteConfirmDialog"
 import ImportDataDialog from "@/components/knowledgeBase/ImportDataDialog";
 import ToastProvider from "@/components/knowledgeBase/ToastProvider";
 import { useToast } from "@/components/knowledgeBase/useToast";
-import { PLACEHOLDER_PROFILE } from "@/constants/reviewPlaceholder";
+import {
+  useKnowledgeBase,
+  useManualUpdateKnowledgeBase,
+} from "@/hooks/useKnowledgeBase";
+import { authApi } from "@/api";
 
-const PLACEHOLDER_USER = {
-  displayName: "Shakirat Akanji",
-  role: "Design Engineer | UX Designer",
-  school: "",
-  location: "Lagos, Nigeria",
-  experience: "3 Years",
-  email: "akanjiishakirat@gmail.com",
-  portfolio: "sakunli.framer.website",
+const EMPTY_PROFILE: ReviewProfileData = {
+  summary: { text: "" },
+  experience: [],
+  skills: [],
+  education: [],
+  certifications: [],
+  projects: [],
 };
 
 /** Calculate profile completion as a percentage (6 sections) */
@@ -86,11 +89,39 @@ export default function KnowledgeBase() {
   );
 }
 
+function KnowledgeBaseLoading() {
+  return (
+    <div className="min-h-full px-10 py-6">
+      <div className="mb-6 flex items-center justify-between">
+        <div className="space-y-2">
+          <div className="h-8 w-48 animate-pulse rounded-md bg-gray-200" />
+          <div className="h-4 w-72 animate-pulse rounded-md bg-gray-200" />
+        </div>
+        <div className="h-10 w-32 animate-pulse rounded-xl bg-gray-200" />
+      </div>
+
+      <div className="grid grid-cols-[20rem_1fr] gap-6">
+        <div className="space-y-4">
+          <div className="h-44 animate-pulse rounded-2xl bg-white" />
+          <div className="h-36 animate-pulse rounded-2xl bg-white" />
+        </div>
+        <div className="space-y-4">
+          <div className="h-52 animate-pulse rounded-2xl bg-white" />
+          <div className="h-52 animate-pulse rounded-2xl bg-white" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function KnowledgeBaseContent() {
   const { toast } = useToast();
-  const [profile, setProfile] =
-    useState<ReviewProfileData>(PLACEHOLDER_PROFILE);
-  // useState<ReviewProfileData>(EMPTY_PROFILE);
+  const { data: kbDataResp, isLoading, isFetching } = useKnowledgeBase();
+  const { mutateAsync: manualUpdateKnowledgeBase } =
+    useManualUpdateKnowledgeBase();
+  const kbData = kbDataResp?.data;
+
+  const [profile, setProfile] = useState<ReviewProfileData>(EMPTY_PROFILE);
   const [sheet, setSheet] = useState<SheetState>({ type: "none" });
   const [deleteDialog, setDeleteDialog] = useState<DeleteState>({
     type: "none",
@@ -98,142 +129,389 @@ function KnowledgeBaseContent() {
   const [importOpen, setImportOpen] = useState(false);
   const [personalInfoOpen, setPersonalInfoOpen] = useState(false);
   const [personalInfo, setPersonalInfo] = useState<PersonalInfoData>({
-    displayName: PLACEHOLDER_USER.displayName,
-    role: PLACEHOLDER_USER.role,
+    displayName: "",
+    role: "",
     country: "",
     state: "",
     website: "",
   });
 
+  useEffect(() => {
+    if (kbData) {
+      // Map backend data to local state
+      const { account, knowledge } = kbData;
+      if (account) {
+        setPersonalInfo({
+          displayName: account.displayName || "",
+          role: account.professionalTitle || "",
+          country: knowledge?.location?.split(", ")[1] || "",
+          state: knowledge?.location?.split(", ")[0] || "",
+          website: account.portfolioLink || "",
+        });
+      }
+      if (knowledge) {
+        setProfile({
+          summary: { text: knowledge.professionalSummary || "" },
+          // A bit verbose, but mapping array items accurately depends on backend returned shape. Currently doing a crude fallback mapping:
+          experience: (knowledge.experience || []).map((e: any, i) => ({
+            id: e.id || String(i),
+            title: e.position || "",
+            company: e.company || "",
+            employmentType: "",
+            startMonth: e.startDate
+              ? new Date(e.startDate).toLocaleString("default", {
+                  month: "long",
+                })
+              : "",
+            startYear: e.startDate
+              ? new Date(e.startDate).getFullYear().toString()
+              : "",
+            endMonth: e.endDate
+              ? new Date(e.endDate).toLocaleString("default", { month: "long" })
+              : "",
+            endYear: e.endDate
+              ? new Date(e.endDate).getFullYear().toString()
+              : "",
+            currentlyWorking: !!e.current,
+            location: e.location || "",
+            description: e.description || "",
+          })),
+          education: (knowledge.education || []).map((e: any, i) => ({
+            id: e.id || String(i),
+            school: e.institution || "",
+            degree: e.degree || "",
+            fieldOfStudy: e.fieldOfStudy || "",
+            startDate: e.startDate || "",
+            endDate: e.endDate || "",
+            grade: "",
+            description: e.description || "",
+          })),
+          certifications: (knowledge.certifications || []).map((c: any, i) => ({
+            id: c.id || String(i),
+            name: c.name || "",
+            issuingOrganization: c.issuer || "",
+            issueMonth: c.issueDate
+              ? new Date(c.issueDate).toLocaleString("default", {
+                  month: "long",
+                })
+              : "",
+            issueYear: c.issueDate
+              ? new Date(c.issueDate).getFullYear().toString()
+              : "",
+            expirationMonth: "",
+            expirationYear: "",
+            credentialId: "",
+            credentialUrl: "",
+          })),
+          projects: (knowledge.projects || []).map((p: any, i) => ({
+            id: p.id || String(i),
+            title: p.title || "",
+            description: p.description || "",
+            projectLink: p.link || "",
+            startMonth: p.startDate
+              ? new Date(p.startDate).toLocaleString("default", {
+                  month: "long",
+                })
+              : "",
+            startYear: p.startDate
+              ? new Date(p.startDate).getFullYear().toString()
+              : "",
+            endMonth: p.endDate
+              ? new Date(p.endDate).toLocaleString("default", { month: "long" })
+              : "",
+            endYear: p.endDate
+              ? new Date(p.endDate).getFullYear().toString()
+              : "",
+            currentlyWorking: false,
+            files: [],
+          })),
+          skills: (knowledge.skills || []).map((s: any, i) => ({
+            id: s.id || String(i),
+            name: s.name || s,
+          })),
+        });
+      }
+    }
+  }, [kbData]);
+
   const closeSheet = () => setSheet({ type: "none" });
+
+  const toIsoDateFromMonthYear = (month: string, year: string): string => {
+    const trimmedYear = year.trim();
+    if (!trimmedYear) return "";
+
+    const monthIndex = month
+      ? new Date(`${month} 1, 2000`).getMonth()
+      : 0;
+
+    const safeMonthIndex = Number.isNaN(monthIndex) ? 0 : monthIndex;
+    return `${trimmedYear}-${String(safeMonthIndex + 1).padStart(2, "0")}-01`;
+  };
+
+  const normalizeUrl = (value: string): string => {
+    const trimmed = value.trim();
+    if (!trimmed) return "";
+    return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+  };
 
   /* ---- CRUD handlers ---- */
 
-  const handleSaveSummary = (text: string) => {
-    setProfile(prev => ({ ...prev, summary: { text } }));
-    toast("Summary updated successfully!");
+  const handleSaveSummary = async (text: string) => {
+    try {
+      await manualUpdateKnowledgeBase({ professionalSummary: text });
+      setProfile(prev => ({ ...prev, summary: { text } }));
+      toast("Summary updated successfully!");
+    } catch (e) {
+      toast("Failed to update summary.", "error");
+      throw e;
+    }
   };
 
-  const handleSaveExperience = (entry: ExperienceEntry) => {
-    setProfile(prev => {
-      const exists = prev.experience.find(e => e.id === entry.id);
+  const handleSaveExperience = async (entry: ExperienceEntry) => {
+    const exists = profile.experience.find(e => e.id === entry.id);
+    const nextExperience = exists
+      ? profile.experience.map(e => (e.id === entry.id ? entry : e))
+      : [...profile.experience, entry];
+
+    const payload = nextExperience.map(e => ({
+      company: e.company,
+      position: e.title,
+      startDate: toIsoDateFromMonthYear(e.startMonth, e.startYear),
+      endDate: e.currentlyWorking
+        ? ""
+        : toIsoDateFromMonthYear(e.endMonth, e.endYear),
+      current: e.currentlyWorking,
+      description: e.description,
+      location: e.location,
+    }));
+
+    try {
+      await manualUpdateKnowledgeBase({ experience: payload });
+      setProfile(prev => ({ ...prev, experience: nextExperience }));
       toast(
         exists
           ? "Experience updated successfully!"
           : "Experience added successfully!"
       );
-      return {
-        ...prev,
-        experience: exists
-          ? prev.experience.map(e => (e.id === entry.id ? entry : e))
-          : [...prev.experience, entry],
-      };
-    });
+    } catch (e) {
+      toast("Failed to update experience.", "error");
+      throw e;
+    }
   };
 
-  const handleSaveEducation = (entry: EducationEntry) => {
-    setProfile(prev => {
-      const exists = prev.education.find(e => e.id === entry.id);
+  const handleSaveEducation = async (entry: EducationEntry) => {
+    const exists = profile.education.find(e => e.id === entry.id);
+    const nextEducation = exists
+      ? profile.education.map(e => (e.id === entry.id ? entry : e))
+      : [...profile.education, entry];
+
+    const payload = nextEducation.map(e => ({
+      institution: e.school,
+      degree: e.degree,
+      fieldOfStudy: e.fieldOfStudy,
+      startDate: e.startDate,
+      endDate: e.endDate,
+      current: false,
+      description: e.description,
+    }));
+
+    try {
+      await manualUpdateKnowledgeBase({ education: payload });
+      setProfile(prev => ({ ...prev, education: nextEducation }));
       toast(
         exists
           ? "Education updated successfully!"
           : "Education added successfully!"
       );
-      return {
-        ...prev,
-        education: exists
-          ? prev.education.map(e => (e.id === entry.id ? entry : e))
-          : [...prev.education, entry],
-      };
-    });
+    } catch (e) {
+      toast("Failed to update education.", "error");
+      throw e;
+    }
   };
 
-  const handleSaveCertification = (entry: CertificationEntry) => {
-    setProfile(prev => {
-      const exists = prev.certifications.find(e => e.id === entry.id);
+  const handleSaveCertification = async (entry: CertificationEntry) => {
+    const exists = profile.certifications.find(e => e.id === entry.id);
+    const nextCertifications = exists
+      ? profile.certifications.map(e => (e.id === entry.id ? entry : e))
+      : [...profile.certifications, entry];
+
+    const payload = nextCertifications.map(c => ({
+      name: c.name,
+      issuer: c.issuingOrganization,
+      issueDate: toIsoDateFromMonthYear(c.issueMonth, c.issueYear),
+    }));
+
+    try {
+      await manualUpdateKnowledgeBase({ certifications: payload });
+      setProfile(prev => ({ ...prev, certifications: nextCertifications }));
       toast(
         exists
           ? "Certification updated successfully!"
           : "Certification added successfully!"
       );
-      return {
-        ...prev,
-        certifications: exists
-          ? prev.certifications.map(e => (e.id === entry.id ? entry : e))
-          : [...prev.certifications, entry],
-      };
-    });
+    } catch (e) {
+      toast("Failed to update certification.", "error");
+      throw e;
+    }
   };
 
-  const handleSaveProject = (entry: ProjectEntry) => {
-    setProfile(prev => {
-      const exists = prev.projects.find(e => e.id === entry.id);
+  const handleSaveProject = async (entry: ProjectEntry) => {
+    const exists = profile.projects.find(e => e.id === entry.id);
+    const nextProjects = exists
+      ? profile.projects.map(e => (e.id === entry.id ? entry : e))
+      : [...profile.projects, entry];
+
+    const payload = nextProjects.map(p => ({
+      title: p.title,
+      description: p.description,
+      link: normalizeUrl(p.projectLink),
+      technologies: [],
+      startDate: toIsoDateFromMonthYear(p.startMonth, p.startYear),
+      endDate: p.currentlyWorking
+        ? ""
+        : toIsoDateFromMonthYear(p.endMonth, p.endYear),
+    }));
+
+    try {
+      await manualUpdateKnowledgeBase({ projects: payload });
+      setProfile(prev => ({ ...prev, projects: nextProjects }));
       toast(
         exists ? "Project updated successfully!" : "Project added successfully!"
       );
-      return {
-        ...prev,
-        projects: exists
-          ? prev.projects.map(e => (e.id === entry.id ? entry : e))
-          : [...prev.projects, entry],
-      };
-    });
+    } catch (e) {
+      toast("Failed to update project.", "error");
+      throw e;
+    }
   };
 
-  const handleSaveSkills = (skills: SkillEntry[]) => {
-    setProfile(prev => ({ ...prev, skills }));
-    toast("Skills updated successfully!");
+  const handleSaveSkills = async (skills: SkillEntry[]) => {
+    const payload = skills.map(skill => ({
+      name: skill.name,
+      level: "Beginner",
+    }));
+
+    try {
+      await manualUpdateKnowledgeBase({ skills: payload });
+      setProfile(prev => ({ ...prev, skills }));
+      toast("Skills updated successfully!");
+    } catch (e) {
+      toast("Failed to update skills.", "error");
+      throw e;
+    }
   };
 
-  const handleConfirmDeleteItem = () => {
-    if (deleteDialog.type === "experience") {
-      setProfile(prev => ({
-        ...prev,
-        experience: prev.experience.filter(e => e.id !== deleteDialog.entry.id),
-      }));
-      toast("Experience deleted successfully!");
-    }
+  const handleConfirmDeleteItem = async () => {
+    try {
+      if (deleteDialog.type === "experience") {
+        const payload = profile.experience
+          .filter(e => e.id !== deleteDialog.entry.id)
+          .map(e => ({
+            company: e.company,
+            position: e.title,
+            startDate: toIsoDateFromMonthYear(e.startMonth, e.startYear),
+            endDate: e.currentlyWorking
+              ? ""
+              : toIsoDateFromMonthYear(e.endMonth, e.endYear),
+            current: e.currentlyWorking,
+            description: e.description,
+            location: e.location,
+          }));
+        await manualUpdateKnowledgeBase({ experience: payload });
+        setProfile(prev => ({
+          ...prev,
+          experience: prev.experience.filter(e => e.id !== deleteDialog.entry.id),
+        }));
+        toast("Experience deleted successfully!");
+      }
 
-    if (deleteDialog.type === "education") {
-      setProfile(prev => ({
-        ...prev,
-        education: prev.education.filter(e => e.id !== deleteDialog.entry.id),
-      }));
-      toast("Education deleted successfully!");
-    }
+      if (deleteDialog.type === "education") {
+        const payload = profile.education
+          .filter(e => e.id !== deleteDialog.entry.id)
+          .map(e => ({
+            institution: e.school,
+            degree: e.degree,
+            fieldOfStudy: e.fieldOfStudy,
+            startDate: e.startDate,
+            endDate: e.endDate,
+            current: false,
+            description: e.description,
+          }));
+        await manualUpdateKnowledgeBase({ education: payload });
+        setProfile(prev => ({
+          ...prev,
+          education: prev.education.filter(e => e.id !== deleteDialog.entry.id),
+        }));
+        toast("Education deleted successfully!");
+      }
 
-    if (deleteDialog.type === "certification") {
-      setProfile(prev => ({
-        ...prev,
-        certifications: prev.certifications.filter(
-          c => c.id !== deleteDialog.entry.id
-        ),
-      }));
-      toast("Certification deleted successfully!");
-    }
+      if (deleteDialog.type === "certification") {
+        const payload = profile.certifications
+          .filter(c => c.id !== deleteDialog.entry.id)
+          .map(c => ({
+            name: c.name,
+            issuer: c.issuingOrganization,
+            issueDate: toIsoDateFromMonthYear(c.issueMonth, c.issueYear),
+          }));
+        await manualUpdateKnowledgeBase({ certifications: payload });
+        setProfile(prev => ({
+          ...prev,
+          certifications: prev.certifications.filter(c => c.id !== deleteDialog.entry.id),
+        }));
+        toast("Certification deleted successfully!");
+      }
 
-    if (deleteDialog.type === "project") {
-      setProfile(prev => ({
-        ...prev,
-        projects: prev.projects.filter(p => p.id !== deleteDialog.entry.id),
-      }));
-      toast("Project deleted successfully!");
-    }
+      if (deleteDialog.type === "project") {
+        const payload = profile.projects
+          .filter(p => p.id !== deleteDialog.entry.id)
+          .map(p => ({
+            title: p.title,
+            description: p.description,
+            link: normalizeUrl(p.projectLink),
+            technologies: [],
+            startDate: toIsoDateFromMonthYear(p.startMonth, p.startYear),
+            endDate: p.currentlyWorking
+              ? ""
+              : toIsoDateFromMonthYear(p.endMonth, p.endYear),
+          }));
+        await manualUpdateKnowledgeBase({ projects: payload });
+        setProfile(prev => ({
+          ...prev,
+          projects: prev.projects.filter(p => p.id !== deleteDialog.entry.id),
+        }));
+        toast("Project deleted successfully!");
+      }
 
-    setDeleteDialog({ type: "none" });
+      setDeleteDialog({ type: "none" });
+    } catch (e) {
+      toast("Failed to delete item.", "error");
+      throw e;
+    }
   };
+
+  // Avoid rendering placeholder profile data before first backend payload arrives.
+  if (isLoading || (isFetching && !kbDataResp)) {
+    return <KnowledgeBaseLoading />;
+  }
 
   const selectedLocation = [personalInfo.state, personalInfo.country]
     .filter(Boolean)
     .join(", ");
 
+  const experienceYears = kbData?.knowledge?.experienceYears;
+  const experienceText =
+    typeof experienceYears === "number" && experienceYears > 0
+      ? `${experienceYears} Year${experienceYears === 1 ? "" : "s"}`
+      : "";
+
   const user = {
-    ...PLACEHOLDER_USER,
-    ...personalInfo,
-    location: selectedLocation || PLACEHOLDER_USER.location,
-    portfolio: personalInfo.website || PLACEHOLDER_USER.portfolio,
+    displayName: personalInfo.displayName || "User",
+    role: personalInfo.role,
+    location: selectedLocation,
+    experience: experienceText,
+    email: kbData?.account?.email || "",
+    portfolio: personalInfo.website,
   };
-  const initials = user.displayName
+  const initials = (user.displayName || "U")
     .split(" ")
     .map(n => n[0])
     .slice(0, 2)
@@ -491,9 +769,27 @@ function KnowledgeBaseContent() {
         open={personalInfoOpen}
         onClose={() => setPersonalInfoOpen(false)}
         initialData={personalInfo}
-        onSave={data => {
-          setPersonalInfo(data);
-          toast("Personal information updated successfully!");
+        onSave={async data => {
+          const location = [data.state, data.country].filter(Boolean).join(", ");
+          const website = normalizeUrl(data.website);
+
+          try {
+            await Promise.all([
+              manualUpdateKnowledgeBase({
+                location,
+              }),
+              authApi.updateProfile({
+                professional_title: data.role,
+                portfolio_link: website,
+              }),
+            ]);
+
+            setPersonalInfo({ ...data, website });
+            toast("Personal information updated successfully!");
+          } catch (e) {
+            toast("Failed to update personal information.", "error");
+            throw e;
+          }
         }}
       />
 

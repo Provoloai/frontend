@@ -27,11 +27,22 @@ export const useAuth = () => {
           password
         );
         const user = userCredential.user;
+
+        // Refresh auth profile to read latest verification state.
+        await user.reload();
         const idToken = await getIdToken(user, true);
 
         await authApi.login(idToken);
 
-        // Always navigate to optimizer - email verification check happens in layout
+        if (!user.emailVerified) {
+          navigate({
+            to: "/signup",
+            replace: true,
+            hash: "login-auto-resend",
+          });
+          return;
+        }
+
         navigate({ to: "/optimizer", replace: true });
       } catch (err: unknown) {
         const error = err as Error;
@@ -61,7 +72,16 @@ export const useAuth = () => {
 
       // Sync providers to backend to ensure they are merged, not replaced
       const updatedProviders = user.providerData.map(p => p.providerId);
-      await authApi.updateProviders(updatedProviders, idToken);
+      await authApi.updateProviders(updatedProviders);
+
+      if (!user.emailVerified) {
+        navigate({
+          to: "/signup",
+          replace: true,
+          hash: "login-auto-resend",
+        });
+        return;
+      }
 
       navigate({ to: "/optimizer", replace: true });
     } catch (err: unknown) {

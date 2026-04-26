@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Loader2 } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -16,7 +17,7 @@ type Props = {
   open: boolean;
   onClose: () => void;
   entry: EducationEntry | null;
-  onSave: (entry: EducationEntry) => void;
+  onSave: (entry: EducationEntry) => void | Promise<void>;
 };
 
 const emptyEntry: EducationEntry = {
@@ -37,6 +38,7 @@ export default function EditEducationSheet({
   onSave,
 }: Props) {
   const [form, setForm] = useState<EducationEntry>(emptyEntry);
+  const [isSaving, setIsSaving] = useState(false);
   const isAdding = !entry;
 
   useEffect(() => {
@@ -47,9 +49,16 @@ export default function EditEducationSheet({
     setForm(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSave = () => {
-    onSave(form);
-    onClose();
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      await onSave(form);
+      onClose();
+    } catch (e) {
+      // Handled by parent
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -128,10 +137,11 @@ export default function EditEducationSheet({
         </div>
 
         <SheetFooter className="flex-row gap-3 border-t pt-4">
-          <Button variant="outline" onClick={onClose} className="flex-1">
+          <Button variant="outline" onClick={onClose} className="flex-1" disabled={isSaving}>
             Cancel
           </Button>
-          <Button onClick={handleSave} className="flex-1">
+          <Button onClick={handleSave} className="flex-1 flex items-center gap-2" disabled={isSaving}>
+            {isSaving && <Loader2 className="size-4 animate-spin" />}
             Save
           </Button>
         </SheetFooter>

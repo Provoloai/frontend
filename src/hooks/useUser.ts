@@ -1,12 +1,10 @@
 import { useState, useCallback, useMemo } from "react";
-import { useNavigate } from "@tanstack/react-router";
 import { getCustomerPortalUrl } from "@/server/checkout";
 import { logout } from "@/utils/logout.util";
 import { USER_CONFIG } from "@/constants/user";
 import type { UserData } from "@/types/user";
 
-export const useUser = (userData: any) => {
-  const navigate = useNavigate();
+export const useUser = (userData: Record<string, unknown> | null) => {
   const [portalLoading, setPortalLoading] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -14,8 +12,8 @@ export const useUser = (userData: any) => {
   // Memoize user data to prevent recalculation
   const user = useMemo(
     (): UserData => ({
-      name: userData?.displayName ?? USER_CONFIG.messages.defaultUserName,
-      email: userData?.email,
+      name: (userData?.displayName as string) ?? USER_CONFIG.messages.defaultUserName,
+      email: userData?.email as string,
     }),
     [userData]
   );
@@ -35,7 +33,9 @@ export const useUser = (userData: any) => {
       if (url) window.location.href = url;
     } catch (e) {
       setSnackbarMessage(
-        e instanceof Error ? e.message : USER_CONFIG.subscription.portalErrorMessage
+        e instanceof Error
+          ? e.message
+          : USER_CONFIG.subscription.portalErrorMessage
       );
       setSnackbarOpen(true);
     } finally {
@@ -47,7 +47,7 @@ export const useUser = (userData: any) => {
   const handleSignOut = useCallback(async () => {
     try {
       await logout();
-      // Force reload the page so react-query and all contexts are thoroughly wiped, 
+      // Force reload the page so react-query and all contexts are thoroughly wiped,
       // preventing any cached session data from redirecting them back to the dashboard immediately.
       window.location.href = "/login";
     } catch {

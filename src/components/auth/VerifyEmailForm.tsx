@@ -11,6 +11,7 @@ type VerifyEmailFormProps = {
     message: string,
     variant?: "success" | "error" | "warning" | "info"
   ) => void;
+  autoResendOnMount?: boolean;
 };
 
 const OTP_LENGTH = 6;
@@ -22,6 +23,7 @@ export default function VerifyEmailForm({
   email,
   onVerified,
   onToast,
+  autoResendOnMount = false,
 }: VerifyEmailFormProps) {
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(""));
   const [status, setStatus] = useState<VerificationStatus>("idle");
@@ -31,6 +33,7 @@ export default function VerifyEmailForm({
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const didAutoResendRef = useRef(false);
 
   const startCountdown = useCallback((seconds: number) => {
     if (timerRef.current) {
@@ -60,6 +63,36 @@ export default function VerifyEmailForm({
       }
     };
   }, [startCountdown]);
+
+  useEffect(() => {
+    if (!autoResendOnMount || didAutoResendRef.current) return;
+
+    didAutoResendRef.current = true;
+
+    const autoResend = async () => {
+      setIsResending(true);
+      startCountdown(RESEND_SECONDS);
+
+      try {
+        const response = await authApi.sendVerificationCode();
+        onToast(
+          response?.message || "A new verification code was sent.",
+          "info"
+        );
+      } catch {
+        onToast("Failed to resend verification code.", "error");
+        setResendCountdown(0);
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
+          timerRef.current = null;
+        }
+      } finally {
+        setIsResending(false);
+      }
+    };
+
+    void autoResend();
+  }, [autoResendOnMount, onToast, startCountdown]);
 
   const handleOtpChange = (index: number, value: string) => {
     if (value && !/^\d$/.test(value)) return;

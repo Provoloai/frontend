@@ -39,7 +39,9 @@ export const useUserProfile = () => {
   // Optimized subscription portal handler
   const openSubscriptionPortal = useCallback(async () => {
     if (!user?.polarId) {
-      setSnackbarMessage(USER_PROFILE_CONFIG.subscription.noSubscriptionMessage);
+      setSnackbarMessage(
+        USER_PROFILE_CONFIG.subscription.noSubscriptionMessage
+      );
       setSnackbarOpen(true);
       return;
     }
@@ -49,7 +51,9 @@ export const useUserProfile = () => {
       if (url) window.location.href = url;
     } catch (e) {
       setSnackbarMessage(
-        e instanceof Error ? e.message : USER_PROFILE_CONFIG.subscription.portalErrorMessage
+        e instanceof Error
+          ? e.message
+          : USER_PROFILE_CONFIG.subscription.portalErrorMessage
       );
       setSnackbarOpen(true);
     } finally {
@@ -87,7 +91,9 @@ export const useUserProfile = () => {
 
     // Validate that at least one field is filled
     if (!trimmedPortfolioLink && !trimmedProfessionalTitle) {
-      setSnackbarMessage("Please fill in at least one field (Portfolio Link or Professional Title) to update your profile.");
+      setSnackbarMessage(
+        "Please fill in at least one field (Portfolio Link or Professional Title) to update your profile."
+      );
       setSnackbarOpen(true);
       return;
     }
@@ -100,7 +106,9 @@ export const useUserProfile = () => {
       } = {};
 
       if (trimmedPortfolioLink) {
-        updateData.portfolio_link = trimmedPortfolioLink;
+        updateData.portfolio_link = /^https?:\/\//i.test(trimmedPortfolioLink)
+          ? trimmedPortfolioLink
+          : `https://${trimmedPortfolioLink}`;
       }
 
       if (trimmedProfessionalTitle) {
@@ -116,7 +124,9 @@ export const useUserProfile = () => {
       setSnackbarOpen(true);
     } catch (e) {
       setSnackbarMessage(
-        e instanceof Error ? e.message : "Failed to update profile. Please try again."
+        e instanceof Error
+          ? e.message
+          : "Failed to update profile. Please try again."
       );
       setSnackbarOpen(true);
     } finally {

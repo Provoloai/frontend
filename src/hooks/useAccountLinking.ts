@@ -41,7 +41,7 @@ export const useAccountLinking = () => {
         p => p.providerId
       );
       console.log("Syncing providers to backend:", updatedProviders);
-      await authApi.updateProviders(updatedProviders, newToken);
+      await authApi.updateProviders(updatedProviders);
 
       const { data: freshUser } = await refetch();
       if (!freshUser) {
@@ -90,7 +90,7 @@ export const useAccountLinking = () => {
           p => p.providerId
         );
         console.log("Syncing providers to backend:", updatedProviders);
-        await authApi.updateProviders(updatedProviders, newToken);
+        await authApi.updateProviders(updatedProviders);
 
         const { data: freshUser } = await refetch();
         if (!freshUser) {

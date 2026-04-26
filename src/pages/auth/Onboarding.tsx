@@ -34,14 +34,17 @@ export default function Onboarding() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [userProfile, setUserProfile] = useState<{ displayName: string, email: string } | null>(null);
+  const [userProfile, setUserProfile] = useState<{
+    displayName: string;
+    email: string;
+  } | null>(null);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
+    const unsubscribe = auth.onAuthStateChanged(user => {
       if (user) {
         setUserProfile({
           displayName: user.displayName || "New User",
-          email: user.email || ""
+          email: user.email || "",
         });
       } else {
         // If not logged in, they shouldn't be on the onboarding screen
@@ -63,7 +66,14 @@ export default function Onboarding() {
       setError("");
       setIsLoading(true);
       try {
-        await authApi.updateProfile({ portfolio_link: data.portfolioUrl });
+        const rawPortfolioUrl = data.portfolioUrl.trim();
+        const portfolioLinkWithProtocol = /^https?:\/\//i.test(rawPortfolioUrl)
+          ? rawPortfolioUrl
+          : `https://${rawPortfolioUrl}`;
+
+        await authApi.updateProfile({
+          portfolio_link: portfolioLinkWithProtocol,
+        });
         navigate({ to: "/optimizer", replace: true });
       } catch (err: unknown) {
         const _err = err as Error;

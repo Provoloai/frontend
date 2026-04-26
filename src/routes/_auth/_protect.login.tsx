@@ -15,7 +15,11 @@ function RouteComponent() {
   }
 
   if (user) {
-    return <Navigate to="/knowledge-base" replace />;
+    if (user.emailVerified) {
+      return <Navigate to="/knowledge-base" replace />;
+    }
+
+    return <Navigate to="/signup" replace hash="login-auto-resend" />;
   }
 
   return <Login />;
