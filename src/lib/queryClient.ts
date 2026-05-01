@@ -14,7 +14,12 @@ export const QUERY_STALE_TIMES = {
 
 export const queryKeys = {
   session: () => ["session"] as const,
-  devices: () => ["devices"] as const,
+  devices: {
+    /** Prefix for invalidating all device-history queries */
+    all: () => ["devices"] as const,
+    page: (exclusiveAfter?: string) =>
+      ["devices", "page", exclusiveAfter ?? "__first__"] as const,
+  },
   paymentTiers: () => ["payment-tiers"] as const,
   proposalHistory: {
     all: () => ["proposal-history"] as const,

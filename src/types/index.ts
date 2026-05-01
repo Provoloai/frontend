@@ -150,9 +150,21 @@ export interface DeviceSession {
   browser: string;
   os: string;
   ip: string;
+  /** Country from edge headers at sign-in (e.g. ISO2); null if unknown. */
+  country?: string | null;
+  /** Region/subdivision when available (e.g. US state code); null if unknown. */
+  state?: string | null;
   userAgent?: string;
   timestamp: string; // ISO Date from backend
   isCurrent?: boolean;
+}
+
+/** Paginated login history (`GET /auth/devices`); `limit` is capped at 10 on the server. */
+export interface DeviceHistoryPage {
+  sessions: DeviceSession[];
+  /** Opaque token pass through as `cursor` for older pages (`null` when no more rows). */
+  nextCursor: string | null;
+  limit: number;
 }
 
 // Notification Types
@@ -248,4 +260,24 @@ export interface ImportResumePdfResponse {
   status?: string;
   message: string;
   data: ImportResumePdfData;
+}
+
+/** Authenticated user from `/auth/verify`, login, and signup (Firestore-backed, OTP fields stripped). */
+export interface User {
+  id: string;
+  userId: string;
+  email: string;
+  displayName?: string | null;
+  country: string | null;
+  state: string | null;
+  tierId?: string;
+  mailerliteId?: string | null;
+  polarId?: string | null;
+  portfolioLink?: string | null;
+  professionalTitle?: string | null;
+  emailVerified?: boolean;
+  providers?: string[];
+  activeSessionToken?: string | null;
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
 }

@@ -1,12 +1,12 @@
 import {
   Resume,
-  DeviceSession,
   NotificationsResponse,
   CreateResumeResponse,
   GetResumesResponse,
   DeleteResumeResponse,
   ImportResumePdfResponse,
   SaveResumeRequest,
+  DeviceHistoryPage,
 } from "@/types";
 import { apiGet, getBackendBaseUrl } from "@/utils/api.util";
 import { useQuery } from "@tanstack/react-query";
@@ -14,7 +14,7 @@ import { auth } from "@/lib/firebase";
 import { QUERY_STALE_TIMES, queryKeys } from "@/lib/queryClient";
 
 // Generic API request function
-const apiRequest = async <T>(
+const apiRequest = async <T>( 
   endpoint: string,
   options: RequestInit = {},
   responseType: "json" | "blob" = "json"
@@ -116,14 +116,30 @@ const apiRequest = async <T>(
 };
 
 // Device Tracking API
+export const DEVICE_HISTORY_PAGE_SIZE = 10 as const;
+
 export const deviceApi = {
-  getDevices: async () => {
-    return apiRequest<{
-      success: boolean;
-      data: DeviceSession[];
-    }>("/auth/devices", {
-      method: "GET",
-    });
+  getDevices: async (params?: {
+    cursor?: string;
+    /** Capped at 10 on the server. */
+    limit?: number;
+  }) => {
+    const sp = new URLSearchParams();
+    const limit = Math.min(
+      DEVICE_HISTORY_PAGE_SIZE,
+      Math.max(1, params?.limit ?? DEVICE_HISTORY_PAGE_SIZE)
+    );
+    sp.set("limit", String(limit));
+    if (params?.cursor?.trim()) {
+      sp.set("cursor", params.cursor.trim());
+    }
+    const qs = sp.toString();
+    return apiRequest<{ success: boolean; data: DeviceHistoryPage }>(
+      `/auth/devices?${qs}`,
+      {
+        method: "GET",
+      }
+    );
   },
   revokeDevice: async (id: string) => {
     return apiRequest<{ success: boolean; message: string }>(
@@ -135,11 +151,19 @@ export const deviceApi = {
   },
 };
 
-export const useGetDevices = () => {
+export const useDeviceHistoryPage = (
+  exclusiveAfterDocId?: string,
+  opts?: { enabled?: boolean }
+) => {
   return useQuery({
-    queryKey: queryKeys.devices(),
-    queryFn: () => deviceApi.getDevices(),
+    queryKey: queryKeys.devices.page(exclusiveAfterDocId),
+    queryFn: () =>
+      deviceApi.getDevices({
+        cursor: exclusiveAfterDocId,
+        limit: DEVICE_HISTORY_PAGE_SIZE,
+      }),
     staleTime: QUERY_STALE_TIMES.devices,
+    enabled: opts?.enabled ?? true,
   });
 };
 
