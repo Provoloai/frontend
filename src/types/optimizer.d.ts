@@ -13,7 +13,7 @@ export interface OptimizerTouchedFields {
 }
 
 export interface OptimizerResults {
-  fullAnalysis: string;
+  fullAnalysis?: string;
   weaknessesAndOptimization: string;
   optimizedProfileOverview: string;
   suggestedProjectTitles: string;
@@ -26,10 +26,28 @@ export interface AccordionSection {
   content: string;
 }
 
-export interface OptimizerState {
-  formData: OptimizerFormData;
-  results: OptimizerResults | null;
-  isLoading: boolean;
-  error: string;
-  touched: OptimizerTouchedFields;
+export type OptimizerTargetSection =
+  | "all"
+  | "weaknessesAndOptimization"
+  | "optimizedProfileOverview"
+  | "suggestedProjectTitles"
+  | "recommendedVisuals"
+  | "beforeAfterComparison";
+
+export interface OptimizerVersion {
+  id: string;
+  versionNumber: number;
+  refinementLabel?: string;
+  userInstruction?: string;
+  targetSection?: OptimizerTargetSection;
+  createdAt: string;
+  response: OptimizerResults;
+}
+
+export interface OptimizerWorkspaceState {
+  rootRecordId: string | null;
+  versions: OptimizerVersion[];
+  currentVersionIndex: number;
+  unlimitedRefine: boolean;
+  refinementsRemaining: number;
 }

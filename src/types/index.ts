@@ -1,3 +1,12 @@
+export type {
+  ProposalTone,
+  ProposalToneOption,
+  ProposalData,
+  RoleFitAssessment,
+  RoleFitLevel,
+  ImprovementOption,
+} from "./proposal";
+
 export interface ResumeListItem {
   id: string;
   name: string;

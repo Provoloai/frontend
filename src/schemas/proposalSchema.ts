@@ -8,6 +8,7 @@ export const proposalFormSchema = z.object({
   }),
   jobTitle: z.string().min(1, "Job title is required").max(200, "Job title too long"),
   jobSummary: z.string().min(50, "Job summary must be at least 50 characters").max(5000, "Job summary too long"),
+  optimizerRecordId: z.string().optional(),
 });
 
 // Type inference for form data

@@ -171,9 +171,22 @@ const OptimizerHistoryPage = () => {
             {optimizer?.data?.originalInput?.professionalTitle ||
               "Optimization Results"}
           </h2>
-          <p className="text-gray-500 mb-8">
+          <p className="text-gray-500 mb-4">
             Review your personalized optimization insights and suggestions.
           </p>
+
+          <Link
+            to="/optimizer"
+            search={{
+              recordId:
+                optimizer?.data?.parentRecordId || optimizerId,
+            }}
+            className="inline-flex mb-8"
+          >
+            <CustomButton type="button" className="btn-primary">
+              Continue editing
+            </CustomButton>
+          </Link>
         </motion.div>
 
         {/* Modern Tab Navigation */}

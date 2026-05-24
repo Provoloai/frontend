@@ -174,6 +174,7 @@ export const proposalApi = {
     proposal_tone: string;
     job_summary: string;
     job_title: string;
+    optimizer_record_id?: string;
   }) => {
     return apiRequest<{ data: any }>("/ai/generate-proposal", {
       method: "POST",
@@ -185,6 +186,7 @@ export const proposalApi = {
     proposalId: string | undefined;
     newTone: string;
     refinementType: string;
+    customInstruction?: string;
   }) => {
     return apiRequest<{ data: any }>("/ai/refine-proposal", {
       method: "POST",
@@ -199,6 +201,7 @@ export const refineProposalApi = {
     proposalId: string;
     refinementType: string;
     newTone: string;
+    customInstruction?: string;
   }) => {
     return apiRequest<{ data: any }>("/ai/refine-proposal", {
       method: "POST",
@@ -214,7 +217,18 @@ export const optimizerApi = {
     professional_title: string;
     profile: string;
   }) => {
-    return apiRequest<{ data: any }>("/ai/optimize-upwork", {
+    return apiRequest<{ data: Record<string, unknown> }>("/ai/optimize-upwork", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+
+  refineProfile: async (data: {
+    recordId: string;
+    instruction: string;
+    targetSection?: string;
+  }) => {
+    return apiRequest<{ data: Record<string, unknown> }>("/ai/refine-profile", {
       method: "POST",
       body: JSON.stringify(data),
     });

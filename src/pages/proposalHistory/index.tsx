@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion } from "motion/react";
 import { useParams } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Copy,
   Check,
@@ -18,6 +19,11 @@ import {
 import { Link } from "@tanstack/react-router";
 import { useGetProposal } from "@/api";
 import SidebarBadge from "@/components/sidebar/SidebarBadge";
+import ProposalRefinePanel from "@/components/proposal/ProposalRefinePanel";
+import RoleFitCard from "@/components/proposal/RoleFitCard";
+import CustomSnackbar from "@/Reusables/CustomSnackbar";
+import { queryKeys } from "@/lib/queryClient";
+import type { ProposalData, ProposalTone } from "@/types";
 
 const ProposalHistory: React.FC = () => {
   const { proposalId } = useParams({
@@ -27,9 +33,11 @@ const ProposalHistory: React.FC = () => {
   const [copyState, setCopyState] = useState<"idle" | "copied">("idle");
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [currentVersionIndex, setCurrentVersionIndex] = useState<number>(0);
+  const [error, setError] = useState("");
+  const queryClient = useQueryClient();
 
   // Fetch the proposal based on the ID from URL params
-  const { data: proposal, isLoading } = useGetProposal(proposalId);
+  const { data: proposal, isLoading, isFetching } = useGetProposal(proposalId);
 
   // Extract versions from the proposal response
   // The API returns: { data: { versions: [{ proposal: {...} }], proposalResponse: {...} } }
@@ -55,6 +63,23 @@ const ProposalHistory: React.FC = () => {
 
   // For pagination, we need an array of versions
   const proposalVersions = hasMultipleVersions ? rawVersions : [];
+
+  const latestVersionIndex = hasMultipleVersions
+    ? Math.max(0, proposalVersions.length - 1)
+    : 0;
+  const isOnLatestVersion = currentVersionIndex === latestVersionIndex;
+
+  const proposalTone = (proposal?.data?.proposalTone ??
+    "professional") as ProposalTone;
+
+  const handleProposalRefined = useCallback(
+    async (_refined: ProposalData) => {
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.proposalHistory.detail(proposalId),
+      });
+    },
+    [queryClient, proposalId]
+  );
 
   // Format the creation date
   const formatDate = (dateString: string): string => {
@@ -110,10 +135,16 @@ const ProposalHistory: React.FC = () => {
     };
   }, []);
 
-  // Reset version index when proposal changes
+  // Open on latest version when proposal loads or updates
   useEffect(() => {
-    setCurrentVersionIndex(0);
-  }, [proposalId]);
+    if (!proposal?.data) return;
+    const versions = proposal.data.versions;
+    if (Array.isArray(versions) && versions.length > 1) {
+      setCurrentVersionIndex(versions.length - 1);
+    } else {
+      setCurrentVersionIndex(0);
+    }
+  }, [proposalId, proposal?.data?.versions?.length, proposal?.data?.updatedAt]);
 
   // Skeleton Loader Component
   const SkeletonLoader = () => (
@@ -216,10 +247,28 @@ const ProposalHistory: React.FC = () => {
           <h2 className="text-3xl font-medium mb-2 flex items-center gap-3">
             {proposal?.data?.jobTitle}
           </h2>
-          <p className="mb-6 text-sm text-gray-400">
+          <p className="mb-4 text-sm text-gray-400">
             Created on {formatDate(proposal?.data?.createdAt)}
           </p>
+          <Link
+            to="/proposal"
+            search={{ proposalId }}
+            className="inline-flex mb-6"
+          >
+            <CustomButton type="button" className="btn-primary">
+              Continue editing
+            </CustomButton>
+          </Link>
         </motion.div>
+
+        {error && (
+          <CustomSnackbar
+            open={!!error}
+            close={() => setError("")}
+            snackbarColor="danger"
+            snackbarMessage={error}
+          />
+        )}
 
         <motion.div
           className="grid lg:grid-cols-2 md:grid-cols-1 sm:grid-cols-1 gap-x-5 gap-y-5"
@@ -244,6 +293,11 @@ const ProposalHistory: React.FC = () => {
               </div>
             ) : (
               <>
+                {generatedProposal?.roleFit && (
+                  <div className="mb-4">
+                    <RoleFitCard roleFit={generatedProposal.roleFit} />
+                  </div>
+                )}
                 {generatedProposal?.hook && (
                   <div className="mb-4">
                     <h4 className="font-medium text-gray-900 mb-2">Hook</h4>
@@ -354,8 +408,8 @@ const ProposalHistory: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex-1 overflow-y-auto">
-                {!generatedProposal ? (
+                <div className="flex-1 overflow-y-auto">
+                  {!generatedProposal ? (
                   // Show loading spinner when proposal data is not ready
                   <div className="flex items-center justify-center h-64">
                     <div className="relative">
@@ -433,6 +487,17 @@ const ProposalHistory: React.FC = () => {
             </div>
           </motion.section>
         </motion.div>
+
+        {generatedProposal && isOnLatestVersion && !isFetching && (
+          <motion.section className="mt-5" variants={proposalCardVariants}>
+            <ProposalRefinePanel
+              proposalId={proposalId}
+              proposalTone={proposalTone}
+              onRefined={handleProposalRefined}
+              onError={setError}
+            />
+          </motion.section>
+        )}
       </motion.div>
     </div>
   );

@@ -5,6 +5,10 @@ import VerifyingAuth from "../../Reusables/VerifyingAuth";
 import { useEffect } from "react";
 
 export const Route = createFileRoute("/_sidebarlayout/_protected/proposal")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    proposalId:
+      typeof search.proposalId === "string" ? search.proposalId : undefined,
+  }),
   component: RouteComponent,
 });
 
