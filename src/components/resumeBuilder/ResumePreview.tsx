@@ -36,7 +36,7 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({
   const renderRichText = (html: string) => {
     return (
       <div
-        className="prose prose-sm max-w-none text-gray-700"
+        className="prose prose-sm max-w-none text-[13px] leading-relaxed text-gray-900 list-inside marker:text-gray-900"
         dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(html) }}
       />
     );
@@ -109,6 +109,18 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({
                     {exp.current ? "Present" : formatDate(exp.endDate)}
                   </span>
                 </div>
+                <div className="flex justify-between items-baseline mb-1">
+                  <p className="font-bold text-[13px] text-black">
+                    {exp.employer}
+                    {(exp.city || exp.country) && (
+                      <span className="font-normal italic">
+                        {" "} — {exp.city}
+                        {exp.city && exp.country && ", "}
+                        {exp.country}
+                      </span>
+                    )}
+                  </p>
+                </div>
                 {exp.description && (
                   <div className="mt-2">{renderRichText(exp.description)}</div>
                 )}
@@ -141,6 +153,18 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({
                     {formatDate(edu.startDate)} –{" "}
                     {edu.current ? "Present" : formatDate(edu.endDate)}
                   </span>
+                </div>
+                <div className="flex justify-between items-baseline">
+                  <p className="text-[13px] text-black italic">
+                    {edu.school}
+                    {(edu.city || edu.country) && (
+                      <span className="not-italic">
+                        {" "} — {edu.city}
+                        {edu.city && edu.country && ", "}
+                        {edu.country}
+                      </span>
+                    )}
+                  </p>
                 </div>
                 {edu.description && (
                   <div className="mt-2">{renderRichText(edu.description)}</div>
@@ -192,7 +216,7 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({
                   </p>
                 )}
                 {course.description && (
-                  <div className="mt-1">
+                  <div className="mt-0.5">
                     {renderRichText(course.description)}
                   </div>
                 )}
@@ -225,8 +249,9 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({
                     {formatDate(internship.endDate)}
                   </span>
                 </div>
+                <p className="text-[13px] text-black italic mb-1">{internship.company}</p>
                 {internship.description && (
-                  <div className="mt-2">
+                  <div className="mt-1">
                     {renderRichText(internship.description)}
                   </div>
                 )}
