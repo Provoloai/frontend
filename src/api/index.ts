@@ -8,10 +8,14 @@ import {
   SaveResumeRequest,
   DeviceHistoryPage,
 } from "@/types";
-import { apiGet, getBackendBaseUrl } from "@/utils/api.util";
+import { getBackendBaseUrl } from "@/utils/api.util";
 import { useQuery } from "@tanstack/react-query";
 import { auth } from "@/lib/firebase";
 import { QUERY_STALE_TIMES, queryKeys } from "@/lib/queryClient";
+import type {
+  ApiSuccessResponse,
+  OptimizerHistoryDetailRecord,
+} from "@/types/optimizer";
 
 // Generic API request function
 const apiRequest = async <T>( 
@@ -303,16 +307,19 @@ export const authApi = {
 export const useGetProposalList = (page: number = 1, limit: number = 10) => {
   return useQuery({
     queryKey: queryKeys.proposalHistory.list(page, limit),
-    queryFn: () => apiGet(`/ai/proposal-history?page=${page}&limit=${limit}`),
+    queryFn: () => apiRequest(`/ai/proposal-history?page=${page}&limit=${limit}`),
     staleTime: QUERY_STALE_TIMES.history,
   });
 };
 
-export const useGetProposal = (id: string) => {
+export const useGetProposal = (
+  id: string,
+  options?: { enabled?: boolean },
+) => {
   return useQuery({
     queryKey: queryKeys.proposalHistory.detail(id),
-    queryFn: () => apiGet(`/ai/proposal-history/${id}`),
-    enabled: !!id, // Only run query if id exists
+    queryFn: () => apiRequest(`/ai/proposal-history/${id}`),
+    enabled: !!id && (options?.enabled ?? true),
     staleTime: QUERY_STALE_TIMES.detail,
   });
 };
@@ -320,16 +327,22 @@ export const useGetProposal = (id: string) => {
 export const useGetOptimizerList = (page: number = 1, limit: number = 10) => {
   return useQuery({
     queryKey: queryKeys.optimizerHistory.list(page, limit),
-    queryFn: () => apiGet(`/ai/optimizer-history?page=${page}&limit=${limit}`),
+    queryFn: () => apiRequest(`/ai/optimizer-history?page=${page}&limit=${limit}`),
     staleTime: QUERY_STALE_TIMES.history,
   });
 };
 
-export const useGetOptimizer = (id: string) => {
+export const useGetOptimizer = (
+  id: string,
+  options?: { enabled?: boolean },
+) => {
   return useQuery({
     queryKey: queryKeys.optimizerHistory.detail(id),
-    queryFn: () => apiGet(`/ai/optimizer-history/${id}`),
-    enabled: !!id, // Only run query if id exists
+    queryFn: () =>
+      apiRequest<ApiSuccessResponse<OptimizerHistoryDetailRecord>>(
+        `/ai/optimizer-history/${id}`,
+      ),
+    enabled: !!id && (options?.enabled ?? true),
     staleTime: QUERY_STALE_TIMES.detail,
   });
 };

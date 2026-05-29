@@ -20,11 +20,16 @@ const PortfolioOptimizer = () => {
     from: "/_sidebarlayout/_protected/optimizer",
   });
 
-  const { user } = useSession();
+  const { user, loading: sessionLoading } = useSession();
   const { data: quotaData } = useGetQuota("upwork_profile_optimizer");
-  const { data: historyData, isLoading: historyLoading } = useGetOptimizer(
-    recordIdFromUrl || ""
-  );
+  const {
+    data: historyData,
+    isLoading: historyLoading,
+    isError: historyError,
+    refetch: refetchHistory,
+  } = useGetOptimizer(recordIdFromUrl || "", {
+    enabled: !!user && !sessionLoading,
+  });
 
   const {
     versions,
@@ -60,20 +65,17 @@ const PortfolioOptimizer = () => {
   );
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || recordIdFromUrl) return;
     setFormDefaults({
       freelancerName: user.displayName || "",
       profileTitle: user.professionalTitle || "",
       profileDescription: "",
     });
-  }, [user]);
+  }, [user, recordIdFromUrl]);
 
   useEffect(() => {
     if (!recordIdFromUrl || !historyData?.data) return;
-    const formDefaultsFromHistory = hydrateFromHistory(
-      historyData.data as Parameters<typeof hydrateFromHistory>[0]
-    );
-    setFormDefaults(formDefaultsFromHistory);
+    setFormDefaults(hydrateFromHistory(historyData.data));
   }, [recordIdFromUrl, historyData, hydrateFromHistory]);
 
   useEffect(() => {
@@ -158,10 +160,27 @@ const PortfolioOptimizer = () => {
     }
   };
 
-  if (recordIdFromUrl && historyLoading) {
+  if (recordIdFromUrl && (sessionLoading || historyLoading)) {
     return (
       <div className="flex-1 flex items-center justify-center p-10 text-gray-500">
         Loading profile…
+      </div>
+    );
+  }
+
+  if (recordIdFromUrl && historyError) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center p-10 text-center gap-4">
+        <p className="text-gray-600">
+          Could not load this saved profile. Check your connection and try again.
+        </p>
+        <button
+          type="button"
+          onClick={() => refetchHistory()}
+          className="text-sm text-blue-600 hover:text-blue-800"
+        >
+          Retry
+        </button>
       </div>
     );
   }

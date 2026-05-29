@@ -2,7 +2,11 @@ import { useCallback, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { optimizerApi } from "@/api";
 import { queryKeys } from "@/lib/queryClient";
-import type { OptimizerTargetSection, OptimizerVersion } from "@/types/optimizer";
+import type {
+  OptimizerTargetSection,
+  OptimizerVersion,
+  OptimizerHistoryDetailRecord,
+} from "@/types/optimizer";
 import type { PortfolioFormData } from "@/schemas/portfolioSchema";
 import {
   buildVersionFromGenerate,
@@ -31,7 +35,7 @@ export function useOptimizerWorkspace() {
     workspace.versions.length > 0 && !!workspace.rootRecordId;
 
   const hydrateFromHistory = useCallback(
-    (record: Parameters<typeof normalizeHistoryRecord>[0]) => {
+    (record: OptimizerHistoryDetailRecord) => {
       const { rootRecordId, versions, formDefaults } =
         normalizeHistoryRecord(record);
 
