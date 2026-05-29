@@ -1,11 +1,12 @@
-import { Controller } from "react-hook-form";
+import { Control, Controller } from "react-hook-form";
 import { FileText, Lightbulb } from "lucide-react";
 import { motion } from "motion/react";
 import { useState } from "react";
 import TextInputField from "@/Reusables/TextInputField";
+import { Resume } from "@/types";
 
 interface SummaryFormProps {
-  control: any;
+  control: Control<Resume>;
 }
 
 export const SummaryForm: React.FC<SummaryFormProps> = ({ control }) => {
@@ -16,8 +17,8 @@ export const SummaryForm: React.FC<SummaryFormProps> = ({ control }) => {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.15 }
-    }
+      transition: { staggerChildren: 0.15 },
+    },
   };
 
   const itemVariants = {
@@ -25,8 +26,8 @@ export const SummaryForm: React.FC<SummaryFormProps> = ({ control }) => {
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.3 }
-    }
+      transition: { duration: 0.3 },
+    },
   };
 
   return (
@@ -45,14 +46,15 @@ export const SummaryForm: React.FC<SummaryFormProps> = ({ control }) => {
           </h3>
         </div>
         <p className="text-sm text-gray-600">
-          Write a compelling summary that highlights your key achievements, skills, and career goals.
+          Write a compelling summary that highlights your key achievements,
+          skills, and career goals.
         </p>
       </motion.div>
 
       {/* Textarea */}
       <motion.div variants={itemVariants} className="space-y-2">
         <Controller
-          name="summary"
+          name="content.personalInfo.summary"
           control={control}
           render={({ field, fieldState }) => (
             <TextInputField
@@ -62,7 +64,11 @@ export const SummaryForm: React.FC<SummaryFormProps> = ({ control }) => {
               placeholder="Example: Results-driven software engineer with 5+ years of experience in full-stack development..."
               helperText="Briefly describe your career background and key goals."
               value={field.value}
-              onChange={field.onChange}
+              onChange={(e: any) => {
+                field.onChange(e);
+                const value = e.target?.value || "";
+                setCharCount(value.length);
+              }}
               onBlur={field.onBlur}
               touched={fieldState.isTouched}
               error={fieldState.error?.message}
@@ -87,26 +93,31 @@ export const SummaryForm: React.FC<SummaryFormProps> = ({ control }) => {
           <div className="bg-blue-500 text-white p-1 rounded-full shrink-0 shadow-sm">
             <Lightbulb className="w-3 h-3 fill-current" />
           </div>
-          <span className="text-[11px] font-bold text-blue-900 underline decoration-blue-200 underline-offset-2 uppercase tracking-tight">Writing Tips</span>
+          <span className="text-[11px] font-bold text-blue-900 underline decoration-blue-200 underline-offset-2 uppercase tracking-tight">
+            Writing Tips
+          </span>
         </div>
 
         <div className="space-y-2 px-1">
           <div className="flex items-start gap-3">
             <div className="w-1 h-1 rounded-full bg-blue-400 mt-1.5 flex-shrink-0"></div>
             <p className="text-[11px] text-blue-800 leading-relaxed">
-              <span className="font-bold">Be specific:</span> Include years of experience and key technical skills
+              <span className="font-bold">Be specific:</span> Include years of
+              experience and key technical skills
             </p>
           </div>
           <div className="flex items-start gap-3">
             <div className="w-1 h-1 rounded-full bg-blue-400 mt-1.5 flex-shrink-0"></div>
             <p className="text-[11px] text-blue-800 leading-relaxed">
-              <span className="font-bold">Show impact:</span> Mention notable achievements or results
+              <span className="font-bold">Show impact:</span> Mention notable
+              achievements or results
             </p>
           </div>
           <div className="flex items-start gap-3">
             <div className="w-1 h-1 rounded-full bg-blue-400 mt-1.5 flex-shrink-0"></div>
             <p className="text-[11px] text-blue-800 leading-relaxed">
-              <span className="font-bold">Keep it focused:</span> Aim for 3-5 sentences that capture your value
+              <span className="font-bold">Keep it focused:</span> Aim for 3-5
+              sentences that capture your value
             </p>
           </div>
         </div>

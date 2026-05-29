@@ -5,6 +5,7 @@ import CustomSnackbar from "@/Reusables/CustomSnackbar";
 import { authApi } from "@/api";
 import { auth } from "@/lib/firebase";
 import { useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/queryClient";
 
 const EmailVerification: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -108,7 +109,7 @@ const EmailVerification: React.FC = () => {
         message: "Email verified successfully!",
         color: "success",
       });
-      await queryClient.invalidateQueries({ queryKey: ["session"] });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.session() });
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error

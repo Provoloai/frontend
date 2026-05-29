@@ -4,8 +4,8 @@ import { useNotificationsStore } from '@/stores/notificationsStore';
 import { transformBackendNotification, getIconFromName } from '@/utils/notifications.util';
 import type { Notification } from '@/stores/notificationsStore';
 
-export const useNotifications = (limit: number = 20, startAfter?: string) => {
-    const { data, isLoading, error, refetch } = useGetNotifications(limit, startAfter);
+export const useNotifications = (startAfter?: string) => {
+    const { data, isLoading, error, refetch } = useGetNotifications(startAfter);
     const setNotifications = useNotificationsStore((state) => state.setNotifications);
     const setPaginationInfo = useNotificationsStore((state) => state.setPaginationInfo);
     const setLoading = useNotificationsStore((state) => state.setLoading);

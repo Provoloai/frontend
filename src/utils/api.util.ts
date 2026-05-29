@@ -1,5 +1,15 @@
 // Generic API utility functions for all API calls
 
+export function getBackendBaseUrl(): string {
+  const NODE_ENV = (import.meta.env.VITE_NODE_ENV as string) || "";
+  const SERVER_URL = (import.meta.env.VITE_SERVER_URL as string) || "";
+  const apiBase =
+    NODE_ENV === "development" && SERVER_URL
+      ? SERVER_URL.replace(/\/$/, "")
+      : "/api";
+  return apiBase;
+}
+
 const sanitizeInput = (input: string): string => {
   if (typeof input !== "string") return "";
 
@@ -44,15 +54,7 @@ const makeApiRequest = async (
   endpoint: string,
   options: ApiRequestOptions = {}
 ): Promise<any> => {
-  const NODE_ENV = (import.meta.env.VITE_NODE_ENV as string) || "";
-  const SERVER_URL = (import.meta.env.VITE_SERVER_URL as string) || "";
-
-  // If running in development and a server URL is provided, call the remote backend directly.
-  // Otherwise default to '/api' so production (Vercel) rewrites/proxies will handle requests.
-  const apiBase =
-    NODE_ENV === "development" && SERVER_URL
-      ? SERVER_URL.replace(/\/$/, "")
-      : "/api";
+  const apiBase = getBackendBaseUrl();
 
   const url = `${apiBase}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
 

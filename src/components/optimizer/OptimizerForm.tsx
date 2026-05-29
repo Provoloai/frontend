@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { motion } from "motion/react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,12 +11,18 @@ import {
   optimizerCardVariants,
 } from "@/constants/animations";
 import { portfolioInputSchema, type PortfolioFormData } from "@/schemas/portfolioSchema";
+import {
+  PROFILE_DESCRIPTION_MIN_CHARS,
+  PROFILE_DESCRIPTION_MAX_CHARS,
+} from "@/constants/optimizer";
+import TextareaWordCounter from "./TextareaWordCounter";
 
 interface OptimizerFormProps {
   isLoading: boolean;
   error: string;
   onSubmit: (data: PortfolioFormData) => void;
   onErrorClose: () => void;
+  defaultValues?: PortfolioFormData;
 }
 
 const OptimizerForm: React.FC<OptimizerFormProps> = ({
@@ -23,28 +30,32 @@ const OptimizerForm: React.FC<OptimizerFormProps> = ({
   error,
   onSubmit,
   onErrorClose,
+  defaultValues,
 }) => {
   const {
     control,
     handleSubmit,
     watch,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<PortfolioFormData>({
     resolver: zodResolver(portfolioInputSchema),
     mode: "onBlur", // Validate on blur for better UX
-    defaultValues: {
+    defaultValues: defaultValues ?? {
       freelancerName: "",
       profileTitle: "",
       profileDescription: "",
     },
   });
 
-  // Watch the description field for word/character counter
+  useEffect(() => {
+    if (defaultValues) {
+      reset(defaultValues);
+    }
+  }, [defaultValues, reset]);
+
   const descriptionValue = watch("profileDescription") || "";
-  const characterCount = descriptionValue.length;
-  const wordCount = descriptionValue.trim() ? descriptionValue.trim().split(/\s+/).length : 0;
-  const minChars = 50;
-  const maxChars = 5000;
+
   return (
     <motion.form
       onSubmit={handleSubmit(onSubmit)}
@@ -130,21 +141,11 @@ const OptimizerForm: React.FC<OptimizerFormProps> = ({
           </p>
         )}
 
-        {/* Word/Character Counter */}
-        <div className="flex justify-between items-center mt-2">
-          <div className="text-xs text-gray-500">
-            {wordCount} {wordCount === 1 ? "word" : "words"} • {characterCount} {characterCount === 1 ? "character" : "characters"}
-          </div>
-          <div className={`text-xs ${characterCount < minChars
-            ? "text-black"
-            : characterCount > maxChars
-              ? "text-red-600"
-              : "text-gray-500"
-            }`}>
-            {characterCount} / {maxChars} characters
-            {characterCount < minChars && ` (min: ${minChars})`}
-          </div>
-        </div>
+        <TextareaWordCounter
+          value={descriptionValue}
+          minChars={PROFILE_DESCRIPTION_MIN_CHARS}
+          maxChars={PROFILE_DESCRIPTION_MAX_CHARS}
+        />
       </motion.div>
 
       <motion.div variants={optimizerItemVariants}>

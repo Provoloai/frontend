@@ -1,31 +1,39 @@
-import React, { useState } from 'react'
-import { Link, useRouter } from '@tanstack/react-router'
-import { TriangleAlert } from 'lucide-react'
+import { useState } from "react";
+import { Link, useRouter } from "@tanstack/react-router";
+import { TriangleAlert } from "lucide-react";
 
-const ErrorPage = ({ error, info, reset }) => {
-  const isDevelopment = import.meta.env.VITE_NODE_ENV === "development"
-  const [showError, setShowError] = useState(false)
-  const router = useRouter()
+const ErrorPage = ({
+  error,
+  info,
+  reset,
+}: {
+  error?: Error;
+  info?: { componentStack?: string };
+  reset?: () => void;
+}) => {
+  const isDevelopment = import.meta.env.VITE_NODE_ENV === "development";
+  const [showError, setShowError] = useState(false);
+  const router = useRouter();
 
   const handleReset = () => {
     if (reset) {
-      reset()
+      reset();
     } else {
-      router.navigate({ to: '/' })
+      router.navigate({ to: "/" });
     }
-  }
+  };
 
   const handleRefresh = () => {
-    window.location.reload()
-  }
+    window.location.reload();
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6">
       <div className="max-w-4xl w-full">
         <div className="p-6 rounded-lg text-center">
-          <div className='w-full text-center flex justify-center'>
+          <div className="w-full text-center flex justify-center">
             {/* Error Icon */}
-            <TriangleAlert size={100}  color='red'/>
+            <TriangleAlert size={100} color="red" />
           </div>
 
           <h1 className="text-4xl sm:text-5xl font-semibold text-center mb-2 mt-5 text-gray-800">
@@ -33,7 +41,8 @@ const ErrorPage = ({ error, info, reset }) => {
           </h1>
 
           <p className="text-center text-gray-600 lg:w-2/3 mx-auto text-sm mb-6">
-            We encountered an unexpected error. Don't worry, our team has been notified.
+            We encountered an unexpected error. Don't worry, our team has been
+            notified.
           </p>
 
           {/* Error Details Toggle - Only show in development */}
@@ -43,7 +52,7 @@ const ErrorPage = ({ error, info, reset }) => {
                 onClick={() => setShowError(!showError)}
                 className="text-blue-600 hover:text-blue-800 underline text-sm"
               >
-                {showError ? 'Hide Error Details' : 'Show Error Details'}
+                {showError ? "Hide Error Details" : "Show Error Details"}
               </button>
             </div>
           )}
@@ -51,21 +60,27 @@ const ErrorPage = ({ error, info, reset }) => {
           {/* Error Details - Only show in development */}
           {isDevelopment && showError && error && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-left">
-              <h3 className="font-semibold text-red-800 mb-2">Error Details:</h3>
+              <h3 className="font-semibold text-red-800 mb-2">
+                Error Details:
+              </h3>
               <div className="text-sm text-red-700 font-mono bg-red-100 p-3 rounded overflow-auto max-h-40">
                 <div className="mb-2">
-                  <strong>Message:</strong> {error.message || 'Unknown error'}
+                  <strong>Message:</strong> {error.message || "Unknown error"}
                 </div>
                 {error.stack && (
                   <div>
                     <strong>Stack Trace:</strong>
-                    <pre className="whitespace-pre-wrap text-xs mt-1">{error.stack}</pre>
+                    <pre className="whitespace-pre-wrap text-xs mt-1">
+                      {error.stack}
+                    </pre>
                   </div>
                 )}
                 {info?.componentStack && (
                   <div className="mt-2">
                     <strong>Component Stack:</strong>
-                    <pre className="whitespace-pre-wrap text-xs mt-1">{info.componentStack}</pre>
+                    <pre className="whitespace-pre-wrap text-xs mt-1">
+                      {info.componentStack}
+                    </pre>
                   </div>
                 )}
               </div>
@@ -98,7 +113,7 @@ const ErrorPage = ({ error, info, reset }) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ErrorPage
+export default ErrorPage;

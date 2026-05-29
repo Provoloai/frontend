@@ -23,7 +23,6 @@ export default function OptimizerDropdown({
           exit={{ opacity: 0, height: 0 }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
         >
-          {/* Vertical timeline line */}
           <div className="absolute left-3 top-2 bottom-2 w-px bg-gray-200" />
 
           {optimizers.map((item) => {
@@ -32,13 +31,11 @@ export default function OptimizerDropdown({
 
             return (
               <div key={item.id} className="relative flex items-start">
-                {/* Timeline dot */}
                 <div
                   className={`absolute left-3 top-[0.85rem] w-1.5 h-1.5 rounded-full -translate-x-1/2 transition-colors duration-200 ${
                     isHistoryActive ? "bg-[#0c54f2]" : "bg-gray-300"
                   }`}
                 />
-
                 <Link
                   to={historyPath}
                   className={`block pl-6 pr-3 py-2 text-sm rounded-md transition-all duration-200 flex-1 truncate ${

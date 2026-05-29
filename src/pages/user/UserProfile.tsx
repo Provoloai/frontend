@@ -3,12 +3,10 @@ import useSession from "@/hooks/useSession";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import UserProfileHeader from "@/components/user/UserProfileHeader";
 import UserProfileInfo from "@/components/user/UserProfileInfo";
-// import UserProfileCard from "@/components/user/UserProfileCard";
 import UserProfileSnackbar from "@/components/user/UserProfileSnackbar";
 import AccountLinkingSection from "@/components/user/AccountLinkingSection";
 import LoginHistory from "@/components/user/LoginHistory";
 import { USER_PROFILE_ANIMATIONS } from "@/constants/userProfile";
-// import Banner from "@/components/dashboard/Banner";
 
 export default function UserProfile() {
   const { user, loading: loadingUserData } = useSession();

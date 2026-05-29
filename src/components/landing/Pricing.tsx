@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import type { PricingTier, PricingFeature } from "@/types/pricing";
 import { useSEO, SEO_CONFIGS } from "@/hooks/useSEO";
+import { QUERY_STALE_TIMES, queryKeys } from "@/lib/queryClient";
 
 // Icon mapping for different feature types
 const getFeatureIcon = (featureName: string) => {
@@ -239,9 +240,9 @@ export default function Pricing() {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["payment-tiers"],
+    queryKey: queryKeys.paymentTiers(),
     queryFn: fetchTiers,
-    staleTime: 1000 * 60 * 15,
+    staleTime: QUERY_STALE_TIMES.pricing,
     gcTime: 1000 * 60 * 30,
     refetchOnWindowFocus: false,
     refetchOnMount: false,

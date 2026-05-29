@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from "motion/react";
+import { Control, UseFormWatch, UseFormSetValue } from "react-hook-form";
 import { PersonalInfoForm } from "./PersonalInfoForm";
 import { SummaryForm } from "./SummaryForm";
 import { ExperienceForm } from "./ExperienceForm";
@@ -12,10 +13,8 @@ import { InternshipsForm } from "./InternshipsForm";
 import { LanguagesForm } from "./LanguagesForm";
 import { ReferencesForm } from "./ReferencesForm";
 import { ProjectsForm } from "./ProjectsForm";
-import useSession from "@/hooks/useSession";
 import { CertificationsForm } from "./CertificationsForm";
-
-
+import { Resume } from "@/types";
 
 interface Section {
   id: string;
@@ -23,14 +22,20 @@ interface Section {
   shortLabel: string;
 }
 
+interface AvailableSection {
+  id: string;
+  label: string;
+  icon: string;
+}
+
 interface ResumeFormProps {
   activeSection: string;
   setActiveSection: (section: string) => void;
   additionalSections: string[];
   addAdditionalSection: (sectionId: string) => void;
-  control: any;
-  watch: any;
-  setValue: any;
+  control: Control<Resume>;
+  watch: UseFormWatch<Resume>;
+  setValue: UseFormSetValue<Resume>;
   onReview: () => void;
 }
 
@@ -44,28 +49,25 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({
   setValue,
   onReview,
 }) => {
-  const { user } = useSession();
-  console.log(user);
-  
-  const availableSections = [
-    { id: 'courses', label: 'Courses', icon: 'FileText' },
-    { id: 'internships', label: 'Internships', icon: 'Briefcase' },
-    { id: 'projects', label: 'Projects', icon: 'FolderGit2' },
-    { id: 'certifications', label: 'Certifications', icon: 'Award' },
-    { id: 'hobbies', label: 'Hobbies', icon: 'Zap' },
-    { id: 'languages', label: 'Languages', icon: 'Globe' },
-    { id: 'references', label: 'References', icon: 'Users' },
+  const availableSections: AvailableSection[] = [
+    { id: "courses", label: "Courses", icon: "FileText" },
+    { id: "internships", label: "Internships", icon: "Briefcase" },
+    { id: "projects", label: "Projects", icon: "FolderGit2" },
+    { id: "certifications", label: "Certifications", icon: "Award" },
+    { id: "hobbies", label: "Hobbies", icon: "Zap" },
+    { id: "languages", label: "Languages", icon: "Globe" },
+    { id: "references", label: "References", icon: "Users" },
   ];
 
   const baseSections: Section[] = [
-    { id: 'personal', label: 'Personal Information', shortLabel: 'Personal' },
-    { id: 'summary', label: 'Professional Summary', shortLabel: 'Summary' },
-    { id: 'experience', label: 'Work Experience', shortLabel: 'Experience' },
-    { id: 'education', label: 'Education', shortLabel: 'Education' },
-    { id: 'skills', label: 'Skills', shortLabel: 'Skills' },
+    { id: "personal", label: "Personal Information", shortLabel: "Personal" },
+    { id: "summary", label: "Professional Summary", shortLabel: "Summary" },
+    { id: "experience", label: "Work Experience", shortLabel: "Experience" },
+    { id: "education", label: "Education", shortLabel: "Education" },
+    { id: "skills", label: "Skills", shortLabel: "Skills" },
   ];
 
-  const addedSectionObjects = additionalSections.map(id => ({
+  const addedSectionObjects: Section[] = additionalSections.map(id => ({
     id,
     label: availableSections.find(s => s.id === id)?.label || id,
     shortLabel: availableSections.find(s => s.id === id)?.label || id,
@@ -74,13 +76,17 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({
   const sections: Section[] = [
     ...baseSections,
     ...addedSectionObjects,
-    { id: 'additional', label: 'Additional Sections', shortLabel: 'Additional' },
+    {
+      id: "additional",
+      label: "Additional Sections",
+      shortLabel: "Additional",
+    },
   ];
 
   const currentIndex = sections.findIndex(s => s.id === activeSection);
-  const isLastStep = activeSection === 'additional';
+  const isLastStep = activeSection === "additional";
 
-  const handleNext = () => {
+  const handleNext = (): void => {
     if (isLastStep) {
       onReview();
     } else if (currentIndex < sections.length - 1) {
@@ -88,7 +94,7 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({
     }
   };
 
-  const handlePrevious = () => {
+  const handlePrevious = (): void => {
     if (currentIndex > 0) {
       setActiveSection(sections[currentIndex - 1].id);
     }
@@ -120,25 +126,82 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.3 }}
           >
-            {activeSection === 'personal' && <PersonalInfoForm control={control} />}
-            {activeSection === 'summary' && <SummaryForm control={control} />}
-            {activeSection === 'experience' && <ExperienceForm control={control} watch={watch} setValue={setValue} />}
-            {activeSection === 'education' && <EducationForm control={control} watch={watch} setValue={setValue} />}
-            {activeSection === 'skills' && <SkillsForm control={control} watch={watch} setValue={setValue} />}
-            {activeSection === 'courses' && <CoursesForm control={control} watch={watch} setValue={setValue} />}
-            {activeSection === 'internships' && <InternshipsForm control={control} watch={watch} setValue={setValue} />}
-            {activeSection === 'projects' && <ProjectsForm control={control} watch={watch} setValue={setValue} />}
-            {activeSection === 'certifications' && <CertificationsForm control={control} watch={watch} setValue={setValue} />}
-            {activeSection === 'hobbies' && <HobbiesForm control={control} watch={watch} setValue={setValue} />}
-            {activeSection === 'languages' && <LanguagesForm control={control} watch={watch} setValue={setValue} />}
-            {activeSection === 'references' && <ReferencesForm control={control} watch={watch} setValue={setValue} />}
-            {activeSection === 'additional' && (
+            {activeSection === "personal" && (
+              <PersonalInfoForm control={control} />
+            )}
+            {activeSection === "summary" && <SummaryForm control={control} />}
+            {activeSection === "experience" && (
+              <ExperienceForm
+                control={control}
+                watch={watch}
+                setValue={setValue}
+              />
+            )}
+            {activeSection === "education" && (
+              <EducationForm
+                control={control}
+                watch={watch}
+                setValue={setValue}
+              />
+            )}
+            {activeSection === "skills" && (
+              <SkillsForm control={control} watch={watch} setValue={setValue} />
+            )}
+            {activeSection === "courses" && (
+              <CoursesForm
+                control={control}
+                watch={watch}
+                setValue={setValue}
+              />
+            )}
+            {activeSection === "internships" && (
+              <InternshipsForm
+                control={control}
+                watch={watch}
+                setValue={setValue}
+              />
+            )}
+            {activeSection === "projects" && (
+              <ProjectsForm
+                control={control}
+                watch={watch}
+                setValue={setValue}
+              />
+            )}
+            {activeSection === "certifications" && (
+              <CertificationsForm
+                control={control}
+                watch={watch}
+                setValue={setValue}
+              />
+            )}
+            {activeSection === "hobbies" && (
+              <HobbiesForm
+                control={control}
+                watch={watch}
+                setValue={setValue}
+              />
+            )}
+            {activeSection === "languages" && (
+              <LanguagesForm
+                control={control}
+                watch={watch}
+                setValue={setValue}
+              />
+            )}
+            {activeSection === "references" && (
+              <ReferencesForm
+                control={control}
+                watch={watch}
+                setValue={setValue}
+              />
+            )}
+            {activeSection === "additional" && (
               <AdditionalSectionsForm
                 availableSections={availableSections}
                 addedSections={additionalSections}
-                onAddSection={(sectionId) => {
+                onAddSection={(sectionId: string) => {
                   addAdditionalSection(sectionId);
-                  // Immediately navigate to the newly added section
                   setActiveSection(sectionId);
                 }}
               />
@@ -152,10 +215,11 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({
           <CustomButton
             onClick={handlePrevious}
             disabled={currentIndex === 0}
-            className={`btn-primary ${currentIndex === 0
+            className={`btn-primary ${
+              currentIndex === 0
                 ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                 : " text-gray-700"
-              }`}
+            }`}
           >
             Previous
           </CustomButton>
@@ -171,21 +235,13 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({
                   : index < currentIndex
                     ? "w-1.5 bg-primary"
                     : "w-1.5 bg-gray-300"
-                }`}
+              }`}
             />
           ))}
         </div>
         <div className="w-fit flex justify-end">
           <CustomButton onClick={handleNext} className="btn-primary">
-            {isLastStep ? (
-              <>
-                Review
-              </>
-            ) : (
-              <>
-                Next
-              </>
-            )}
+            {isLastStep ? "Review" : "Next"}
           </CustomButton>
         </div>
       </div>

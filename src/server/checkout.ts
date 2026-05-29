@@ -1,12 +1,4 @@
-import { Polar } from "@polar-sh/sdk";
-
-const POLAR_ACCESS_TOKEN = import.meta.env?.VITE_POLAR_ACCESS_TOKEN || "";
-const POLAR_SERVER = import.meta.env?.VITE_POLAR_SERVER || "";
-
-const polar = new Polar({
-  server: POLAR_SERVER as "production" | "sandbox",
-  accessToken: POLAR_ACCESS_TOKEN,
-});
+import { apiRequest } from "@/api";
 
 // Minimal shape of the user object we rely on here
 interface SessionUser {
@@ -19,7 +11,6 @@ export const proSubscription = async (
   polarRefId: string,
   user: SessionUser
 ) => {
-  console.log(user);
   if (!polarRefId)
     throw new Error(
       "No subscription ref ID provided, if error persists, contact support."
@@ -28,31 +19,32 @@ export const proSubscription = async (
     throw new Error(
       "You must be logged in to subscribe, if error persists, contact support."
     );
-  const checkout = await polar.checkouts.create({
-    products: [polarRefId],
-    metadata: {
-      user_id: user.userId,
-    },
-    customerId: user.polarId,
-    customerEmail: user.email,
-    successUrl: import.meta.env?.VITE_POLAR_SUCCESS_URL,
-  });
-  console.log("Checkout created:", checkout);
-  return checkout.url;
+  const response = await apiRequest<{ data?: { url?: string } }>(
+    "/payment/checkout-session",
+    {
+      method: "POST",
+      body: JSON.stringify({ polarRefId }),
+    }
+  );
+  const checkoutUrl = response?.data?.url;
+  if (!checkoutUrl) {
+    throw new Error("Unable to create checkout session.");
+  }
+  return checkoutUrl;
 };
 
 // Create (or reuse) a customer session to access the Polar customer portal
 export const getCustomerPortalUrl = async (user: SessionUser) => {
   if (!user) throw new Error("Not authenticated");
-  if (!user.polarId)
-    throw new Error("No Polar customer ID associated with this account.");
 
   try {
-    const session = await polar.customerSessions.create({
-      customerId: user.polarId,
-    });
-    const portalUrl =
-      (session as any)?.customerPortalUrl || (session as any)?.url;
+    const response = await apiRequest<{ data?: { url?: string } }>(
+      "/payment/customer-portal-session",
+      {
+        method: "POST",
+      }
+    );
+    const portalUrl = response?.data?.url;
     if (!portalUrl) throw new Error("Unable to retrieve customer portal URL.");
     return portalUrl;
   } catch (err) {

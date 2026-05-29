@@ -3,15 +3,10 @@ import { motion } from "motion/react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import TextInputField from "../../Reusables/TextInputField";
-import CustomSnackbar from "../../Reusables/CustomSnackbar";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import {
-  FilePlus,
-  PenLine,
-  Scissors,
   Sparkles,
-  Workflow,
   Copy,
   Check,
   ChevronLeft,
@@ -19,23 +14,27 @@ import {
 } from "lucide-react";
 import DocumentIllustration from "@/assets/svg/DocumentIllustration";
 import CustomButton from "@/Reusables/CustomButton";
-import { proposalApi } from "@/api";
+import { proposalApi, useGetOptimizerList, useGetProposal } from "@/api";
 import { proposalToneOptions } from "@/constants/proposal";
 import {
   proposalContainerVariants,
   proposalItemVariants,
   proposalCardVariants,
 } from "@/constants/animations";
-import type { ProposalData, ImprovementOption } from "@/types";
+import type { ProposalData, ProposalTone } from "@/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSEO, SEO_CONFIGS } from "@/hooks/useSEO";
+import { queryKeys } from "@/lib/queryClient";
+import ProposalRefinePanel from "@/components/proposal/ProposalRefinePanel";
+import RoleFitCard from "@/components/proposal/RoleFitCard";
 // import Banner from "@/components/dashboard/Banner";
-import { Link } from "@tanstack/react-router";
+import { Link, useSearch } from "@tanstack/react-router";
 import {
   proposalFormSchema,
   type ProposalFormData,
 } from "@/schemas/proposalSchema";
 import SidebarBadge from "@/components/sidebar/SidebarBadge";
+import CustomSnackbar from "../../Reusables/CustomSnackbar";
 
 const PortfolioOptimizer: React.FC = () => {
   useSEO(SEO_CONFIGS.proposal);
@@ -44,6 +43,17 @@ const PortfolioOptimizer: React.FC = () => {
   const [copyState, setCopyState] = useState<"idle" | "copied">("idle");
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const queryClient = useQueryClient();
+  const { proposalId: proposalIdFromUrl } = useSearch({
+    from: "/_sidebarlayout/_protected/proposal",
+  });
+  const { data: savedProposal, isLoading: savedProposalLoading } = useGetProposal(
+    proposalIdFromUrl || ""
+  );
+  const { data: optimizerHistoryData } = useGetOptimizerList(1, 50);
+  const optimizerProfiles = useMemo(
+    () => optimizerHistoryData?.data?.records ?? [],
+    [optimizerHistoryData]
+  );
 
   // NEW: State variables for storing all proposal versions
   const [proposalVersions, setProposalVersions] = useState<
@@ -57,9 +67,7 @@ const PortfolioOptimizer: React.FC = () => {
   >([]);
   const [currentVersionIndex, setCurrentVersionIndex] = useState<number>(0);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
-  const [selectedImprovement, setSelectedImprovement] = useState<string | null>(
-    null
-  );
+  const [savedProposalTone, setSavedProposalTone] = useState<ProposalTone>("professional");
 
   // Get the current proposal based on the selected version
   const generatedProposal = useMemo(() => {
@@ -80,6 +88,7 @@ const PortfolioOptimizer: React.FC = () => {
       proposalTone: undefined,
       jobTitle: "",
       jobSummary: "",
+      optimizerRecordId: "",
     },
   });
 
@@ -92,43 +101,79 @@ const PortfolioOptimizer: React.FC = () => {
   const minChars = 50;
   const maxChars = 5000;
 
-  // Memoized improvement options to prevent re-renders
-  const improvementOptions: ImprovementOption[] = useMemo(
-    () => [
-      {
-        icon: FilePlus,
-        title: "Expand Text",
-        description: "Add more details or examples.",
-        bgColor: "bg-blue-50",
-        hoverColor: "hover:bg-blue-100",
-        value: "expand_text",
-      },
-      {
-        icon: Workflow,
-        title: "Improve Flow",
-        description: "Reorganize ideas for clarity.",
-        bgColor: "bg-purple-50",
-        hoverColor: "hover:bg-purple-100",
-        value: "improve_flow",
-      },
-      {
-        icon: Scissors,
-        title: "Trim Text",
-        description: "Remove unnecessary words.",
-        bgColor: "bg-yellow-50",
-        hoverColor: "hover:bg-yellow-100",
-        value: "trim_text",
-      },
-      {
-        icon: PenLine,
-        title: "Simplify Text",
-        description: "Break down complex sentences.",
-        bgColor: "bg-red-50",
-        hoverColor: "hover:bg-red-100",
-        value: "simplify_text",
-      },
-    ],
-    []
+  const activeProposalId =
+    generatedProposal?.proposalId || proposalIdFromUrl || undefined;
+
+  const isOnLatestVersion =
+    proposalVersions.length === 0 ||
+    currentVersionIndex === proposalVersions.length - 1;
+
+  // Hydrate from saved proposal when opening via ?proposalId=
+  useEffect(() => {
+    if (!proposalIdFromUrl || !savedProposal?.data) return;
+
+    const data = savedProposal.data;
+    const rawVersions = data.versions as
+      | Array<{ proposal: ProposalData; version?: number }>
+      | undefined;
+
+    if (rawVersions && rawVersions.length > 0) {
+      const mapped = rawVersions.map((v, i) => ({
+        ...v.proposal,
+        versionNumber: (v.version ?? i) + 1,
+        versionType: "saved",
+        createdAt: data.createdAt ?? new Date().toISOString(),
+        proposalId: data.id ?? proposalIdFromUrl,
+      }));
+      setProposalVersions(mapped);
+      setCurrentVersionIndex(mapped.length - 1);
+    } else if (data.proposalResponse) {
+      setProposalVersions([
+        {
+          ...data.proposalResponse,
+          versionNumber: 1,
+          versionType: "saved",
+          createdAt: data.createdAt ?? new Date().toISOString(),
+          proposalId: data.id ?? proposalIdFromUrl,
+        },
+      ]);
+      setCurrentVersionIndex(0);
+    }
+
+    if (data.proposalTone) {
+      setSavedProposalTone(data.proposalTone as ProposalTone);
+    }
+  }, [proposalIdFromUrl, savedProposal]);
+
+  const handleProposalRefined = useCallback(
+    async (refined: ProposalData) => {
+      const versionedProposal = {
+        ...refined,
+        versionType: "custom",
+        createdAt: new Date().toISOString(),
+        proposalId: activeProposalId ?? refined.proposalId,
+      };
+      setProposalVersions(prev => {
+        const next = [
+          ...prev,
+          {
+            ...versionedProposal,
+            versionNumber: prev.length + 1,
+          },
+        ];
+        setCurrentVersionIndex(next.length - 1);
+        return next;
+      });
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.proposalHistory.all(),
+      });
+      if (activeProposalId) {
+        await queryClient.invalidateQueries({
+          queryKey: queryKeys.proposalHistory.detail(activeProposalId),
+        });
+      }
+    },
+    [activeProposalId, queryClient]
   );
 
   // Handle form submission - React Hook Form handles validation
@@ -138,11 +183,13 @@ const PortfolioOptimizer: React.FC = () => {
       setError("");
 
       try {
+        const optimizerId = data.optimizerRecordId?.trim();
         const result = await proposalApi.generateProposal({
           client_name: data.clientName.trim(),
           proposal_tone: data.proposalTone,
           job_summary: data.jobSummary.trim(),
           job_title: data.jobTitle.trim(),
+          ...(optimizerId ? { optimizer_record_id: optimizerId } : {}),
         });
 
         // NEW: Add version metadata and store as first version
@@ -155,10 +202,10 @@ const PortfolioOptimizer: React.FC = () => {
 
         setProposalVersions([versionedProposal]);
         setCurrentVersionIndex(0);
-        setSelectedImprovement(null); // Reset selected improvement when generating new proposal
+        setSavedProposalTone(data.proposalTone);
 
         await queryClient.invalidateQueries({
-          queryKey: ["proposal-history"],
+          queryKey: queryKeys.proposalHistory.all(),
         });
       } catch (err: unknown) {
         const errorMessage =
@@ -173,54 +220,8 @@ const PortfolioOptimizer: React.FC = () => {
     [queryClient]
   );
 
-  const refineProposal = async () => {
-    if (!selectedImprovement) {
-      setError("Please select an improvement option");
-      return;
-    }
-
-    setIsGenerating(true);
-    setError("");
-
-    const currentTone = watch("proposalTone");
-    if (!currentTone) {
-      setError("Please select a proposal tone");
-      setIsGenerating(false);
-      return;
-    }
-
-    try {
-      const data = await proposalApi.refineGenerateProposal({
-        proposalId: generatedProposal?.proposalId,
-        newTone: currentTone,
-        refinementType: selectedImprovement,
-      });
-
-      // Add version metadata and append to versions array
-      const versionedProposal = {
-        ...data.data,
-        versionNumber: proposalVersions.length + 1,
-        versionType: selectedImprovement,
-        createdAt: new Date().toISOString(),
-      };
-
-      setProposalVersions(prev => [...prev, versionedProposal]);
-      setCurrentVersionIndex(proposalVersions.length); // Set to the new version
-      setSelectedImprovement(null); // Reset selected improvement
-
-      await queryClient.invalidateQueries({
-        queryKey: ["proposal-history"],
-      });
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Failed to refine proposal. Please try again.";
-      setError(errorMessage);
-    } finally {
-      setIsGenerating(false);
-    }
-  };
+  const refineTone: ProposalTone =
+    watch("proposalTone") || savedProposalTone;
 
   // Optimized: Copy proposal to clipboard with locked feedback state and cleanup
   const copyToClipboard = useCallback(async (): Promise<void> => {
@@ -400,6 +401,107 @@ const PortfolioOptimizer: React.FC = () => {
               )}
             />
 
+            <Controller
+              name="optimizerRecordId"
+              control={control}
+              render={({ field }) => (
+                <div className="w-full">
+                  <Menu as="div" className="relative inline-block w-full">
+                    <label
+                      className="block text-sm mb-2"
+                      htmlFor="optimizer-profile-selector"
+                    >
+                      Optimized profile{" "}
+                      <span className="text-gray-400 font-normal">
+                        (optional)
+                      </span>
+                    </label>
+                    <MenuButton
+                      id="optimizer-profile-selector"
+                      className="capitalize inline-flex w-full gap-x-1.5 rounded-md px-3 py-4 text-sm text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset bg-gray-50 hover:bg-gray-100 duration-200 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                      aria-label="Select optimized profile for role fit"
+                    >
+                      {field.value
+                        ? (() => {
+                            const selected = optimizerProfiles.find(
+                              (p: { id: string }) => p.id === field.value
+                            );
+                            const title =
+                              selected?.originalInput?.professionalTitle ||
+                              "Selected profile";
+                            const platform =
+                              selected?.optimizerType === "linkedin"
+                                ? "LinkedIn"
+                                : "Upwork";
+                            return `${title} · ${platform}`;
+                          })()
+                        : "None — use account profile only"}
+                      <ChevronDownIcon
+                        aria-hidden="true"
+                        className="ml-auto size-5 text-gray-400"
+                      />
+                    </MenuButton>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Compare your optimized profile to this job before you
+                      apply.{" "}
+                      {optimizerProfiles.length === 0 && (
+                        <Link
+                          to="/optimizer"
+                          className="text-blue-600 hover:text-blue-800"
+                        >
+                          Create one in Profile Optimizer
+                        </Link>
+                      )}
+                    </p>
+                    <MenuItems
+                      transition
+                      className="absolute right-0 z-10 mt-2 max-h-60 overflow-y-auto w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-none data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+                    >
+                      <div className="py-1">
+                        <MenuItem>
+                          <button
+                            type="button"
+                            onClick={() => field.onChange("")}
+                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-none"
+                          >
+                            None — use account profile only
+                          </button>
+                        </MenuItem>
+                        {optimizerProfiles.map(
+                          (profile: {
+                            id: string;
+                            optimizerType?: string;
+                            originalInput?: {
+                              professionalTitle?: string;
+                            };
+                          }) => {
+                            const title =
+                              profile.originalInput?.professionalTitle ||
+                              "Untitled profile";
+                            const platform =
+                              profile.optimizerType === "linkedin"
+                                ? "LinkedIn"
+                                : "Upwork";
+                            return (
+                              <MenuItem key={profile.id}>
+                                <button
+                                  type="button"
+                                  onClick={() => field.onChange(profile.id)}
+                                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-none"
+                                >
+                                  {title} · {platform}
+                                </button>
+                              </MenuItem>
+                            );
+                          }
+                        )}
+                      </div>
+                    </MenuItems>
+                  </Menu>
+                </div>
+              )}
+            />
+
             <div className="mb-4">
               <label htmlFor="jobSummary" className="block text-sm mb-2">
                 Job Summary
@@ -477,6 +579,10 @@ const PortfolioOptimizer: React.FC = () => {
             {/* Train of Thoughts Section - Show below Generate button when proposal is generated */}
             {generatedProposal && (
               <div className="mt-6 space-y-4">
+                {generatedProposal.roleFit && (
+                  <RoleFitCard roleFit={generatedProposal.roleFit} />
+                )}
+
                 <h3 className="text-lg font-semibold mb-4">
                   Train of Thoughts
                 </h3>
@@ -736,7 +842,10 @@ const PortfolioOptimizer: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="flex-1 overflow-y-auto">
+                <div className="flex-1 overflow-y-auto space-y-4">
+                  {generatedProposal?.roleFit && (
+                    <RoleFitCard roleFit={generatedProposal.roleFit} />
+                  )}
                   {generatedProposal?.mdx && (
                     <div className="p-5 bg-gray-50 rounded-lg border border-gray-100">
                       <pre
@@ -807,109 +916,21 @@ const PortfolioOptimizer: React.FC = () => {
             )}
           </motion.section>
 
-          {/* Improvement Options Section - Only show after proposal is generated AND on the latest version */}
-          {generatedProposal && !isGenerating && currentVersionIndex === 0 && (
-            <motion.section
-              className="p-5 bg-white rounded-lg border border-gray-200 grid grid-cols-3 gap-24 lg:col-span-2 min-[1920px]:col-span-1 min-[1920px]:grid-cols-1 min-[1920px]:gap-0"
-              variants={proposalCardVariants}
-            >
-              {/* List of proposal improvement options */}
-              <div className="col-span-2 h-fit">
-                <p className="mb-6">
-                  How would you like to improve the proposal?
-                </p>
-
-                <motion.div
-                  className="grid grid-cols-2 grid-rows-2 gap-5 min-[1920px]:grid-cols-1"
-                  variants={proposalContainerVariants}
-                >
-                  {improvementOptions.map((option, index) => (
-                    <motion.div key={index} variants={proposalItemVariants}>
-                      <button
-                        onClick={() => {
-                          setSelectedImprovement(
-                            selectedImprovement === option.value
-                              ? null
-                              : option.value
-                          );
-                        }}
-                        className={`p-5 rounded-2xl transition-all duration-200 ${option.bgColor} ${option.hoverColor} ${selectedImprovement === option.value
-                          ? "ring-2 ring-blue-600"
-                          : ""
-                          } py-[24px] px-5 block w-full text-left`}
-                      >
-                        <span className="flex items-center align-middle gap-2 mb-3">
-                          <option.icon size={16} />
-                          <p className="font-medium">{option.title}</p>
-                        </span>
-                        <span>
-                          <p className="font-thin text-sm">
-                            {option.description}
-                          </p>
-                        </span>
-                      </button>
-                    </motion.div>
-                  ))}
-                </motion.div>
-              </div>
-
-              <div className="col-span-1 flex flex-col h-full min-[1920px]:h-fit mt-auto">
-                {/* Tone selector */}
-                <Controller
-                  name="proposalTone"
-                  control={control}
-                  render={({ field }) => (
-                    <Menu as="div" className="relative inline-block w-full">
-                      <p className="block text-sm mb-2">Proposal Tone</p>
-                      <MenuButton className="capitalize inline-flex w-full gap-x-1.5 rounded-md px-3 py-4 text-sm text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset bg-gray-50 duration-200 transition-all hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                        {field.value
-                          ? proposalToneOptions.find(
-                            t => t.value === field.value
-                          )?.label
-                          : "Select Option"}
-                        <ChevronDownIcon
-                          aria-hidden="true"
-                          className="ml-auto size-5 text-gray-400"
-                        />
-                      </MenuButton>
-
-                      <MenuItems
-                        transition
-                        className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-none data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
-                      >
-                        <div className="py-1">
-                          {proposalToneOptions.map(tone => (
-                            <MenuItem key={tone.value}>
-                              <button
-                                type="button"
-                                onClick={() => field.onChange(tone.value)}
-                                className="block w-full text-left px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-none"
-                              >
-                                {tone.label}
-                              </button>
-                            </MenuItem>
-                          ))}
-                        </div>
-                      </MenuItems>
-                    </Menu>
-                  )}
+          {activeProposalId &&
+            generatedProposal &&
+            !isGenerating &&
+            !savedProposalLoading &&
+            isOnLatestVersion && (
+              <motion.section variants={proposalCardVariants}>
+                <ProposalRefinePanel
+                  proposalId={activeProposalId}
+                  proposalTone={refineTone}
+                  disabled={isGenerating}
+                  onRefined={handleProposalRefined}
+                  onError={setError}
                 />
-
-                {/* Regenerate button */}
-                <CustomButton
-                  onClick={
-                    selectedImprovement
-                      ? refineProposal
-                      : handleSubmit(generateProposal)
-                  }
-                  isLoading={isGenerating || isSubmitting}
-                  className="btn-primary mt-auto  min-[1920px]:mt-10"
-                >
-                  Generate Proposal Again
-                </CustomButton>
-              </div>
-            </motion.section>
-          )}
+              </motion.section>
+            )}
         </motion.div>
       </motion.div>
     </div>

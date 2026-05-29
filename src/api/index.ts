@@ -1,57 +1,114 @@
-import { ResumeData } from "@/stores/resumeStore";
-import { apiGet } from "@/utils/api.util";
+import {
+  Resume,
+  NotificationsResponse,
+  CreateResumeResponse,
+  GetResumesResponse,
+  DeleteResumeResponse,
+  ImportResumePdfResponse,
+  SaveResumeRequest,
+  DeviceHistoryPage,
+} from "@/types";
+import { apiGet, getBackendBaseUrl } from "@/utils/api.util";
 import { useQuery } from "@tanstack/react-query";
+import { auth } from "@/lib/firebase";
+import { QUERY_STALE_TIMES, queryKeys } from "@/lib/queryClient";
 
 // Generic API request function
-const apiRequest = async <T>(
+const apiRequest = async <T>( 
   endpoint: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  responseType: "json" | "blob" = "json"
 ): Promise<T> => {
-  const NODE_ENV = (import.meta.env.VITE_NODE_ENV as string) || "";
-  const SERVER_URL = (import.meta.env.VITE_SERVER_URL as string) || "";
-
-  const apiBase =
-    NODE_ENV === "development" && SERVER_URL
-      ? SERVER_URL.replace(/\/$/, "")
-      : "/api";
+  const apiBase = getBackendBaseUrl();
 
   const url = `${apiBase}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
 
+  const headers = new Headers(options.headers ?? {});
+  const isFormDataBody = options.body instanceof FormData;
+
+  if (!isFormDataBody && !headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
+  }
+
   const defaultOptions: RequestInit = {
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
     credentials: "include",
     ...options,
   };
 
   try {
+    const token = auth.currentUser ? await auth.currentUser.getIdToken() : null;
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`);
+      defaultOptions.headers = headers;
+    }
+
     const response = await fetch(url, defaultOptions);
 
     if (!response.ok) {
+      if (response.status === 503 && endpoint.includes("import-pdf")) {
+        throw new Error(
+          "Upload failed (service unavailable). The request goes through your site’s /api proxy; large uploads sometimes fail at the edge. Check hosting rewrite limits, or that the backend (e.g. Fly) is up and listening on the expected port."
+        );
+      }
+      let errorMessage = `Request failed with status ${response.status}`;
+      let errorTitle = "";
+      try {
+        const payload = (await response.clone().json()) as {
+          message?: string;
+          title?: string;
+        };
+        if (payload?.title) {
+          errorTitle = payload.title;
+        }
+        if (payload?.message) {
+          errorMessage = payload.message;
+        } else if (payload?.title) {
+          errorMessage = payload.title;
+        }
+      } catch {
+        errorMessage =
+          response.status >= 500
+            ? "Something went wrong on our side. Please contact support."
+            : errorMessage;
+      }
+      if (response.status >= 500) {
+        errorMessage = "Something went wrong on our side. Please contact support.";
+      }
+
       if (response.status === 401) {
-        // Redirect to login on 401, but only if not already on a public auth route
+        // Only redirect for true auth/session-expired cases.
+        const normalized = `${errorTitle} ${errorMessage}`.toLowerCase();
+        const isSessionAuthFailure =
+          normalized.includes("session expired") ||
+          normalized.includes("invalid or expired token") ||
+          normalized.includes("authentication required") ||
+          normalized.includes("user not authenticated") ||
+          normalized.includes("no authentication provided");
+
         const publicAuthRoutes = [
           "/login",
           "/signup",
           "/forgot-password",
           "/reset-password",
         ];
+        const currentPath = window.location.pathname;
         const isOnPublicAuthRoute = publicAuthRoutes.some(route =>
-          window.location.pathname.startsWith(route)
+          currentPath.startsWith(route)
         );
-        if (!isOnPublicAuthRoute) {
-          window.location.href = "/login?reason=session_expired";
+
+        if (isSessionAuthFailure && !isOnPublicAuthRoute) {
+          window.location.replace("/login?reason=session_expired");
+          throw new Error("Session expired");
         }
       }
 
-      const errorData = await response.json();
-      throw new Error(
-        errorData.message || `HTTP error! status: ${response.status}`
-      );
+      throw new Error(errorMessage);
     }
 
-    return await response.json();
+    return responseType === "blob"
+      ? ((await response.blob()) as unknown as T)
+      : await response.json();
   } catch (error) {
     console.error(`API request failed for ${endpoint}:`, error);
     throw error;
@@ -59,25 +116,30 @@ const apiRequest = async <T>(
 };
 
 // Device Tracking API
-export interface DeviceSession {
-  id: string;
-  device: string;
-  browser: string;
-  os: string;
-  ip: string;
-  userAgent?: string;
-  timestamp: string; // ISO Date from backend
-  isCurrent?: boolean;
-}
+export const DEVICE_HISTORY_PAGE_SIZE = 10 as const;
 
 export const deviceApi = {
-  getDevices: async () => {
-    return apiRequest<{
-      success: boolean;
-      data: DeviceSession[];
-    }>("/auth/devices", {
-      method: "GET",
-    });
+  getDevices: async (params?: {
+    cursor?: string;
+    /** Capped at 10 on the server. */
+    limit?: number;
+  }) => {
+    const sp = new URLSearchParams();
+    const limit = Math.min(
+      DEVICE_HISTORY_PAGE_SIZE,
+      Math.max(1, params?.limit ?? DEVICE_HISTORY_PAGE_SIZE)
+    );
+    sp.set("limit", String(limit));
+    if (params?.cursor?.trim()) {
+      sp.set("cursor", params.cursor.trim());
+    }
+    const qs = sp.toString();
+    return apiRequest<{ success: boolean; data: DeviceHistoryPage }>(
+      `/auth/devices?${qs}`,
+      {
+        method: "GET",
+      }
+    );
   },
   revokeDevice: async (id: string) => {
     return apiRequest<{ success: boolean; message: string }>(
@@ -89,10 +151,19 @@ export const deviceApi = {
   },
 };
 
-export const useGetDevices = () => {
+export const useDeviceHistoryPage = (
+  exclusiveAfterDocId?: string,
+  opts?: { enabled?: boolean }
+) => {
   return useQuery({
-    queryKey: ["devices"],
-    queryFn: () => deviceApi.getDevices(),
+    queryKey: queryKeys.devices.page(exclusiveAfterDocId),
+    queryFn: () =>
+      deviceApi.getDevices({
+        cursor: exclusiveAfterDocId,
+        limit: DEVICE_HISTORY_PAGE_SIZE,
+      }),
+    staleTime: QUERY_STALE_TIMES.devices,
+    enabled: opts?.enabled ?? true,
   });
 };
 
@@ -103,6 +174,7 @@ export const proposalApi = {
     proposal_tone: string;
     job_summary: string;
     job_title: string;
+    optimizer_record_id?: string;
   }) => {
     return apiRequest<{ data: any }>("/ai/generate-proposal", {
       method: "POST",
@@ -114,6 +186,7 @@ export const proposalApi = {
     proposalId: string | undefined;
     newTone: string;
     refinementType: string;
+    customInstruction?: string;
   }) => {
     return apiRequest<{ data: any }>("/ai/refine-proposal", {
       method: "POST",
@@ -128,6 +201,7 @@ export const refineProposalApi = {
     proposalId: string;
     refinementType: string;
     newTone: string;
+    customInstruction?: string;
   }) => {
     return apiRequest<{ data: any }>("/ai/refine-proposal", {
       method: "POST",
@@ -143,7 +217,18 @@ export const optimizerApi = {
     professional_title: string;
     profile: string;
   }) => {
-    return apiRequest<{ data: any }>("/ai/optimize-upwork", {
+    return apiRequest<{ data: Record<string, unknown> }>("/ai/optimize-upwork", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+
+  refineProfile: async (data: {
+    recordId: string;
+    instruction: string;
+    targetSection?: string;
+  }) => {
+    return apiRequest<{ data: Record<string, unknown> }>("/ai/refine-profile", {
       method: "POST",
       body: JSON.stringify(data),
     });
@@ -215,35 +300,37 @@ export const authApi = {
   },
 };
 
-
-
 export const useGetProposalList = (page: number = 1, limit: number = 10) => {
   return useQuery({
-    queryKey: ["proposal-history", page, limit],
+    queryKey: queryKeys.proposalHistory.list(page, limit),
     queryFn: () => apiGet(`/ai/proposal-history?page=${page}&limit=${limit}`),
+    staleTime: QUERY_STALE_TIMES.history,
   });
 };
 
 export const useGetProposal = (id: string) => {
   return useQuery({
-    queryKey: ["proposal-history", id],
+    queryKey: queryKeys.proposalHistory.detail(id),
     queryFn: () => apiGet(`/ai/proposal-history/${id}`),
     enabled: !!id, // Only run query if id exists
+    staleTime: QUERY_STALE_TIMES.detail,
   });
 };
 
 export const useGetOptimizerList = (page: number = 1, limit: number = 10) => {
   return useQuery({
-    queryKey: ["optimizer-history", page, limit],
-    queryFn: () => apiGet(`/ai/optimizer-history`),
+    queryKey: queryKeys.optimizerHistory.list(page, limit),
+    queryFn: () => apiGet(`/ai/optimizer-history?page=${page}&limit=${limit}`),
+    staleTime: QUERY_STALE_TIMES.history,
   });
 };
 
 export const useGetOptimizer = (id: string) => {
   return useQuery({
-    queryKey: ["optimizer-history", id],
+    queryKey: queryKeys.optimizerHistory.detail(id),
     queryFn: () => apiGet(`/ai/optimizer-history/${id}`),
     enabled: !!id, // Only run query if id exists
+    staleTime: QUERY_STALE_TIMES.detail,
   });
 };
 
@@ -267,61 +354,21 @@ export const quotaApi = {
 
 export const useGetQuota = (quotaSlug: string) => {
   return useQuery({
-    queryKey: ["quota", quotaSlug],
+    queryKey: queryKeys.quota(quotaSlug),
     queryFn: () => quotaApi.getQuota(quotaSlug),
     enabled: !!quotaSlug,
+    staleTime: QUERY_STALE_TIMES.quota,
   });
 };
 
-// Notification API types
-export enum NotificationCategory {
-  SYSTEM = "system",
-  USER = "user",
-  PROMOTION = "promotion",
-  ADMIN = "admin",
-  OTHER = "other",
-  PROFILE = "profile",
-  PROPOSAL = "proposal",
-  KNOWLEDGE = "knowledge",
-  COMMUNITY = "community",
-  ACHIEVEMENT = "achievement",
-  SUBSCRIPTION = "subscription",
-  RESEARCH = "research",
-}
-
-export interface FirebaseTimestamp {
-  _seconds: number;
-  _nanoseconds: number;
-}
-
-export interface BackendNotification {
-  id: string;
-  recipient: string;
-  title: string;
-  message: string;
-  read: boolean;
-  category: NotificationCategory;
-  createdAt: string | FirebaseTimestamp;
-}
-
-export interface NotificationsResponse {
-  title: string;
-  message: string;
-  status: string;
-  data: {
-    notifications: BackendNotification[];
-    lastVisibleId: string;
-    totalCount: number;
-    pageSize: number;
-    currentPage: number;
-    totalPages: number;
-    remainingPages: number;
-  };
-}
-
 // Notification API functions
+export const NOTIFICATIONS_DEFAULT_LIMIT = 20;
+
 export const notificationApi = {
-  getNotifications: async (limit: number = 20, startAfter?: string) => {
+  getNotifications: async (
+    limit: number = NOTIFICATIONS_DEFAULT_LIMIT,
+    startAfter?: string
+  ) => {
     const queryParams = new URLSearchParams({
       limit: limit.toString(),
     });
@@ -364,37 +411,73 @@ export const notificationApi = {
 };
 
 export const useGetNotifications = (
-  limit: number = 20,
   startAfter?: string
 ) => {
   return useQuery({
-    queryKey: ["notifications", limit, startAfter],
-    queryFn: () => notificationApi.getNotifications(limit, startAfter),
+    queryKey: queryKeys.notifications.list(startAfter),
+    queryFn: () =>
+      notificationApi.getNotifications(NOTIFICATIONS_DEFAULT_LIMIT, startAfter),
+    staleTime: QUERY_STALE_TIMES.notifications,
   });
 };
 
-// API Request/Response Types
-
-
-// Response type for create/save resume
-export interface CreateResumeResponse {
-  success: boolean;
-  data?: {
-    id: string;
-    [key: string]: any;
-  };
-  error?: string;
-}
-
 export const resumeApi = {
-  createResume: async (data: ResumeData): Promise<CreateResumeResponse> => {
-    return apiRequest<CreateResumeResponse>("/api/v1/resumes/save", {
+  getResumes: async (): Promise<GetResumesResponse> => {
+    return apiRequest<GetResumesResponse>("/resumes/list", {
+      method: "GET",
+    });
+  },
+
+  createResume: async (
+    data: Partial<Resume> | SaveResumeRequest
+  ): Promise<CreateResumeResponse> => {
+    return apiRequest<CreateResumeResponse>("/resumes/save", {
       method: "POST",
       body: JSON.stringify(data),
     });
-  }
+  },
+
+  deleteResume: async (id: string): Promise<DeleteResumeResponse> => {
+    return apiRequest<DeleteResumeResponse>(`/resumes/${id}`, {
+      method: "DELETE",
+    });
+  },
+
+  downloadResumePdf: async (latexContent: string): Promise<Blob> => {
+    return apiRequest<Blob>(
+      "/latex/compile",
+      {
+        method: "POST",
+        body: JSON.stringify({ latexContent }),
+      },
+      "blob"
+    );
+  },
+
+  scrapeLinkedIn: async (url: string): Promise<{ data: any }> => {
+    return apiRequest<{ data: any }>("/resumes/scrape-linkedin", {
+      method: "POST",
+      body: JSON.stringify({ url }),
+    });
+  },
+
+  importResumePdf: async (file: File): Promise<ImportResumePdfResponse> => {
+    const formData = new FormData();
+    formData.append("resume", file);
+
+    return apiRequest<ImportResumePdfResponse>("/resumes/import-pdf", {
+      method: "POST",
+      body: formData,
+    });
+  },
 };
 
+export const useGetResumes = () => {
+  return useQuery({
+    queryKey: queryKeys.resumes.list(),
+    queryFn: () => resumeApi.getResumes(),
+    staleTime: QUERY_STALE_TIMES.history,
+  });
+};
 
-// Export the generic API request function for custom use cases
 export { apiRequest };

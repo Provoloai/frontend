@@ -51,7 +51,7 @@ const Sidebar = () => {
   const { data: optimizerHistory } = useGetOptimizerList();
   const optimizers: OptimizerHistoryItem[] =
     optimizerHistory?.data?.records?.map(
-      (item: { id: string; originalInput: string }) => ({
+      (item: { id: string; originalInput: OptimizerHistoryItem["originalInput"] }) => ({
         id: item.id,
         originalInput: item.originalInput,
       })

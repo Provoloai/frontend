@@ -1,102 +1,101 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { motion } from "motion/react";
 import { ArrowUp, ArrowDown, Infinity as InfinityIcon } from "lucide-react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useSearch } from "@tanstack/react-router";
 import useSession from "../hooks/useSession";
-import { optimizerApi, useGetQuota } from "@/api";
+import { useGetQuota, useGetOptimizer } from "@/api";
+import { useOptimizerWorkspace } from "@/hooks/useOptimizerWorkspace";
 import {
   optimizerContainerVariants,
   optimizerItemVariants,
 } from "@/constants/animations";
-import type { OptimizerResults, AccordionSection } from "@/types/optimizer";
 import type { PortfolioFormData } from "@/schemas/portfolioSchema";
 import OptimizerForm from "@/components/optimizer/OptimizerForm";
-import OptimizerResultsComponent from "@/components/optimizer/OptimizerResults";
+import OptimizerWorkspace from "@/components/optimizer/OptimizerWorkspace";
 import { useSEO, SEO_CONFIGS } from "@/hooks/useSEO";
 
 const PortfolioOptimizer = () => {
   useSEO(SEO_CONFIGS.optimizer);
+  const { recordId: recordIdFromUrl } = useSearch({
+    from: "/_sidebarlayout/_protected/optimizer",
+  });
 
-  // Get user from backend session
   const { user } = useSession();
-
-  // Fetch quota information
   const { data: quotaData } = useGetQuota("upwork_profile_optimizer");
+  const { data: historyData, isLoading: historyLoading } = useGetOptimizer(
+    recordIdFromUrl || ""
+  );
 
-  // Results state
-  const [results, setResults] = useState<OptimizerResults | null>(null);
+  const {
+    versions,
+    currentVersionIndex,
+    hasWorkspace,
+    unlimitedRefine,
+    refinementsRemaining,
+    hydrateFromHistory,
+    generate,
+    refine,
+    selectVersion,
+  } = useOptimizerWorkspace();
 
-  // UI state
-  const [isLoading, setIsLoading] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isRefining, setIsRefining] = useState(false);
   const [error, setError] = useState("");
+  const [refineError, setRefineError] = useState("");
+  const [showGenerateSuccess, setShowGenerateSuccess] = useState(false);
 
-  // Memoize user display name to prevent recalculation
+  const [formDefaults, setFormDefaults] = useState<PortfolioFormData>({
+    freelancerName: "",
+    profileTitle: "",
+    profileDescription: "",
+  });
+
+  const formRef = useRef<HTMLDivElement>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
+  const [isOnFormSection, setIsOnFormSection] = useState(true);
+
   const displayName = useMemo(
     () => user?.displayName || user?.email?.split("@")[0] || "User",
     [user]
   );
 
-  const queryClient = useQueryClient();
-  // Memoize accordion sections
-  const accordionSections: AccordionSection[] = useMemo(
-    () => [
-      {
-        title: "Weaknesses and Optimization Ideas",
-        content: results?.weaknessesAndOptimization || "",
-      },
-      {
-        title: "Optimized Profile Overview",
-        content: results?.optimizedProfileOverview || "",
-      },
-      {
-        title: "Suggested Project Titles and Layouts",
-        content: results?.suggestedProjectTitles || "",
-      },
-      {
-        title: "Recommended Visuals/Layout Hierarchies",
-        content: results?.recommendedVisuals || "",
-      },
-      {
-        title: "Before and After Comparison",
-        content: results?.beforeAfterComparison || "",
-      },
-    ],
-    [results]
-  );
-
-  // Refs for scroll functionality
-  const formRef = useRef<HTMLDivElement>(null);
-  const resultsRef = useRef<HTMLDivElement>(null);
-
-  // Track which section is currently visible
-  const [isOnFormSection, setIsOnFormSection] = useState(true);
-
-  // Monitor scroll position to determine which section is visible
   useEffect(() => {
+    if (!user) return;
+    setFormDefaults({
+      freelancerName: user.displayName || "",
+      profileTitle: user.professionalTitle || "",
+      profileDescription: "",
+    });
+  }, [user]);
+
+  useEffect(() => {
+    if (!recordIdFromUrl || !historyData?.data) return;
+    const formDefaultsFromHistory = hydrateFromHistory(
+      historyData.data as Parameters<typeof hydrateFromHistory>[0]
+    );
+    setFormDefaults(formDefaultsFromHistory);
+  }, [recordIdFromUrl, historyData, hydrateFromHistory]);
+
+  useEffect(() => {
+    if (!resultsRef.current || !formRef.current) return;
+
     const handleScroll = () => {
-      if (!resultsRef.current || !formRef.current) return;
-
-      const resultsTop = resultsRef.current.getBoundingClientRect().top;
+      const resultsTop = resultsRef.current!.getBoundingClientRect().top;
       const viewportHeight = window.innerHeight;
-
-      // If results section is in the upper half of viewport, user is on results
       setIsOnFormSection(resultsTop > viewportHeight / 2);
     };
 
-    const scrollContainer = document.querySelector('.snap-y');
-    scrollContainer?.addEventListener('scroll', handleScroll);
-    window.addEventListener('scroll', handleScroll);
-
+    const scrollContainer = document.querySelector(".snap-y");
+    scrollContainer?.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll);
     return () => {
-      scrollContainer?.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('scroll', handleScroll);
+      scrollContainer?.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     };
-  }, [results]);
+  }, [hasWorkspace]);
 
-  // Auto-scroll to results when they become available
   useEffect(() => {
-    if (results && resultsRef.current) {
-      // Small delay to ensure the results are rendered
+    if (hasWorkspace && resultsRef.current) {
       setTimeout(() => {
         resultsRef.current?.scrollIntoView({
           behavior: "smooth",
@@ -104,86 +103,71 @@ const PortfolioOptimizer = () => {
         });
       }, 300);
     }
-  }, [results]);
+  }, [hasWorkspace, versions.length]);
 
-  // Scroll back to form
   const scrollToForm = () => {
-    formRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
+    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  // Scroll to results
   const scrollToResults = () => {
-    resultsRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
+    resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  // Handle form submission - React Hook Form handles validation
   const handleSubmit = async (data: PortfolioFormData) => {
-    setIsLoading(true);
+    setIsGenerating(true);
     setError("");
-    setResults(null);
+    setShowGenerateSuccess(false);
 
     try {
-      // Prepare request payload - data is already validated by React Hook Form
-      const requestPayload = {
-        full_name: data.freelancerName,
-        professional_title: data.profileTitle,
-        profile: data.profileDescription,
-      };
-
-      // Call backend API endpoint using centralized API function
-      const result = await optimizerApi.optimizePortfolio(requestPayload);
-
-      // Set the analysis results from backend response
-      setResults({
-        fullAnalysis:
-          result.data.fullAnalysis || "Analysis completed successfully",
-        weaknessesAndOptimization:
-          result.data.weaknessesAndOptimization || "N/A",
-        optimizedProfileOverview: result.data.optimizedProfileOverview || "N/A",
-        suggestedProjectTitles: result.data.suggestedProjectTitles || "N/A",
-        recommendedVisuals: result.data.recommendedVisuals || "N/A",
-        beforeAfterComparison: result.data.beforeAfterComparison || "N/A",
-      });
-
-      // Invalidate quota to refresh the count
-      await queryClient.invalidateQueries({
-        queryKey: ["quota", "upwork_profile_optimizer"],
-      });
-
-       await queryClient.invalidateQueries({
-        queryKey: ["proposal-history"],
-      });
+      await generate(data);
+      setShowGenerateSuccess(true);
     } catch (err: unknown) {
-      const error = err as Error;
-      if (error.name === "TypeError" && error.message.includes("fetch")) {
+      const e = err as Error;
+      if (e.name === "TypeError" && e.message.includes("fetch")) {
         setError("Network error. Please check your connection and try again.");
-      } else if (error.message.includes("401")) {
+      } else if (e.message.includes("401")) {
         setError("Authentication required. Please log in again.");
-      } else if (error.message.includes("429")) {
+      } else if (e.message.includes("429")) {
         setError(
-          "You have reached your daily prompt limit. Please try again tomorrow."
+          "You have reached your generation limit. Please try again later or upgrade your plan."
         );
       } else {
-        setError(error.message || "Something went wrong. Please try again.");
+        setError(e.message || "Something went wrong. Please try again.");
       }
     } finally {
-      setIsLoading(false);
+      setIsGenerating(false);
     }
   };
 
-  const handleErrorClose = () => {
-    setError("");
+  const handleRefine = async (
+    instruction: string,
+    targetSection: Parameters<typeof refine>[1]
+  ) => {
+    setIsRefining(true);
+    setRefineError("");
+
+    try {
+      await refine(instruction, targetSection);
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Failed to refine profile.";
+      setRefineError(message);
+      throw err;
+    } finally {
+      setIsRefining(false);
+    }
   };
+
+  if (recordIdFromUrl && historyLoading) {
+    return (
+      <div className="flex-1 flex items-center justify-center p-10 text-gray-500">
+        Loading profile…
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 flex flex-col overflow-y-auto snap-y snap-mandatory relative">
-      {/* Header and Form Section - Constrained Width, Full Screen */}
       <motion.div
         ref={formRef}
         className="p-6 sm:p-10 max-w-3xl m-auto w-full min-h-screen flex flex-col justify-center snap-start snap-always"
@@ -195,18 +179,17 @@ const PortfolioOptimizer = () => {
           className="text-3xl mb-3 text-center"
           variants={optimizerItemVariants}
         >
-          Let's Optimize Your Profile, {displayName}
+          Let&apos;s Optimize Your Profile, {displayName}
         </motion.h2>
 
-        {/* Input Section */}
         <OptimizerForm
-          isLoading={isLoading}
+          isLoading={isGenerating}
           error={error}
           onSubmit={handleSubmit}
-          onErrorClose={handleErrorClose}
+          onErrorClose={() => setError("")}
+          defaultValues={formDefaults}
         />
 
-        {/* Quota Counter */}
         <motion.div
           className="text-center"
           initial={{ opacity: 0 }}
@@ -217,70 +200,54 @@ const PortfolioOptimizer = () => {
             <div className="flex items-center justify-center gap-1.5 text-xs text-gray-500">
               <span>{quotaData.data.count}</span>
               <span>/</span>
-              {quotaData.data.limit === -1 || quotaData.data.limit === "unlimited" ? (
+              {quotaData.data.limit === -1 ||
+              quotaData.data.limit === "unlimited" ? (
                 <>
                   <InfinityIcon size={20} className="text-gray-500" />
-                  <span>Optimizations</span>
+                  <span>generations</span>
                 </>
               ) : (
-                <span>{quotaData.data.limit} optimizations</span>
+                <span>{quotaData.data.limit} generations</span>
               )}
             </div>
           )}
         </motion.div>
       </motion.div>
 
-      {/* Output Section - Full Width, Full Screen */}
-      {results && (
+      {hasWorkspace && (
         <div
           ref={resultsRef}
-          className="w-full min-h-screen flex flex-col snap-start snap-always relative overflow-y-auto"
+          className="w-full min-h-screen flex flex-col snap-start snap-always relative overflow-y-auto pb-16"
         >
-          <OptimizerResultsComponent
-            sections={accordionSections}
-            hasResults={!!results}
+          <OptimizerWorkspace
+            versions={versions}
+            currentVersionIndex={currentVersionIndex}
+            onVersionSelect={selectVersion}
+            unlimitedRefine={unlimitedRefine}
+            refinementsRemaining={refinementsRemaining}
+            isRefining={isRefining}
+            refineError={refineError}
+            onRefine={handleRefine}
+            onRefineErrorClose={() => setRefineError("")}
+            showSuccessSnackbar={showGenerateSuccess}
           />
         </div>
       )}
 
-      {/* Empty state when no results - No snap behavior */}
-      {!results && (
-        <div className="w-full">
-          <OptimizerResultsComponent
-            sections={accordionSections}
-            hasResults={false}
-          />
-        </div>
-      )}
-
-      {/* Global Dynamic Scroll Button */}
-      {results && (
+      {hasWorkspace && (
         <motion.div
           className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 bg-white border shadow-md hover:shadow-lg transition-all duration-300 rounded-full"
-          animate={{
-            y: [0, -20, 0],
-            scale: [1, 1.05, 1],
-          }}
-          transition={{
-            duration: 1.2,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
+          animate={{ y: [0, -20, 0], scale: [1, 1.05, 1] }}
+          transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
         >
           <motion.button
+            type="button"
             onClick={isOnFormSection ? scrollToResults : scrollToForm}
             className="flex items-center gap-2 px-4 py-2 text-gray-700 rounded-full border-gray-200 hover:bg-gray-50 transition-all duration-200 text-sm font-medium"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.5 }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            {isOnFormSection ? (
-              <ArrowDown size={16} />
-            ) : (
-              <ArrowUp size={16} />
-            )}
+            {isOnFormSection ? <ArrowDown size={16} /> : <ArrowUp size={16} />}
             {isOnFormSection ? "Results" : "Optimize"}
           </motion.button>
         </motion.div>
