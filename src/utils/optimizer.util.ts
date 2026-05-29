@@ -7,6 +7,8 @@ import type {
   OptimizerResults,
   OptimizerTargetSection,
   OptimizerVersion,
+  OptimizerHistoryDetailRecord,
+  OptimizerHistoryVersionEntry,
 } from "@/types/optimizer";
 
 export function mapApiToOptimizerResults(
@@ -88,16 +90,22 @@ export function buildVersionFromRefine(
   };
 }
 
+function parseApiDate(value: unknown): string {
+  if (typeof value === "string") return value;
+  if (
+    value &&
+    typeof value === "object" &&
+    "_seconds" in value &&
+    typeof (value as { _seconds: number })._seconds === "number"
+  ) {
+    return new Date((value as { _seconds: number })._seconds * 1000).toISOString();
+  }
+  if (value instanceof Date) return value.toISOString();
+  return new Date().toISOString();
+}
+
 export function mapHistoryVersions(
-  versions: Array<{
-    id: string;
-    versionNumber: number;
-    refinementLabel?: string;
-    userInstruction?: string;
-    targetSection?: string;
-    createdAt: string;
-    response: OptimizerResults;
-  }>
+  versions: OptimizerHistoryVersionEntry[],
 ): OptimizerVersion[] {
   return versions.map((v) => ({
     id: v.id,
@@ -105,24 +113,12 @@ export function mapHistoryVersions(
     refinementLabel: v.refinementLabel,
     userInstruction: v.userInstruction,
     targetSection: v.targetSection as OptimizerVersion["targetSection"],
-    createdAt:
-      typeof v.createdAt === "string"
-        ? v.createdAt
-        : new Date(v.createdAt).toISOString(),
+    createdAt: parseApiDate(v.createdAt),
     response: v.response,
   }));
 }
 
-export function normalizeHistoryRecord(record: {
-  id: string;
-  parentRecordId?: string;
-  originalInput?: {
-    fullName?: string;
-    professionalTitle?: string;
-    content?: string;
-  };
-  versions?: Parameters<typeof mapHistoryVersions>[0];
-}): {
+export function normalizeHistoryRecord(record: OptimizerHistoryDetailRecord): {
   rootRecordId: string;
   versions: OptimizerVersion[];
   formDefaults: {
@@ -132,9 +128,22 @@ export function normalizeHistoryRecord(record: {
   };
 } {
   const rootRecordId = record.parentRecordId || record.id;
-  const versions = record.versions?.length
-    ? mapHistoryVersions(record.versions)
-    : [];
+
+  let versions: OptimizerVersion[];
+  if (record.versions?.length) {
+    versions = mapHistoryVersions(record.versions);
+  } else if (record.response && typeof record.response === "object") {
+    versions = [
+      {
+        id: rootRecordId,
+        versionNumber: record.versionNumber ?? 1,
+        createdAt: new Date().toISOString(),
+        response: mapApiToOptimizerResults(record.response),
+      },
+    ];
+  } else {
+    versions = [];
+  }
 
   return {
     rootRecordId,

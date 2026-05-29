@@ -51,3 +51,35 @@ export interface OptimizerWorkspaceState {
   unlimitedRefine: boolean;
   refinementsRemaining: number;
 }
+
+export interface OptimizerHistoryOriginalInput {
+  fullName?: string;
+  professionalTitle?: string;
+  content?: string;
+}
+
+export interface OptimizerHistoryVersionEntry {
+  id: string;
+  versionNumber: number;
+  refinementLabel?: string;
+  userInstruction?: string;
+  targetSection?: string;
+  createdAt: string | Date | { _seconds: number; _nanoseconds?: number };
+  response: OptimizerResults;
+}
+
+/** Single optimizer history record from GET /ai/optimizer-history/:id */
+export interface OptimizerHistoryDetailRecord {
+  id: string;
+  parentRecordId?: string;
+  versionNumber?: number;
+  response?: Record<string, unknown>;
+  originalInput?: OptimizerHistoryOriginalInput;
+  versions?: OptimizerHistoryVersionEntry[];
+}
+
+export interface ApiSuccessResponse<T> {
+  success?: boolean;
+  message?: string;
+  data: T;
+}
